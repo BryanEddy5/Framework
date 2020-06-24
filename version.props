@@ -1,0 +1,25 @@
+<Project>
+  <PropertyGroup Label="Package versioning">
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionSuffix Condition="'$(Channel)' != ''">$(Channel)-$(BuildTimestamp)</VersionSuffix>
+  </PropertyGroup>
+  <PropertyGroup Label="Runtime, .NET Framework Version, etc">
+    <AppTargetFrameworkVersion>netcoreapp3.1</AppTargetFrameworkVersion>
+    <LibTargetFrameworkVersion>netstandard2.0</LibTargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Label="Analyzers">
+    <StyleCopAnalyzerVersion>1.1.118</StyleCopAnalyzerVersion>
+    <ThreadingAnalyzerVersion>16.4.45</ThreadingAnalyzerVersion>
+    <MicrosoftCodeAnalysisCSharpVersion>3.6.0</MicrosoftCodeAnalysisCSharpVersion>
+  </PropertyGroup>
+  <PropertyGroup Label="Microsoft library versions">
+  </PropertyGroup>
+  <PropertyGroup Label="Test framework versions">
+    <CoverletVersion>2.9.0</CoverletVersion>
+    <xUnitVersion>2.4.1</xUnitVersion>
+    <MoqVersion>4.14.0</MoqVersion>
+    <MicrosoftNetTestSdkVersion>16.6.1</MicrosoftNetTestSdkVersion>
+  </PropertyGroup>
+  <PropertyGroup Label="Third party libs">
+  </PropertyGroup>
+</Project>
