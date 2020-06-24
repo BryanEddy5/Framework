@@ -1,0 +1,12 @@
+<Project>
+    <Import Project="../directory.build.props"/>
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="coverlet.msbuild" Version="$(CoverletVersion)"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)" />
+        <PackageReference Include="MSTest.TestFramework" Version="$(MsTestVersion)" />
+        <PackageReference Include="MSTest.TestAdapter" Version="$(MsTestVersion)" />
+    </ItemGroup>
+</Project>

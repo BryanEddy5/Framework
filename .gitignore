@@ -1,0 +1,46 @@
+*.swp
+*.*~
+.DS_Store
+*.pyc
+
+# editors
+.vs
+.idea
+.vscode
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+msbuild.log
+msbuild.err
+msbuild.wrn
+artifacts
+bin
+obj
+
+# ui
+node_modules
+project.lock.json
+
+# logs
+logs/
+/src/API/aws-logger-errors.txt
+
+# tests
+.test/
+/TestResults/
