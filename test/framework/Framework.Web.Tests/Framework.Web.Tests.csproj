@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
+    <AssemblyName>$(SolutionNamespaceRoot).Framework.Web.Tests</AssemblyName>
+    <RootNamespace>$(AssemblyName)</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\framework\Framework.Web\Framework.Web.csproj" />
+    <ProjectReference Include="..\..\..\src\core\Core.Testing\Core.Testing.csproj" />
+  </ItemGroup>
+</Project>
