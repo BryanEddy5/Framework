@@ -5,7 +5,7 @@
   </PropertyGroup>
   <PropertyGroup Label="Runtime, .NET Framework Version, etc">
     <AppTargetFrameworkVersion>netcoreapp3.1</AppTargetFrameworkVersion>
-    <LibTargetFrameworkVersion>netstandard2.0</LibTargetFrameworkVersion>
+    <LibTargetFrameworkVersion>netstandard2.1</LibTargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Label="Analyzers">
     <StyleCopAnalyzerVersion>1.1.118</StyleCopAnalyzerVersion>
@@ -13,13 +13,33 @@
     <MicrosoftCodeAnalysisCSharpVersion>3.6.0</MicrosoftCodeAnalysisCSharpVersion>
   </PropertyGroup>
   <PropertyGroup Label="Microsoft library versions">
+    <AspNetCoreHostingVersion>2.2.7</AspNetCoreHostingVersion>
+    <MvcVersion>2.2.0</MvcVersion>
+    <XmlSerializerVersion>4.3.0</XmlSerializerVersion>
+    <ComponentModelAnnotations>4.5.0</ComponentModelAnnotations>
+    <MicrosoftExtensionsVersion>3.1.5</MicrosoftExtensionsVersion>
+    <MicrosoftAspNetCoreMvcVersioningApiExplorer>4.0.0</MicrosoftAspNetCoreMvcVersioningApiExplorer>
   </PropertyGroup>
   <PropertyGroup Label="Test framework versions">
     <CoverletVersion>2.9.0</CoverletVersion>
     <xUnitVersion>2.4.1</xUnitVersion>
     <MoqVersion>4.14.0</MoqVersion>
     <MicrosoftNetTestSdkVersion>16.6.1</MicrosoftNetTestSdkVersion>
+    <AutoFixtureVersion>4.11.0</AutoFixtureVersion>
   </PropertyGroup>
   <PropertyGroup Label="Third party libs">
+    <AutofacVersion>5.2.0</AutofacVersion>
+    <AutofacDependencyInjectionVersion>6.0.0</AutofacDependencyInjectionVersion>
+    <NewtonsoftJsonVersion>12.0.3</NewtonsoftJsonVersion>
+    <FluentValidationVersion>8.6.2</FluentValidationVersion>
+    <SerilogVersion>2.9.0</SerilogVersion>
+    <SerilogAspNetCore>3.2.0</SerilogAspNetCore>
+    <SerilogExtensionsLogging>3.0.1</SerilogExtensionsLogging>
+    <SerilogSettingsConfiguration>3.1.0</SerilogSettingsConfiguration>
+    <SerilogExceptionsVersion>5.4.0</SerilogExceptionsVersion>
+    <SwashbuckleVersion>5.0.0-rc4</SwashbuckleVersion>
+    <MicroElementsSwashbuckleFluentValidation>3.0.0-rc.3</MicroElementsSwashbuckleFluentValidation>
+    <StackdriverVersion>3.0.0</StackdriverVersion>
+    <CorrelationIdVersion>3.0.0</CorrelationIdVersion>
   </PropertyGroup>
 </Project>
