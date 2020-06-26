@@ -1,7 +1,7 @@
 <Project>
   <Import Project="version.props"/>
   <PropertyGroup>
-    <SolutionNamespaceRoot>Humana.Webcore</SolutionNamespaceRoot>
+    <SolutionNamespaceRoot>HumanaEdge.Webcore</SolutionNamespaceRoot>
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)/codeanalysis.ruleset</CodeAnalysisRuleSet>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

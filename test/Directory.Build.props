@@ -1,0 +1,12 @@
+<Project>
+    <Import Project="../Directory.Build.props"/>
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="coverlet.msbuild" Version="$(CoverletVersion)"/>
+        <PackageReference Include="xunit" Version="$(xUnitVersion)" />
+        <PackageReference Include="xunit.extensibility.core" Version="$(xUnitVersion)" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="$(xUnitVersion)" />
+    </ItemGroup>
+</Project>

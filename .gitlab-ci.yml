@@ -1,0 +1,67 @@
+﻿# This is a simple example illustrating how to build and test .NET Core project
+# with GitLab Continuous Integration / Continuous Delivery.
+
+# ### Specify the Docker image
+image: mcr.microsoft.com/dotnet/core/sdk:3.1
+
+variables:
+  CONFIGURATION: Release
+  NUGET_PACKAGE_FOLDER: .nuget
+  CHANNEL: alpha
+  ARTIFACTORY_SOURCE: https://humanaedge.jfrog.io/humanaedge/api/nuget/v3/nuget-local
+
+stages:
+  - build
+  - test
+  - pack
+
+####################
+# BUILD
+####################
+build:
+  stage: build
+  script:
+    - dotnet restore --no-cache
+    - dotnet build -c ${CONFIGURATION} --no-restore
+
+
+####################
+# TEST
+####################
+.test-stage:
+  before_script:
+    - echo $CI_ENVIRONMENT_URL
+    - shopt -s expand_aliases
+    - dotnet tool install -g trx2junit
+    - dotnet restore --no-cache
+    - alias run-tests="dotnet test --logger 'trx;logfilename=test_results.trx' --results-directory=. /p:CoverletOutputFormat=opencover /p:CollectCoverage=true --no-restore"
+    - mkdir -p coverage
+  after_script:
+    - /root/.dotnet/tools/trx2junit test_results.trx
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/coverage/
+    reports:
+      junit: test_results.xml
+
+test:
+  stage: test
+  extends: .test-stage
+  script:
+    - run-tests /p:CoverletOutput=$CI_PROJECT_DIR/coverage/unit
+
+####################
+# PACK
+####################
+pack:
+  stage: pack
+  script:
+    - echo $(date +%Y%m%d%H%M%S)
+    - export PACKAGE_VERSION=$(date +%Y%m%d%H%M%S)
+    - dotnet pack /p:Channel=${CHANNEL} /p:BuildTimestamp=${PACKAGE_VERSION} -c ${CONFIGURATION} -o ${NUGET_PACKAGE_FOLDER} --no-restore
+    - cd $NUGET_PACKAGE_FOLDER
+    - dotnet nuget push **/*-${PACKAGE_VERSION}.nupkg -s ${ARTIFACTORY_SOURCE} -k ${ARTIFACTORY_NUGET}
+  only:
+    - merge_requests
+    - master
+  when: manual

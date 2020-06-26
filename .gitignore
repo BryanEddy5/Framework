@@ -44,3 +44,7 @@ logs/
 # tests
 .test/
 /TestResults/
+
+.nuget
+.nupkg
+builds
