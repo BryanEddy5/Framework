@@ -1,6 +1,7 @@
 using System;
 using FluentValidation.AspNetCore;
 using HumanaEdge.Webcore.Framework.Logging.Extensions;
+using HumanaEdge.Webcore.Framework.Rest.Extensions;
 using HumanaEdge.Webcore.Framework.Web.Exceptions;
 using HumanaEdge.Webcore.Framework.Web.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -94,6 +95,8 @@ namespace HumanaEdge.Webcore.Framework.Web
 
             var httpClientBuilder = ConfigureAppServices(services);
             services.AddTracing(Configuration, httpClientBuilder);
+
+            services.AddRestClient();
         }
 
         /// <summary>
@@ -116,7 +119,7 @@ namespace HumanaEdge.Webcore.Framework.Web
         ///     Hook for applications to add app-specific services to the <see cref="IServiceCollection" />.
         /// </summary>
         /// <param name="services">The running service collection.</param>
-        /// <returns>returns an <see cref="IHttpClientBuilder"/> for tracing to be attached to.</returns>
+        /// <returns>returns an <see cref="IHttpClientBuilder" /> for tracing to be attached to.</returns>
         protected virtual IHttpClientBuilder ConfigureAppServices(IServiceCollection services)
         {
             return services.AddHttpClient("backend");

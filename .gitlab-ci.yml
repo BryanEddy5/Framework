@@ -56,6 +56,7 @@ test:
 pack:
   stage: pack
   script:
+    - dotnet restore --no-cache
     - echo $(date +%Y%m%d%H%M%S)
     - export PACKAGE_VERSION=$(date +%Y%m%d%H%M%S)
     - dotnet pack /p:Channel=${CHANNEL} /p:BuildTimestamp=${PACKAGE_VERSION} -c ${CONFIGURATION} -o ${NUGET_PACKAGE_FOLDER} --no-restore

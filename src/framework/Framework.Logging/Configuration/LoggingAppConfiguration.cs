@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyModel;
 using Serilog;
@@ -10,6 +11,7 @@ namespace HumanaEdge.Webcore.Framework.Logging.Configuration
     /// <summary>
     ///     Dynamically configures logging based on the application configuration settings.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     internal static class LoggingAppConfiguration
     {
         /// <summary>

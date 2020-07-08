@@ -41,5 +41,6 @@
     <MicroElementsSwashbuckleFluentValidation>3.0.0-rc.3</MicroElementsSwashbuckleFluentValidation>
     <StackdriverVersion>3.0.0</StackdriverVersion>
     <CorrelationIdVersion>3.0.0</CorrelationIdVersion>
+    <NewtonsoftJsonVersion>12.0.1</NewtonsoftJsonVersion>
   </PropertyGroup>
 </Project>
