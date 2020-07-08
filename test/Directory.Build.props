@@ -1,12 +1,16 @@
 <Project>
-    <Import Project="../Directory.Build.props"/>
-    <PropertyGroup>
-        <IsPackable>false</IsPackable>
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="coverlet.msbuild" Version="$(CoverletVersion)"/>
-        <PackageReference Include="xunit" Version="$(xUnitVersion)" />
-        <PackageReference Include="xunit.extensibility.core" Version="$(xUnitVersion)" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="$(xUnitVersion)" />
-    </ItemGroup>
+  <Import Project="../Directory.Build.props"/>
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="$(CoverletVersion)"/>
+    <PackageReference Include="xunit" Version="$(xUnitVersion)"/>
+    <PackageReference Include="xunit.extensibility.core" Version="$(xUnitVersion)"/>
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(xUnitVersion)"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\core\Core.Testing\Core.Testing.csproj" />
+  </ItemGroup>
 </Project>

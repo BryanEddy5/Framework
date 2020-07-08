@@ -166,7 +166,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests
         /// <summary>
         ///     Converts the <see cref="HttpContext" /> response body into a <see cref="JToken" />.
         /// </summary>
-        /// <param name="httpContext">Contains information about the httprequest.</param>
+        /// <param name="httpContext">Contains information about the http request.</param>
         /// <returns>Returns a <see cref="JToken" />.</returns>
         private static async Task<JToken> ResponseBodyToString(HttpContext httpContext)
         {

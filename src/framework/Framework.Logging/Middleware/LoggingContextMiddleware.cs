@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.Web;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ namespace HumanaEdge.Webcore.Framework.Logging.Middleware
     /// <summary>
     ///     Middleware which establish a common set of items in the logical log context.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     internal sealed class LoggingContextMiddleware
     {
         /// <summary>
@@ -31,7 +33,7 @@ namespace HumanaEdge.Webcore.Framework.Logging.Middleware
         private readonly IRequestIdAccessor _requestIdAccessor;
 
         /// <summary>
-        ///     Designated constructor.
+        ///     Designated ctor.
         /// </summary>
         /// <param name="next">A delegate to invoke the next handler in the pipeline.</param>
         /// <param name="diagnosticContext">The log context.</param>
@@ -53,7 +55,7 @@ namespace HumanaEdge.Webcore.Framework.Logging.Middleware
         /// <returns>An awaitable task.</returns>
         public async Task InvokeAsync(HttpContext context)
         {
-            _diagnosticContext.Set(CorrelationIdKey, _requestIdAccessor.Get);
+            _diagnosticContext.Set(CorrelationIdKey, _requestIdAccessor.CorrelationId);
 
             await _next(context);
         }

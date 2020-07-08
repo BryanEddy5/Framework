@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.ExceptionServices;
 
 namespace HumanaEdge.Webcore.Core.Common
@@ -6,6 +7,7 @@ namespace HumanaEdge.Webcore.Core.Common
     /// <summary>
     ///     A class containing extension methods for <see cref="Exception" />.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class ExceptionExtensions
     {
         /// <summary>

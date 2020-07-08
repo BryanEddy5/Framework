@@ -11,11 +11,12 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="$(SwashbuckleVersion)" />
     <PackageReference Include="MicroElements.Swashbuckle.FluentValidation" Version="$(MicroElementsSwashbuckleFluentValidation)" />
     <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="$(StackdriverVersion)" />
-    <PackageReference Include="CorrelationId" Version="3.0.0" />
+    <PackageReference Include="CorrelationId" Version="$(CorrelationIdVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Core.Common\Core.Common.csproj" />
     <ProjectReference Include="..\..\core\Core.Web\Core.Web.csproj" />
     <ProjectReference Include="..\Framework.Logging\Framework.Logging.csproj" />
+    <ProjectReference Include="..\Framework.Rest\Framework.Rest.csproj" />
   </ItemGroup>
 </Project>

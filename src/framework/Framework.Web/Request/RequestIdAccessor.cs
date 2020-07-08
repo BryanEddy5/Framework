@@ -21,6 +21,9 @@ namespace HumanaEdge.Webcore.Framework.Web.Request
         }
 
         /// <inheritdoc />
-        public string Get => _correlationContextAccessor.CorrelationContext.CorrelationId;
+        public string CorrelationId => _correlationContextAccessor.CorrelationContext.CorrelationId;
+
+        /// <inheritdoc/>
+        public string Header => _correlationContextAccessor.CorrelationContext.Header;
     }
 }

@@ -12,7 +12,7 @@ namespace HumanaEdge.Webcore.Core.Common
     public class AppException : Exception
     {
         /// <summary>
-        ///     Designated constructor.
+        ///     Designated ctor.
         /// </summary>
         /// <param name="message">The exception message.</param>
         /// <param name="inner">Optional. Inner exception, if any.</param>

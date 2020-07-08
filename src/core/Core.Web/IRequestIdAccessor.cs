@@ -9,6 +9,11 @@
         ///     A unique request id for the current request.
         /// </summary>
         /// <returns>The request id.</returns>
-        string Get { get; }
+        string CorrelationId { get; }
+
+        /// <summary>
+        ///     The header key of the correlation id.
+        /// </summary>
+        public string Header { get; }
     }
 }

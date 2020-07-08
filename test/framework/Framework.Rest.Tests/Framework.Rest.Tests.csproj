@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
-    <AssemblyName>$(SolutionNamespaceRoot).Framework.Web.Tests</AssemblyName>
+    <AssemblyName>$(SolutionNamespaceRoot).Framework.Rest.Tests</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\framework\Framework.Web\Framework.Web.csproj" />
+    <ProjectReference Include="..\..\..\src\framework\Framework.Rest\Framework.Rest.csproj" />
   </ItemGroup>
 </Project>

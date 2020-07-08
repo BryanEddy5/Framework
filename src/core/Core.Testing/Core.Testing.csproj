@@ -10,4 +10,7 @@
     <PackageReference Include="AutoFixture.Xunit2" Version="$(AutoFixtureVersion)" />
     <PackageReference Include="AutoFixture.AutoMoq" Version="$(AutoFixtureVersion)" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Rest\Core.Rest.csproj" />
+  </ItemGroup>
 </Project>

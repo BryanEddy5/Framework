@@ -1,4 +1,5 @@
-﻿using HumanaEdge.Webcore.Framework.Logging.Middleware;
+﻿using System.Diagnostics.CodeAnalysis;
+using HumanaEdge.Webcore.Framework.Logging.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Serilog;
 
@@ -7,6 +8,7 @@ namespace HumanaEdge.Webcore.Framework.Logging.Extensions
     /// <summary>
     ///     Extension methods for <see cref="IApplicationBuilder" /> for logging.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class ApplicationBuilderExtensions
     {
         /// <summary>
