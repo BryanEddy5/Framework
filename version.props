@@ -14,11 +14,14 @@
   </PropertyGroup>
   <PropertyGroup Label="Microsoft library versions">
     <AspNetCoreHostingVersion>2.2.7</AspNetCoreHostingVersion>
-    <MvcVersion>2.2.0</MvcVersion>
     <XmlSerializerVersion>4.3.0</XmlSerializerVersion>
     <ComponentModelAnnotations>4.5.0</ComponentModelAnnotations>
     <MicrosoftExtensionsVersion>3.1.5</MicrosoftExtensionsVersion>
-    <MicrosoftAspNetCoreMvcVersioningApiExplorer>4.0.0</MicrosoftAspNetCoreMvcVersioningApiExplorer>
+    <MicrosoftExtensionsHostingVersion>3.1.5</MicrosoftExtensionsHostingVersion>
+    <MicrosoftExtensionsConfigurationVersion>3.1.5</MicrosoftExtensionsConfigurationVersion>
+    <MicrosoftExtensionsHostingAbstractionsVersion>3.1.5</MicrosoftExtensionsHostingAbstractionsVersion>
+    <MicrosoftExtensionsPlatformAbstractionsVersion>1.1.0</MicrosoftExtensionsPlatformAbstractionsVersion>
+    <MicrosoftAspNetCoreMvcNewtonsoftJsonVersion>3.1.5</MicrosoftAspNetCoreMvcNewtonsoftJsonVersion>
   </PropertyGroup>
   <PropertyGroup Label="Test framework versions">
     <CoverletVersion>2.9.0</CoverletVersion>
@@ -37,7 +40,8 @@
     <SerilogExtensionsLogging>3.0.1</SerilogExtensionsLogging>
     <SerilogSettingsConfiguration>3.1.0</SerilogSettingsConfiguration>
     <SerilogExceptionsVersion>5.4.0</SerilogExceptionsVersion>
-    <SwashbuckleVersion>5.0.0-rc4</SwashbuckleVersion>
+    <SwashbuckleVersion>5.5.1</SwashbuckleVersion>
+    <SwashbuckleFiltersVersion>5.1.2</SwashbuckleFiltersVersion>
     <MicroElementsSwashbuckleFluentValidation>3.0.0-rc.3</MicroElementsSwashbuckleFluentValidation>
     <StackdriverVersion>3.0.0</StackdriverVersion>
     <CorrelationIdVersion>3.0.0</CorrelationIdVersion>

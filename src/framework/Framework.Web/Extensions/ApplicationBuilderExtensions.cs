@@ -1,4 +1,4 @@
-﻿using CorrelationId;
+using CorrelationId;
 using Google.Cloud.Diagnostics.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;

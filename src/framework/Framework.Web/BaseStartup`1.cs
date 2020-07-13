@@ -6,7 +6,6 @@ using HumanaEdge.Webcore.Framework.Web.Exceptions;
 using HumanaEdge.Webcore.Framework.Web.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,7 +25,7 @@ namespace HumanaEdge.Webcore.Framework.Web
         ///     Designated ctor.
         /// </summary>
         /// <param name="configuration">The application configuration settings.</param>
-        public BaseStartup(IConfiguration configuration)
+        protected BaseStartup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -42,12 +41,10 @@ namespace HumanaEdge.Webcore.Framework.Web
         /// <param name="app">The application builder.</param>
         /// <param name="env">The hosting environment.</param>
         /// <param name="logger">The application logger.</param>
-        /// <param name="provider">A provider that discovers and describes API version information within an application.</param>
         public void Configure(
             IApplicationBuilder app,
             IWebHostEnvironment env,
-            ILogger<TStartup> logger,
-            IApiVersionDescriptionProvider provider)
+            ILogger<TStartup> logger)
         {
             _ = env.IsDevelopment() ? app.UseDeveloperExceptionPage() : app.UseHsts();
 
@@ -56,12 +53,13 @@ namespace HumanaEdge.Webcore.Framework.Web
                 .UseLoggingContextMiddleware();
 
             app.UseHttpsRedirection();
+
             app.UseRouting();
             app.UseReadyHealthChecks();
             app.UseTracing(Configuration);
 
             // app specific middleware
-            ConfigureApp(app, env, logger, provider);
+            ConfigureApp(app, env, logger);
 
             app.UseEndpoints(
                 endpoints =>
@@ -105,12 +103,10 @@ namespace HumanaEdge.Webcore.Framework.Web
         /// <param name="app">The application builder.</param>
         /// <param name="env">The hosting environment.</param>
         /// <param name="logger">The application logger.</param>
-        /// <param name="provider">A provider that discovers and describes API version information within an application.</param>
         protected virtual void ConfigureApp(
             IApplicationBuilder app,
             IWebHostEnvironment env,
-            ILogger<TStartup> logger,
-            IApiVersionDescriptionProvider provider)
+            ILogger<TStartup> logger)
         {
             // nop
         }
