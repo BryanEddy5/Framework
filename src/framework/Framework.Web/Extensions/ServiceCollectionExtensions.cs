@@ -1,4 +1,4 @@
-﻿using CorrelationId.DependencyInjection;
+using CorrelationId.DependencyInjection;
 using HumanaEdge.Webcore.Core.Web;
 using HumanaEdge.Webcore.Framework.Web.Options;
 using HumanaEdge.Webcore.Framework.Web.Request;
