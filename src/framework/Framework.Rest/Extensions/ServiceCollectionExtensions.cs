@@ -5,12 +5,12 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace HumanaEdge.Webcore.Framework.Rest.Extensions
 {
     /// <summary>
-    ///     Extension methods for <see cref="IServiceCollection" />.
+    /// Extension methods for <see cref="IServiceCollection" />.
     /// </summary>
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        ///     Registers services necessary for rest client support.
+        /// Registers services necessary for rest client support.
         /// </summary>
         /// <param name="services">The running service collection.</param>
         /// <returns>The service collection, for fluent chaining.</returns>

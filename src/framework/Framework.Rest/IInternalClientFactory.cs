@@ -4,12 +4,12 @@ using System.Net.Http;
 namespace HumanaEdge.Webcore.Framework.Rest
 {
     /// <summary>
-    ///     Factory pattern for generating an <see cref="IInternalClient"/>.
+    /// Factory pattern for generating an <see cref="IInternalClient"/>.
     /// </summary>
     internal interface IInternalClientFactory
     {
         /// <summary>
-        ///     Creates a <see cref="IInternalClient"/> based off of the inputs.
+        /// Creates a <see cref="IInternalClient"/> based off of the inputs.
         /// </summary>
         /// <param name="clientName">The named type instance of an <see cref="HttpClient"/>.</param>
         /// <param name="baseUri">The base URI of the request.</param>

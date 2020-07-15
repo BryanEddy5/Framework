@@ -18,7 +18,7 @@ using Xunit;
 namespace HumanaEdge.Webcore.Framework.Rest.Tests
 {
     /// <summary>
-    ///     Unit tests for <see cref="RestClient" />.
+    /// Unit tests for <see cref="RestClient" />.
     /// </summary>
     public class RestClientTests : BaseTests
     {
@@ -35,12 +35,12 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         private readonly RestClientOptions _options;
 
         /// <summary>
-        ///     System under test.
+        /// System under test.
         /// </summary>
         private RestClient _restClient;
 
         /// <summary>
-        ///     Common test setup.
+        /// Common test setup.
         /// </summary>
         public RestClientTests()
         {
@@ -74,7 +74,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         }
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="RestClient.SendAsync(RestRequest,CancellationToken)" /> with all <see cref="RestClientOptions"/> containing values.
+        /// Verifies the behavior of <see cref="RestClient.SendAsync(RestRequest,CancellationToken)" /> with all <see cref="RestClientOptions"/> containing values.
         /// </summary>
         /// <returns>A <see cref="Task" /> representing the result of the asynchronous operation.</returns>
         [Fact]
@@ -115,7 +115,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         }
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="RestClient.SendAsync{TRequest}(RestRequest{TRequest},CancellationToken)" />.
+        /// Verifies the behavior of <see cref="RestClient.SendAsync{TRequest}(RestRequest{TRequest},CancellationToken)" />.
         /// </summary>
         /// <returns>A <see cref="Task" /> representing the result of the asynchronous operation.</returns>
         [Fact]
@@ -159,7 +159,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         }
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="RestClient.SendAsync(RestRequest,CancellationToken)" />.
+        /// Verifies the behavior of <see cref="RestClient.SendAsync(RestRequest,CancellationToken)" />.
         /// </summary>
         /// <returns>A <see cref="Task" /> representing the result of the asynchronous operation.</returns>
         [Fact]
@@ -201,7 +201,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         }
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="RestClient.SendAsync{TRequest}(RestRequest{TRequest},CancellationToken)" />.
+        /// Verifies the behavior of <see cref="RestClient.SendAsync{TRequest}(RestRequest{TRequest},CancellationToken)" />.
         /// </summary>
         /// <returns>A <see cref="Task" /> representing the result of the asynchronous operation.</returns>
         [Fact]
@@ -224,7 +224,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         }
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="RestClient.SendAsync{TRequest}(RestRequest{TRequest},CancellationToken)" />.
+        /// Verifies the behavior of <see cref="RestClient.SendAsync{TRequest}(RestRequest{TRequest},CancellationToken)" />.
         /// </summary>
         /// <returns>A <see cref="Task" /> representing the result of the asynchronous operation.</returns>
         [Fact]

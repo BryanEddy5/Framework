@@ -13,7 +13,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
         private readonly HttpClient _httpClient;
 
         /// <summary>
-        ///     Designated ctor.
+        /// Designated ctor.
         /// </summary>
         /// <param name="httpClient">A http client for sending http requests.</param>
         /// <param name="baseUri">The base path of the http request.</param>
@@ -28,12 +28,12 @@ namespace HumanaEdge.Webcore.Framework.Rest
         }
 
         /// <summary>
-        ///     The base path.
+        /// The base path.
         /// </summary>
         public Uri BaseUri { get; }
 
         /// <summary>
-        ///     The length in time before the request times out.
+        /// The length in time before the request times out.
         /// </summary>
         public TimeSpan Timeout { get; }
 

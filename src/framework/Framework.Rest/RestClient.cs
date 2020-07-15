@@ -22,7 +22,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
         private readonly IRequestIdAccessor? _requestIdAccessor;
 
         /// <summary>
-        ///     Designated ctor.
+        /// Designated ctor.
         /// </summary>
         /// <param name="clientName">The name type of the <see cref="HttpClient"/>.</param>
         /// <param name="internalClientFactory">A factory for generating <see cref="IInternalClient"/> for sending the request.</param>
@@ -57,7 +57,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
         }
 
         /// <summary>
-        ///     Converts a <see cref="RestRequest{TRequest}" /> to <see cref="HttpRequestMessage" />.
+        /// Converts a <see cref="RestRequest{TRequest}" /> to <see cref="HttpRequestMessage" />.
         /// </summary>
         /// <param name="request">The rest request to be converted.</param>
         /// <typeparam name="TRequest">The <see cref="Type" /> of the request body.</typeparam>
@@ -99,7 +99,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
         }
 
         /// <summary>
-        ///     Converts a <see cref="RestRequest" /> to a <see cref="HttpRequestMessage" />.
+        /// Converts a <see cref="RestRequest" /> to a <see cref="HttpRequestMessage" />.
         /// </summary>
         /// <param name="request">The request to convert.</param>
         /// <returns>An <see cref="HttpRequestMessage" />.</returns>
@@ -135,7 +135,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
         }
 
         /// <summary>
-        ///     Orchestrates the actual HTTP request. Applies any transformations, converted to and from HTTP- classes.
+        /// Orchestrates the actual HTTP request. Applies any transformations, converted to and from HTTP- classes.
         /// </summary>
         /// <typeparam name="TRestRequest">The type of the rest request.</typeparam>
         /// <param name="restRequest">The rest request object.</param>

@@ -7,33 +7,33 @@ using Serilog;
 namespace HumanaEdge.Webcore.Framework.Logging.Middleware
 {
     /// <summary>
-    ///     Middleware which establish a common set of items in the logical log context.
+    /// Middleware which establish a common set of items in the logical log context.
     /// </summary>
     [ExcludeFromCodeCoverage]
     internal sealed class LoggingContextMiddleware
     {
         /// <summary>
-        ///     Key used to store the correlation id in the <see cref="IDiagnosticContext" />.
+        /// Key used to store the correlation id in the <see cref="IDiagnosticContext" />.
         /// </summary>
         internal const string CorrelationIdKey = "CorrelationId";
 
         /// <summary>
-        ///     The log context, used to establish log properties.
+        /// The log context, used to establish log properties.
         /// </summary>
         private readonly IDiagnosticContext _diagnosticContext;
 
         /// <summary>
-        ///     Delegate to invoke the next handler in the pipeline.
+        /// Delegate to invoke the next handler in the pipeline.
         /// </summary>
         private readonly RequestDelegate _next;
 
         /// <summary>
-        ///     The request id accessor.
+        /// The request id accessor.
         /// </summary>
         private readonly IRequestIdAccessor _requestIdAccessor;
 
         /// <summary>
-        ///     Designated ctor.
+        /// Designated ctor.
         /// </summary>
         /// <param name="next">A delegate to invoke the next handler in the pipeline.</param>
         /// <param name="diagnosticContext">The log context.</param>
@@ -49,7 +49,7 @@ namespace HumanaEdge.Webcore.Framework.Logging.Middleware
         }
 
         /// <summary>
-        ///     Handler for HTTP requests which establishes a standard set of items into the log context.
+        /// Handler for HTTP requests which establishes a standard set of items into the log context.
         /// </summary>
         /// <param name="context">The http context.</param>
         /// <returns>An awaitable task.</returns>

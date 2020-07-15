@@ -13,37 +13,37 @@ using Newtonsoft.Json.Serialization;
 namespace HumanaEdge.Webcore.Framework.Web.Exceptions
 {
     /// <summary>
-    ///     A middleware to handle exceptions thrown.
+    /// A middleware to handle exceptions thrown.
     /// </summary>
     internal sealed class ExceptionHandlingMiddleware
     {
         /// <summary>
-        ///     The default error message when an unhandled exception has been thrown.
+        /// The default error message when an unhandled exception has been thrown.
         /// </summary>
         internal const string DefaultErrorMessage = "An internal error has occured. Please try again later.";
 
         /// <summary>
-        ///     Settings for the JSON serialization.
+        /// Settings for the JSON serialization.
         /// </summary>
         private readonly JsonSerializerSettings _jsonSettings;
 
         /// <summary>
-        ///     The application logger.
+        /// The application logger.
         /// </summary>
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
         /// <summary>
-        ///     A delegate used to invoke the next step in the web pipeline.
+        /// A delegate used to invoke the next step in the web pipeline.
         /// </summary>
         private readonly RequestDelegate _next;
 
         /// <summary>
-        ///     The application configuration settings for the exception handling middleware.
+        /// The application configuration settings for the exception handling middleware.
         /// </summary>
         private readonly IOptionsMonitor<ExceptionHandlingOptions> _options;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ExceptionHandlingMiddleware" /> class.
+        /// Initializes a new instance of the <see cref="ExceptionHandlingMiddleware" /> class.
         /// </summary>
         /// <param name="next">A delegate used to invoke the next step in the web pipeline.</param>
         /// <param name="logger">The application logger.</param>
@@ -63,7 +63,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
         }
 
         /// <summary>
-        ///     High level exception handler for exceptions thrown for requests sent down the pipeline.
+        /// High level exception handler for exceptions thrown for requests sent down the pipeline.
         /// </summary>
         /// <param name="httpContext"><see cref="T:Microsoft.AspNetCore.Http.HttpContext" />HttpContext delegate.</param>
         /// <returns>A <see cref="Task" /> representing the result of the asynchronous operation.</returns>
@@ -81,7 +81,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
         }
 
         /// <summary>
-        ///     Generates a <see cref="ProblemDetail" /> for the response with information about the exception thrown.
+        /// Generates a <see cref="ProblemDetail" /> for the response with information about the exception thrown.
         /// </summary>
         /// <param name="exception">The exception that has been caught.</param>
         /// <param name="httpContext"><see cref="T:Microsoft.AspNetCore.Http.HttpContext" />HttpContext delegate.</param>
@@ -112,7 +112,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
         }
 
         /// <summary>
-        ///     Handles exceptions thrown.
+        /// Handles exceptions thrown.
         /// </summary>
         /// <param name="exception">The exception thrown from the application.</param>
         /// <param name="httpContext"><see cref="T:Microsoft.AspNetCore.Http.HttpContext" />HttpContext delegate.</param>

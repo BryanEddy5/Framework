@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace HumanaEdge.Webcore.Core.Rest
 {
     /// <summary>
-    ///     The rest client sends RESTful http requests.
+    /// The rest client sends RESTful http requests.
     /// </summary>
     /// <typeparam name="TClient">The type inheriting from this base class.</typeparam>
     public abstract class BaseRestClient<TClient> : IRestClient
@@ -14,7 +14,7 @@ namespace HumanaEdge.Webcore.Core.Rest
         private readonly Lazy<IRestClient> _restClient;
 
         /// <summary>
-        ///     Designated ctor.
+        /// Designated ctor.
         /// </summary>
         /// <param name="restClientFactory">A factory pattern for generating a <see cref="IRestClient" />.</param>
         /// <param name="options">Optional settings for configuring the rest client for each implementation.</param>

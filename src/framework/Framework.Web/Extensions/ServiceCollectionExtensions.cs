@@ -9,12 +9,12 @@ using Microsoft.Extensions.Options;
 namespace HumanaEdge.Webcore.Framework.Web.Extensions
 {
     /// <summary>
-    ///     Extension methods for <see cref="IServiceCollection" /> for registering services.
+    /// Extension methods for <see cref="IServiceCollection" /> for registering services.
     /// </summary>
     internal static class ServiceCollectionExtensions
     {
         /// <summary>
-        ///     Registers the request id accessor in the <see cref="IServiceCollection" />.
+        /// Registers the request id accessor in the <see cref="IServiceCollection" />.
         /// </summary>
         /// <param name="services">The services collection.</param>
         internal static void AddRequestIdAccessor(this IServiceCollection services)
@@ -24,7 +24,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Extensions
         }
 
         /// <summary>
-        ///     Registers the services for the <see cref="IOptions{TOptions}" /> for accessing configuration settings.
+        /// Registers the services for the <see cref="IOptions{TOptions}" /> for accessing configuration settings.
         /// </summary>
         /// <param name="services">The services collection.</param>
         /// <param name="configuration">The app configuration settings.</param>

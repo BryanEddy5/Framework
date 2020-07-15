@@ -9,7 +9,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
         private readonly IHttpClientFactory _httpClientFactory;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="InternalClientFactory" /> class.
+        /// Initializes a new instance of the <see cref="InternalClientFactory" /> class.
         /// </summary>
         /// <param name="httpClientFactory"><see cref="IHttpClientFactory" /> for generating an <see cref="HttpClient" />.</param>
         public InternalClientFactory(IHttpClientFactory httpClientFactory)

@@ -9,14 +9,14 @@ using Xunit;
 namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
 {
     /// <summary>
-    ///     Unit tests for <see cref="DependencyInjection" />.
+    /// Unit tests for <see cref="DependencyInjection" />.
     /// </summary>
     public class DependencyInjectionTests : BaseTests
     {
         private readonly IHost _host;
 
         /// <summary>
-        ///     Common test setup.
+        /// Common test setup.
         /// </summary>
         public DependencyInjectionTests()
         {
@@ -26,7 +26,7 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         }
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum"/> values.
+        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum"/> values.
         /// </summary>
         [Fact]
         public void GetService_ITransientService()
@@ -46,7 +46,7 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         }
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum"/> values.
+        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum"/> values.
         /// </summary>
         [Fact]
         public void GetService_IScopedService()
@@ -66,7 +66,7 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         }
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum"/> values.
+        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum"/> values.
         /// </summary>
         [Fact]
         public void GetService_ISingletonService()
@@ -86,7 +86,7 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         }
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum"/> values.
+        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum"/> values.
         /// </summary>
         [Fact]
         public void GetService_NonRegisteredComponent()
@@ -101,7 +101,7 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         }
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum"/> values.
+        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum"/> values.
         /// </summary>
         [Fact]
         public void GetService_MultipleComponentsForService()

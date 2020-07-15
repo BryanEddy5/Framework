@@ -5,12 +5,12 @@ using Microsoft.Extensions.Primitives;
 namespace HumanaEdge.Webcore.Core.Rest
 {
     /// <summary>
-    ///     Request meta data for an http request.
+    /// Request meta data for an http request.
     /// </summary>
     public class RestRequest
     {
         /// <summary>
-        ///     Designated ctor.
+        /// Designated ctor.
         /// </summary>
         /// <param name="relativePath">The relative path for the http request.</param>
         /// <param name="httpMethod">The http method for the http request.</param>
@@ -22,23 +22,23 @@ namespace HumanaEdge.Webcore.Core.Rest
         }
 
         /// <summary>
-        ///     Headers associated with the http request.
+        /// Headers associated with the http request.
         /// </summary>
         public Dictionary<string, StringValues> Headers { get; }
 
         /// <summary>
-        ///     The http method for the http request.
+        /// The http method for the http request.
         /// </summary>
         public HttpMethod HttpMethod { get; }
 
         /// <summary>
-        ///     The relative path for the http request.
+        /// The relative path for the http request.
         /// </summary>
         public string RelativePath { get; }
 
         /// <summary>
-        ///     Adds an Accept header to the http request that indicates the the response's MIME-type should be.
-        ///     The header meets the https://tools.ietf.org/html/rfc7231#section-5.3.2 spec.
+        /// Adds an Accept header to the http request that indicates the the response's MIME-type should be.
+        /// The header meets the https://tools.ietf.org/html/rfc7231#section-5.3.2 spec.
         /// </summary>
         /// <param name="mediaType">The mediaType of the request header.</param>
         /// <returns><see cref="RestRequest" /> for fluent chaining.</returns>
@@ -59,7 +59,7 @@ namespace HumanaEdge.Webcore.Core.Rest
         }
 
         /// <summary>
-        ///     Add headers to the request.
+        /// Add headers to the request.
         /// </summary>
         /// <param name="key">The header key.</param>
         /// <param name="value">The mediaType of the request header.</param>

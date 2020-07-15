@@ -15,14 +15,14 @@ using Newtonsoft.Json.Converters;
 namespace HumanaEdge.Webcore.Framework.Web
 {
     /// <summary>
-    ///     A common base startup class for bootstrapping the application.
+    /// A common base startup class for bootstrapping the application.
     /// </summary>
     /// <typeparam name="TStartup">The <see cref="Type" /> of the Startup class.</typeparam>
     public abstract class BaseStartup<TStartup>
         where TStartup : BaseStartup<TStartup>
     {
         /// <summary>
-        ///     Designated ctor.
+        /// Designated ctor.
         /// </summary>
         /// <param name="configuration">The application configuration settings.</param>
         protected BaseStartup(IConfiguration configuration)
@@ -31,12 +31,12 @@ namespace HumanaEdge.Webcore.Framework.Web
         }
 
         /// <summary>
-        ///     The application configuration settings.
+        /// The application configuration settings.
         /// </summary>
         public IConfiguration Configuration { get; }
 
         /// <summary>
-        ///     Configures the web application by building out the pipeline and configuring various settings.
+        /// Configures the web application by building out the pipeline and configuring various settings.
         /// </summary>
         /// <param name="app">The application builder.</param>
         /// <param name="env">The hosting environment.</param>
@@ -72,7 +72,7 @@ namespace HumanaEdge.Webcore.Framework.Web
         }
 
         /// <summary>
-        ///     Configures a DI container and a <see cref="IServiceProvider" /> from a given <see cref="IServiceCollection" />.
+        /// Configures a DI container and a <see cref="IServiceProvider" /> from a given <see cref="IServiceCollection" />.
         /// </summary>
         /// <param name="services">The collection of service registrations that should be included in the container.</param>
         public void ConfigureServices(IServiceCollection services)
@@ -98,7 +98,7 @@ namespace HumanaEdge.Webcore.Framework.Web
         }
 
         /// <summary>
-        ///     Allow for the application to register app specific middleware.
+        /// Allow for the application to register app specific middleware.
         /// </summary>
         /// <param name="app">The application builder.</param>
         /// <param name="env">The hosting environment.</param>
@@ -112,7 +112,7 @@ namespace HumanaEdge.Webcore.Framework.Web
         }
 
         /// <summary>
-        ///     Hook for applications to add app-specific services to the <see cref="IServiceCollection" />.
+        /// Hook for applications to add app-specific services to the <see cref="IServiceCollection" />.
         /// </summary>
         /// <param name="services">The running service collection.</param>
         /// <returns>returns an <see cref="IHttpClientBuilder" /> for tracing to be attached to.</returns>
@@ -122,11 +122,11 @@ namespace HumanaEdge.Webcore.Framework.Web
         }
 
         /// <summary>
-        ///     Hook for applications to add app-specific filters to the MVC pipeline.
+        /// Hook for applications to add app-specific filters to the MVC pipeline.
         /// </summary>
         /// <returns>
-        ///     The collection of filters, aliased by type, that should be added to the pipeline (in the order they should be
-        ///     added.
+        /// The collection of filters, aliased by type, that should be added to the pipeline (in the order they should be
+        /// added.
         /// </returns>
         protected virtual Type[] ConfigureFilters()
         {

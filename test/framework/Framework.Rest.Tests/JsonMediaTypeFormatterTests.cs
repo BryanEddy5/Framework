@@ -11,19 +11,19 @@ using Xunit;
 namespace HumanaEdge.Webcore.Framework.Rest.Tests
 {
     /// <summary>
-    ///     Performs unit tests on <see cref="JsonMediaTypeFormatter" />.
+    /// Performs unit tests on <see cref="JsonMediaTypeFormatter" />.
     /// </summary>
     public class JsonMediaTypeFormatterTests : BaseTests
     {
         /// <summary>
-        ///     System under test.
+        /// System under test.
         /// </summary>
         private readonly JsonMediaTypeFormatter _jsonMediaTypeFormatter;
 
         private readonly RestClientOptions _restClientOptions;
 
         /// <summary>
-        ///     Common test setup.
+        /// Common test setup.
         /// </summary>
         public JsonMediaTypeFormatterTests()
         {
@@ -33,7 +33,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         }
 
         /// <summary>
-        ///     Verify the behavior of <see cref="JsonMediaTypeFormatter.TryFormat{T}(MediaType, IRestFormattingSettings, T, out HttpContent)"/>.
+        /// Verify the behavior of <see cref="JsonMediaTypeFormatter.TryFormat{T}(MediaType, IRestFormattingSettings, T, out HttpContent)"/>.
         /// </summary>
         /// <returns>An awaitable task.</returns>
         [Fact]
@@ -59,8 +59,8 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         }
 
         /// <summary>
-        ///     Verify the behavior of <see cref="JsonMediaTypeFormatter.TryFormat{T}(MediaType, IRestFormattingSettings, T, out HttpContent)"/> with
-        ///     default encoding.
+        /// Verify the behavior of <see cref="JsonMediaTypeFormatter.TryFormat{T}(MediaType, IRestFormattingSettings, T, out HttpContent)"/> with
+        /// default encoding.
         /// </summary>
         [Fact]
         public void TryParseTest_DefaultEncoding()
@@ -86,7 +86,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         }
 
         /// <summary>
-        ///     Verify the behavior of <see cref="JsonMediaTypeFormatter.TryParse{T}(byte[], IRestFormattingSettings, MediaTypeHeaderValue, out T)"/>.
+        /// Verify the behavior of <see cref="JsonMediaTypeFormatter.TryParse{T}(byte[], IRestFormattingSettings, MediaTypeHeaderValue, out T)"/>.
         /// </summary>
         [Fact]
         public void TryParseTest_UTF8()

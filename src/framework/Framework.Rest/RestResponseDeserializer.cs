@@ -6,27 +6,27 @@ using HumanaEdge.Webcore.Core.Rest;
 namespace HumanaEdge.Webcore.Framework.Rest
 {
     /// <summary>
-    ///     Deserializes the request body from a http request.
+    /// Deserializes the request body from a http request.
     /// </summary>
     internal sealed class RestResponseDeserializer : IRestResponseDeserializer
     {
         /// <summary>
-        ///     The formatting settings for deserializing the request body.
+        /// The formatting settings for deserializing the request body.
         /// </summary>
         private readonly IRestFormattingSettings _formattingSettings;
 
         /// <summary>
-        ///     A collection of media type formatters.
+        /// A collection of media type formatters.
         /// </summary>
         private readonly IMediaTypeFormatter[] _mediaTypeFormatters;
 
         /// <summary>
-        ///     The media type from the http response.
+        /// The media type from the http response.
         /// </summary>
         private readonly MediaTypeHeaderValue? _mediaTypeHeaderValue;
 
         /// <summary>
-        ///     Designated ctor.
+        /// Designated ctor.
         /// </summary>
         /// <param name="mediaTypeFormatters">A collection of media type formatters.</param>
         /// <param name="mediaTypeHeaderValue">The media type from the http response.</param>
@@ -45,12 +45,12 @@ namespace HumanaEdge.Webcore.Framework.Rest
         }
 
         /// <summary>
-        ///     The response body payload from the request.
+        /// The response body payload from the request.
         /// </summary>
         public byte[] ResponseBytes { get; }
 
         /// <summary>
-        ///     Converts the http request body to a designated <see cref="Type" />.
+        /// Converts the http request body to a designated <see cref="Type" />.
         /// </summary>
         /// <typeparam name="TResponse">The <see cref="Type" /> to be deserialized to.</typeparam>
         /// <returns>The designated <see cref="Type" />.</returns>

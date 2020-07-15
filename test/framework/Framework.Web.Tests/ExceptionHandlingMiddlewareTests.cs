@@ -17,33 +17,33 @@ using Xunit;
 namespace HumanaEdge.Webcore.Framework.Web.Tests
 {
     /// <summary>
-    ///     Unit tests for the <see cref="ExceptionHandlingMiddleware" /> class.
+    /// Unit tests for the <see cref="ExceptionHandlingMiddleware" /> class.
     /// </summary>
     public class ExceptionHandlingMiddlewareTests : BaseTests
     {
         /// <summary>
-        ///     Application logger.
+        /// Application logger.
         /// </summary>
         private Mock<ILogger<ExceptionHandlingMiddleware>> _mockLogger;
 
         /// <summary>
-        ///     The configuration settings.
+        /// The configuration settings.
         /// </summary>
         private Mock<IOptionsMonitor<ExceptionHandlingOptions>> _mockOptions;
 
         /// <summary>
-        ///     A delegate used to invoke the next step in the web pipeline.
+        /// A delegate used to invoke the next step in the web pipeline.
         /// </summary>
         private RequestDelegate _requestDelegate;
 
         /// <summary>
-        ///     SUT.
+        /// SUT.
         /// </summary>
         private ExceptionHandlingMiddleware _systemUnderTest;
 
         /// <summary>
-        ///     Verifies the <see cref="HttpContext.Response" /> does not contain <see cref="DebugProblemDetail.Exception" />
-        ///     when <see cref="ExceptionHandlingOptions.ShowExceptionDetails" /> is set to false.
+        /// Verifies the <see cref="HttpContext.Response" /> does not contain <see cref="DebugProblemDetail.Exception" />
+        /// when <see cref="ExceptionHandlingOptions.ShowExceptionDetails" /> is set to false.
         /// </summary>
         /// <returns>An awaitable task.</returns>
         [Fact]
@@ -65,8 +65,8 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests
         }
 
         /// <summary>
-        ///     Verifies the <see cref="HttpContext.Response" /> does contain <see cref="DebugProblemDetail.Exception" />
-        ///     when <see cref="ExceptionHandlingOptions.ShowExceptionDetails" /> is set to true.
+        /// Verifies the <see cref="HttpContext.Response" /> does contain <see cref="DebugProblemDetail.Exception" />
+        /// when <see cref="ExceptionHandlingOptions.ShowExceptionDetails" /> is set to true.
         /// </summary>
         /// <returns>An awaitable task.</returns>
         [Fact]
@@ -87,8 +87,8 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests
         }
 
         /// <summary>
-        ///     Verifies no exception is thrown for <see cref="ExceptionHandlingMiddleware.InvokeAsync" /> and the
-        ///     response is empty.
+        /// Verifies no exception is thrown for <see cref="ExceptionHandlingMiddleware.InvokeAsync" /> and the
+        /// response is empty.
         /// </summary>
         /// <returns>An awaitable task.</returns>
         [Fact]
@@ -112,8 +112,8 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests
         }
 
         /// <summary>
-        ///     Verifies an http status code <see cref="HttpStatusCode.InternalServerError" /> is when
-        ///     <see cref="Exception" /> is thrown.
+        /// Verifies an http status code <see cref="HttpStatusCode.InternalServerError" /> is when
+        /// <see cref="Exception" /> is thrown.
         /// </summary>
         /// <returns>An awaitable task.</returns>
         [Fact]
@@ -132,8 +132,8 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests
         }
 
         /// <summary>
-        ///     Verifies an http status code <see cref="HttpStatusCode.NotFound" /> is when
-        ///     <see cref="FakeNotFoundMessageException" /> is thrown.
+        /// Verifies an http status code <see cref="HttpStatusCode.NotFound" /> is when
+        /// <see cref="FakeNotFoundMessageException" /> is thrown.
         /// </summary>
         /// <returns>An awaitable task.</returns>
         [Fact]
@@ -152,7 +152,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests
         }
 
         /// <summary>
-        ///     Builds the context for testing.
+        /// Builds the context for testing.
         /// </summary>
         /// <returns>HttpContext.</returns>
         private static HttpContext CreateHttpContext()
@@ -164,7 +164,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests
         }
 
         /// <summary>
-        ///     Converts the <see cref="HttpContext" /> response body into a <see cref="JToken" />.
+        /// Converts the <see cref="HttpContext" /> response body into a <see cref="JToken" />.
         /// </summary>
         /// <param name="httpContext">Contains information about the http request.</param>
         /// <returns>Returns a <see cref="JToken" />.</returns>
@@ -177,7 +177,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests
         }
 
         /// <summary>
-        ///     Creates a common setup for <see cref="IOptionsMonitor{ExceptionHandlingOptions}" />.
+        /// Creates a common setup for <see cref="IOptionsMonitor{ExceptionHandlingOptions}" />.
         /// </summary>
         /// <param name="showExceptionDetails">A flag to determine if the exception stack trace should be shown.</param>
         /// <param name="exception">A configurable exception to be thrown.</param>

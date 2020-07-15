@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace HumanaEdge.Webcore.Framework.Rest
 {
     /// <summary>
-    ///     Media type formatter for JSON-based MIME types.
+    /// Media type formatter for JSON-based MIME types.
     /// </summary>
     internal sealed class JsonMediaTypeFormatter : IMediaTypeFormatter
     {

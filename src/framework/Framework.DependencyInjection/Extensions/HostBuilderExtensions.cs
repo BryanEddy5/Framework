@@ -5,12 +5,12 @@ using Microsoft.Extensions.Hosting;
 namespace HumanaEdge.Webcore.Framework.DependencyInjection.Extensions
 {
     /// <summary>
-    ///     Contains extension methods for <see cref="IHostBuilder" />.
+    /// Contains extension methods for <see cref="IHostBuilder" />.
     /// </summary>
     public static class HostBuilderExtensions
     {
         /// <summary>
-        ///     Configures the use of application specific dependency injection.
+        /// Configures the use of application specific dependency injection.
         /// </summary>
         /// <param name="hostBuilder">The web host builder.</param>
         /// <returns>The same web host builder for fluent chaining.</returns>

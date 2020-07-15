@@ -7,12 +7,12 @@ using Xunit;
 namespace HumanaEdge.Webcore.Framework.Rest.Tests
 {
     /// <summary>
-    ///     Unit tests for <see cref="ServiceCollectionExtensions"/>.
+    /// Unit tests for <see cref="ServiceCollectionExtensions"/>.
     /// </summary>
     public class ServiceCollectionExtensionsTests
     {
         /// <summary>
-        ///     Verifies the behavior of <see cref="ServiceCollectionExtensions.AddRestClient"/> method.
+        /// Verifies the behavior of <see cref="ServiceCollectionExtensions.AddRestClient"/> method.
         /// </summary>
         [Fact]
         public void AddRestClient_InstantiateFactoryTest()

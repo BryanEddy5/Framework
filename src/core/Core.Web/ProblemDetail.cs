@@ -3,12 +3,12 @@
 namespace HumanaEdge.Webcore.Core.Web
 {
     /// <summary>
-    ///     A response with an explanation of the exception being thrown that is friendly for our consumer.
+    /// A response with an explanation of the exception being thrown that is friendly for our consumer.
     /// </summary>
     public class ProblemDetail
     {
         /// <summary>
-        ///     Designated ctor.
+        /// Designated ctor.
         /// </summary>
         /// <param name="title">The friendly message of the issue that is relayed.</param>
         /// <param name="requestId">A trace identifier for the request.</param>
@@ -23,22 +23,22 @@ namespace HumanaEdge.Webcore.Core.Web
         }
 
         /// <summary>
-        ///     A human-readable explanation specific to this occurrence of the problem.
+        /// A human-readable explanation specific to this occurrence of the problem.
         /// </summary>
         public string Detail { get; }
 
         /// <summary>
-        ///     A trace identifier for the request.
+        /// A trace identifier for the request.
         /// </summary>
         public string RequestId { get; }
 
         /// <summary>
-        ///     The returned result status code associated with the error.
+        /// The returned result status code associated with the error.
         /// </summary>
         public HttpStatusCode StatusCode { get; }
 
         /// <summary>
-        ///     The friendly message of the issue that is relayed.
+        /// The friendly message of the issue that is relayed.
         /// </summary>
         public string Title { get; }
     }
