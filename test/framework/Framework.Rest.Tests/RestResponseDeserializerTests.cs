@@ -10,18 +10,18 @@ using Xunit;
 namespace HumanaEdge.Webcore.Framework.Rest.Tests
 {
     /// <summary>
-    ///     Unit tests for <see cref="RestResponseDeserializer" /> class.
+    /// Unit tests for <see cref="RestResponseDeserializer" /> class.
     /// </summary>
     public class RestResponseDeserializerTests : BaseTests
     {
         /// <summary>
-        ///     System under test.
+        /// System under test.
         /// </summary>
         private RestResponseDeserializer _restResponseDeserializer;
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="RestResponseDeserializer.ConvertTo{T}()"/> when an exception is thrown
-        ///     during deserialization.
+        /// Verifies the behavior of <see cref="RestResponseDeserializer.ConvertTo{T}()"/> when an exception is thrown
+        /// during deserialization.
         /// </summary>
         [Fact]
         public void ConvertTo_ThrowsException_CannotParse()
@@ -47,8 +47,8 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         }
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="RestResponseDeserializer.ConvertTo{T}()"/> when no bytes are
-        ///     present during deserialization.
+        /// Verifies the behavior of <see cref="RestResponseDeserializer.ConvertTo{T}()"/> when no bytes are
+        /// present during deserialization.
         /// </summary>
         [Fact]
         public void ConvertTo_ThrowsException_NoBytes()
@@ -71,8 +71,8 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         }
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="RestResponseDeserializer.ConvertTo{T}()"/> when no content
-        ///     header is included in the response.
+        /// Verifies the behavior of <see cref="RestResponseDeserializer.ConvertTo{T}()"/> when no content
+        /// header is included in the response.
         /// </summary>
         [Fact]
         public void ConvertTo_ThrowsException_NoContentTypeHeader()
@@ -97,8 +97,8 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         }
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="RestResponseDeserializer.ConvertTo{T}()"/> when a <see cref="IMediaTypeFormatter"/>
-        ///     could not be found for the response's MIME type.
+        /// Verifies the behavior of <see cref="RestResponseDeserializer.ConvertTo{T}()"/> when a <see cref="IMediaTypeFormatter"/>
+        /// could not be found for the response's MIME type.
         /// </summary>
         [Fact]
         public void ConvertTo_ThrowsException_NoMatchingFormatter()
@@ -123,8 +123,8 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         }
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="RestResponseDeserializer.ConvertTo{T}()"/> when the MIME type
-        ///     from the response is not supported.
+        /// Verifies the behavior of <see cref="RestResponseDeserializer.ConvertTo{T}()"/> when the MIME type
+        /// from the response is not supported.
         /// </summary>
         [Fact]
         public void ConvertTo_ThrowsException_NoMatchingFormatter_UnsupportedMimeType()
@@ -149,7 +149,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         }
 
         /// <summary>
-        ///     Verifies the behavior of <see cref="RestResponseDeserializer.ConvertTo{T}()"/>.
+        /// Verifies the behavior of <see cref="RestResponseDeserializer.ConvertTo{T}()"/>.
         /// </summary>
         [Fact]
         public void ConvertTo_SuccessfulDeserialization()

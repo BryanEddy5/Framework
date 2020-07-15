@@ -7,12 +7,12 @@ using Xunit;
 namespace HumanaEdge.Webcore.Core.Rest.Tests
 {
     /// <summary>
-    ///     Unit tests for <see cref="RestRequest" />.
+    /// Unit tests for <see cref="RestRequest" />.
     /// </summary>
     public class RestRequestTests : BaseTests
     {
         /// <summary>
-        ///     Validates the behavior of <see cref="RestRequest.UseAcceptHeader(MediaType)" />.
+        /// Validates the behavior of <see cref="RestRequest.UseAcceptHeader(MediaType)" />.
         /// </summary>
         [Fact]
         public void AddAcceptHeader_RestRequest()
@@ -33,7 +33,7 @@ namespace HumanaEdge.Webcore.Core.Rest.Tests
         }
 
         /// <summary>
-        ///     Validates the behavior of <see cref="RestRequest.UseAcceptHeader(MediaType)" />.
+        /// Validates the behavior of <see cref="RestRequest.UseAcceptHeader(MediaType)" />.
         /// </summary>
         [Fact]
         public void AddMultipleAcceptHeader_RestRequest()
@@ -58,7 +58,7 @@ namespace HumanaEdge.Webcore.Core.Rest.Tests
         }
 
         /// <summary>
-        ///     Validates the behavior of creating a <see cref="RestRequest" /> and setting the properties.
+        /// Validates the behavior of creating a <see cref="RestRequest" /> and setting the properties.
         /// </summary>
         [Fact]
         public void CreateNewRestRequest_ValidatePropertiesSet()
@@ -76,7 +76,7 @@ namespace HumanaEdge.Webcore.Core.Rest.Tests
         }
 
         /// <summary>
-        ///     Validates the behavior of <see cref="RestRequest.UseHeader(string, string)" />.
+        /// Validates the behavior of <see cref="RestRequest.UseHeader(string, string)" />.
         /// </summary>
         [Fact]
         public void UseHeader_AddHeaderToRequest_Validation()

@@ -4,17 +4,17 @@ using HumanaEdge.Webcore.Core.Rest;
 namespace HumanaEdge.Webcore.Core.Testing
 {
     /// <summary>
-    ///     Creates a fake <see cref="IRestResponseDeserializer" /> for testing.
+    /// Creates a fake <see cref="IRestResponseDeserializer" /> for testing.
     /// </summary>
     public class TestRestResponseDeserializer : IRestResponseDeserializer
     {
         /// <summary>
-        ///     The delegate for generating the response object.
+        /// The delegate for generating the response object.
         /// </summary>
         private readonly Func<Type, object> _responseGenerator;
 
         /// <summary>
-        ///     Designated ctor.
+        /// Designated ctor.
         /// </summary>
         /// <param name="responseGenerator">Generates the response object.</param>
         /// <param name="fakeBytes">The fake bytes data for testing.</param>

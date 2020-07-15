@@ -10,18 +10,18 @@ using Serilog.Exceptions;
 namespace HumanaEdge.Webcore.Framework.Logging.Configuration
 {
     /// <summary>
-    ///     Dynamically configures logging based on the application configuration settings.
+    /// Dynamically configures logging based on the application configuration settings.
     /// </summary>
     [ExcludeFromCodeCoverage]
     internal static class LoggingAppConfiguration
     {
         /// <summary>
-        ///     Allows for the logger to produce diagnostics for detecting issues with logging.
+        /// Allows for the logger to produce diagnostics for detecting issues with logging.
         /// </summary>
         internal const string UseLoggingDiagnostics = "Logging:UseLoggingDiagnostics";
 
         /// <summary>
-        ///     Alters the targets for nLog based on the appsettings.{local.}json configuration file.
+        /// Alters the targets for nLog based on the appsettings.{local.}json configuration file.
         /// </summary>
         /// <param name="configuration"> The applications configuration file. <see cref="IConfiguration" />.</param>
         /// <typeparam name="TEntry">A type from the entry point assembly.</typeparam>

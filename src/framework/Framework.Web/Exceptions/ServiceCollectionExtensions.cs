@@ -7,12 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 namespace HumanaEdge.Webcore.Framework.Web.Exceptions
 {
     /// <summary>
-    ///     Extension methods for the <see cref="IServiceCollection" /> class.
+    /// Extension methods for the <see cref="IServiceCollection" /> class.
     /// </summary>
     internal static class ServiceCollectionExtensions
     {
         /// <summary>
-        ///     Adds the google stackdriver trace service.
+        /// Adds the google stackdriver trace service.
         /// </summary>
         /// <param name="services">The services collection.</param>
         /// <param name="configuration">The app configuration settings.</param>

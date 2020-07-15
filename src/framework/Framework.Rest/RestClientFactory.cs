@@ -9,22 +9,22 @@ namespace HumanaEdge.Webcore.Framework.Rest
     internal sealed class RestClientFactory : IRestClientFactory
     {
         /// <summary>
-        ///     A factory for generating a rest client.
+        /// A factory for generating a rest client.
         /// </summary>
         private readonly IInternalClientFactory _internalClientFactory;
 
         /// <summary>
-        ///     A collection of media types for formatting a request.
+        /// A collection of media types for formatting a request.
         /// </summary>
         private readonly IMediaTypeFormatter[] _mediaTypeFormatters;
 
         /// <summary>
-        ///     Accessing the request id of the incoming request.
+        /// Accessing the request id of the incoming request.
         /// </summary>
         private readonly IRequestIdAccessor? _requestIdAccessor;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="RestClientFactory" /> class.
+        /// Initializes a new instance of the <see cref="RestClientFactory" /> class.
         /// </summary>
         /// <param name="internalClientFactory">A factory for generating a rest client.</param>
         /// <param name="mediaTypeFormatters">A collection of media types for formatting a request.</param>

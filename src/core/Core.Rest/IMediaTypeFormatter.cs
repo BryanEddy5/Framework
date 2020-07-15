@@ -5,17 +5,17 @@ using System.Net.Http.Headers;
 namespace HumanaEdge.Webcore.Core.Rest
 {
     /// <summary>
-    ///     Serializes and deserializes http requests base on the content type.
+    /// Serializes and deserializes http requests base on the content type.
     /// </summary>
     public interface IMediaTypeFormatter
     {
         /// <summary>
-        ///     The <see cref="MediaType" />  that is associated with this formatter.
+        /// The <see cref="MediaType" />  that is associated with this formatter.
         /// </summary>
         MediaType MediaType { get; }
 
         /// <summary>
-        ///     Formats an outgoing http request to generate <see cref="HttpContent" /> to be used in http requests.
+        /// Formats an outgoing http request to generate <see cref="HttpContent" /> to be used in http requests.
         /// </summary>
         /// <param name="mediaType">Indicates the media type to be formatted to.</param>
         /// <param name="restFormattingSettings">Settings for tailoring the formatting of the request.</param>
@@ -30,8 +30,8 @@ namespace HumanaEdge.Webcore.Core.Rest
             out HttpContent? httpContent);
 
         /// <summary>
-        ///     Parses an http response and converts it to a type of {T}
-        ///     while also reporting if the parsing was successful.
+        /// Parses an http response and converts it to a type of {T}
+        /// while also reporting if the parsing was successful.
         /// </summary>
         /// <param name="bytes">The response bytes from the response.</param>
         /// <param name="formattingSettings">Customizable settings for parsing the response.</param>

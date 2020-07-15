@@ -7,13 +7,13 @@ using Microsoft.Extensions.Configuration;
 namespace HumanaEdge.Webcore.Framework.Web.Extensions
 {
     /// <summary>
-    ///     Extension methods for <see cref="IApplicationBuilder" />.
+    /// Extension methods for <see cref="IApplicationBuilder" />.
     /// </summary>
     internal static class ApplicationBuilderExtensions
     {
         /// <summary>
-        ///     Configures the use of health of all registered checks with the 'ready' tag.
-        ///     https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-2.2.
+        /// Configures the use of health of all registered checks with the 'ready' tag.
+        /// https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-2.2.
         /// </summary>
         /// <param name="app">The application builder.</param>
         internal static void UseReadyHealthChecks(this IApplicationBuilder app)
@@ -34,7 +34,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Extensions
         }
 
         /// <summary>
-        ///     Configures the use of middleware to generate the request id.
+        /// Configures the use of middleware to generate the request id.
         /// </summary>
         /// <param name="app">The application builder.</param>
         /// <returns>Returns the app builder for fluent chaining.</returns>
@@ -44,7 +44,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Extensions
         }
 
         /// <summary>
-        ///     Configures the application to use tracing.
+        /// Configures the application to use tracing.
         /// </summary>
         /// <param name="app">The application builder.</param>
         /// <param name="configuration">The application configuration settings.</param>

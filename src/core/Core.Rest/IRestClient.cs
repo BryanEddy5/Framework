@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 namespace HumanaEdge.Webcore.Core.Rest
 {
     /// <summary>
-    ///     The rest client sends RESTful http requests.
+    /// The rest client sends RESTful http requests.
     /// </summary>
     public interface IRestClient
     {
         /// <summary>
-        ///     Sends an http request without a body.
+        /// Sends an http request without a body.
         /// </summary>
         /// <param name="restRequest">The http request information.</param>
         /// <param name="cancellationToken">The cancellation token for the request.</param>
@@ -18,7 +18,7 @@ namespace HumanaEdge.Webcore.Core.Rest
         Task<RestResponse> SendAsync(RestRequest restRequest, CancellationToken cancellationToken);
 
         /// <summary>
-        ///     Sends an http request with a request Body.
+        /// Sends an http request with a request Body.
         /// </summary>
         /// <param name="restRequest">The http request information.</param>
         /// <param name="cancellationToken">The cancellation token for the request.</param>

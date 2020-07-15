@@ -7,12 +7,12 @@ namespace HumanaEdge.Webcore.Framework.Web.Request
     internal sealed class RequestIdAccessor : IRequestIdAccessor
     {
         /// <summary>
-        ///     An accessor for the request context.
+        /// An accessor for the request context.
         /// </summary>
         private readonly ICorrelationContextAccessor _correlationContextAccessor;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="RequestIdAccessor" /> class.
+        /// Initializes a new instance of the <see cref="RequestIdAccessor" /> class.
         /// </summary>
         /// <param name="correlationContextAccessor">An accessor for the request context.</param>
         public RequestIdAccessor(ICorrelationContextAccessor correlationContextAccessor)

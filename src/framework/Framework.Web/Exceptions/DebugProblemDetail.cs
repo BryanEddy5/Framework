@@ -5,13 +5,13 @@ using HumanaEdge.Webcore.Core.Web;
 namespace HumanaEdge.Webcore.Framework.Web.Exceptions
 {
     /// <summary>
-    ///     Application response with debug information. Carries extra debug level information when allowed via configuration.
+    /// Application response with debug information. Carries extra debug level information when allowed via configuration.
     /// </summary>
     [Serializable]
     internal sealed class DebugProblemDetail : ProblemDetail
     {
         /// <summary>
-        ///     Designated ctor.
+        /// Designated ctor.
         /// </summary>
         /// <param name="title">The friendly message of the issue that is relayed.</param>
         /// <param name="requestId">A trace identifier for the request.</param>
@@ -30,7 +30,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
         }
 
         /// <summary>
-        ///     Designated ctor.
+        /// Designated ctor.
         /// </summary>
         /// <param name="problemDetail">The parent class.</param>
         /// <param name="exception">The exception that the request failed with.</param>
@@ -43,7 +43,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
         }
 
         /// <summary>
-        ///     Optional. The exception that the app failed with.
+        /// Optional. The exception that the app failed with.
         /// </summary>
         public Exception Exception { get; }
     }

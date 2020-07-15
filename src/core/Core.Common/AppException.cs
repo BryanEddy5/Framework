@@ -5,14 +5,14 @@ using System.Runtime.Serialization;
 namespace HumanaEdge.Webcore.Core.Common
 {
     /// <summary>
-    ///     An application specific exception for transmitting errors back to the consumer.
+    /// An application specific exception for transmitting errors back to the consumer.
     /// </summary>
     [Serializable]
     [ExcludeFromCodeCoverage]
     public class AppException : Exception
     {
         /// <summary>
-        ///     Designated ctor.
+        /// Designated ctor.
         /// </summary>
         /// <param name="message">The exception message.</param>
         /// <param name="inner">Optional. Inner exception, if any.</param>
@@ -23,7 +23,7 @@ namespace HumanaEdge.Webcore.Core.Common
         }
 
         /// <summary>
-        ///     Serialization constructor.
+        /// Serialization constructor.
         /// </summary>
         /// <param name="info">The serialization info.</param>
         /// <param name="context">The streaming context.</param>
