@@ -63,6 +63,5 @@ pack:
     - cd $NUGET_PACKAGE_FOLDER
     - dotnet nuget push **/*-${PACKAGE_VERSION}.nupkg -s ${ARTIFACTORY_SOURCE} -k ${ARTIFACTORY_NUGET}
   only:
-    - merge_requests
     - master
   when: manual
