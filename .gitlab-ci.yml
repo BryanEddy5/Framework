@@ -64,4 +64,3 @@ pack:
     - dotnet nuget push **/*-${PACKAGE_VERSION}.nupkg -s ${ARTIFACTORY_SOURCE} -k ${ARTIFACTORY_NUGET}
   only:
     - master
-  when: manual
