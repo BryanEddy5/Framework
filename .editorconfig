@@ -238,6 +238,13 @@ csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = false
 
 ##########################################
+# Rider/ReSharper properties
+##########################################
+# strip out indent
+resharper_xmldoc_indent_child_elements=ZeroIndent
+resharper_xmldoc_indent_text=ZeroIndent
+
+##########################################
 # .NET Naming Conventions
 # https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-naming-conventions
 ##########################################
