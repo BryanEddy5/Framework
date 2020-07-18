@@ -16,12 +16,12 @@
     <AspNetCoreHostingVersion>2.2.7</AspNetCoreHostingVersion>
     <XmlSerializerVersion>4.3.0</XmlSerializerVersion>
     <ComponentModelAnnotations>4.5.0</ComponentModelAnnotations>
-    <MicrosoftExtensionsVersion>3.1.5</MicrosoftExtensionsVersion>
-    <MicrosoftExtensionsHostingVersion>3.1.5</MicrosoftExtensionsHostingVersion>
-    <MicrosoftExtensionsConfigurationVersion>3.1.5</MicrosoftExtensionsConfigurationVersion>
-    <MicrosoftExtensionsHostingAbstractionsVersion>3.1.5</MicrosoftExtensionsHostingAbstractionsVersion>
+    <MicrosoftExtensionsVersion>3.1.6</MicrosoftExtensionsVersion>
+    <MicrosoftExtensionsHostingVersion>3.1.6</MicrosoftExtensionsHostingVersion>
+    <MicrosoftExtensionsConfigurationVersion>3.1.6</MicrosoftExtensionsConfigurationVersion>
+    <MicrosoftExtensionsHostingAbstractionsVersion>3.1.6</MicrosoftExtensionsHostingAbstractionsVersion>
     <MicrosoftExtensionsPlatformAbstractionsVersion>1.1.0</MicrosoftExtensionsPlatformAbstractionsVersion>
-    <MicrosoftAspNetCoreMvcNewtonsoftJsonVersion>3.1.5</MicrosoftAspNetCoreMvcNewtonsoftJsonVersion>
+    <MicrosoftAspNetCoreMvcNewtonsoftJsonVersion>3.1.6</MicrosoftAspNetCoreMvcNewtonsoftJsonVersion>
   </PropertyGroup>
   <PropertyGroup Label="Test framework versions">
     <CoverletVersion>2.9.0</CoverletVersion>
