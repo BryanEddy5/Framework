@@ -84,10 +84,10 @@ namespace HumanaEdge.Webcore.Framework.Rest
 
                 return obj;
             }
-            catch
+            catch (Exception exception)
             {
                 throw new FormatFailedRestException(
-                    $"Unable to parse response of media type {_mediaTypeHeaderValue.MediaType} for type {typeof(TResponse).Name} using formatter {nameof(IMediaTypeFormatter)}");
+                    $"Unable to parse response of media type {_mediaTypeHeaderValue.MediaType} for type {typeof(TResponse).Name} using formatter {nameof(IMediaTypeFormatter)}", exception);
             }
         }
     }
