@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using Microsoft.Extensions.Primitives;
 
@@ -77,6 +79,33 @@ namespace HumanaEdge.Webcore.Core.Rest
             }
 
             return this;
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            if (!(obj is RestRequest that))
+            {
+                return false;
+            }
+
+            var a1 = Headers.ToArray();
+            var a2 = that.Headers.ToArray();
+
+            var areEqual = a1.Length == a2.Length && !a1.Except(a2).Any();
+
+            return (that.RelativePath == RelativePath) && (that.HttpMethod == HttpMethod) && areEqual;
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(RelativePath, HttpMethod, Headers);
         }
     }
 }

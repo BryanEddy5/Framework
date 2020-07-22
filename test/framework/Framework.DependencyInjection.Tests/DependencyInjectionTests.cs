@@ -1,7 +1,7 @@
+using System.Linq;
 using HumanaEdge.Webcore.Core.DependencyInjection;
 using HumanaEdge.Webcore.Core.Testing;
 using HumanaEdge.Webcore.Framework.DependencyInjection.Extensions;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xunit;
@@ -21,12 +21,12 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         public DependencyInjectionTests()
         {
             _host = Host.CreateDefaultBuilder()
-                .UseDependencyInjection()
+                .UseDependencyInjection<DependencyInjectionTests>()
                 .Build();
         }
 
         /// <summary>
-        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum"/> values.
+        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum.Transient"/> values.
         /// </summary>
         [Fact]
         public void GetService_ITransientService()
@@ -46,7 +46,7 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         }
 
         /// <summary>
-        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum"/> values.
+        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum.Scoped"/> values.
         /// </summary>
         [Fact]
         public void GetService_IScopedService()
@@ -66,7 +66,7 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         }
 
         /// <summary>
-        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum"/> values.
+        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum.Singleton"/> values.
         /// </summary>
         [Fact]
         public void GetService_ISingletonService()
@@ -86,7 +86,7 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         }
 
         /// <summary>
-        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum"/> values.
+        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with no implementation.
         /// </summary>
         [Fact]
         public void GetService_NonRegisteredComponent()
@@ -101,18 +101,19 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         }
 
         /// <summary>
-        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum"/> values.
+        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> for multiple implementations of
+        /// an interface.
         /// </summary>
         [Fact]
-        public void GetService_MultipleComponentsForService()
+        public void MultipleServicesRegistration()
         {
-            // arrange
-
-            // act
-            var actual = _host.Services.GetService<IMultipleComponentService>();
+            // arrange act
+            var actual = _host.Services.GetServices<IMultiService>().ToArray();
 
             // assert
-            // TODO: actual has the last registered component not an array of components.
+            Assert.NotEmpty(actual);
+            Assert.IsType<MultiService1>(actual[0]);
+            Assert.IsType<MultiService2>(actual[1]);
         }
 
 #pragma warning disable SA1201 // Elements should appear in the correct order
@@ -147,7 +148,7 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         /// <summary>
         /// Test component for testing service with multiple components.
         /// </summary>
-        public interface IMultipleComponentService
+        public interface IMultiService
         {
         }
 
@@ -186,7 +187,7 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         /// Test component for testing non-registration of component.
         /// </summary>
         [DependencyInjectedComponent(LifetimeScopeEnum.Transient)]
-        public class MultiComponent1 : IMultipleComponentService
+        public class MultiService1 : IMultiService
         {
         }
 
@@ -194,7 +195,7 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         /// Test component for testing non-registration of component.
         /// </summary>
         [DependencyInjectedComponent(LifetimeScopeEnum.Transient)]
-        public class MultiComponent2 : IMultipleComponentService
+        public class MultiService2 : IMultiService
         {
         }
 #pragma warning restore SA1201 // Elements should appear in the correct order
