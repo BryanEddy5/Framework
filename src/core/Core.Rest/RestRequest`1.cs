@@ -32,5 +32,39 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// The request body of the rest request.
         /// </summary>
         public TBody RequestBody { get; }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            if (!(obj is RestRequest<TBody> that))
+            {
+                return false;
+            }
+
+            if (RequestBody == null)
+            {
+                return that.RequestBody == null;
+            }
+
+            if (that.RequestBody == null)
+            {
+                return false;
+            }
+
+            return MediaType == that.MediaType &&
+                   RequestBody.Equals(that.RequestBody) &&
+                   base.Equals(obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(MediaType, RequestBody, base.GetHashCode());
+        }
     }
 }

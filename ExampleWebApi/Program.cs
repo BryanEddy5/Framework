@@ -23,6 +23,6 @@ namespace ExampleWebApi
                         webBuilder.UseStartup<Startup>();
                     })
                 .UseAppLogging<Startup>()
-                .UseDependencyInjection();
+                .UseDependencyInjection<Startup>();
     }
 }

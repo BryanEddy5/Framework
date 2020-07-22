@@ -11,4 +11,7 @@
     <ProjectReference Include="..\..\..\src\core\Core.DependencyInjection\Core.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\..\src\framework\Framework.DependencyInjection\Framework.DependencyInjection.csproj" />
   </ItemGroup>
+  <ItemGroup Label="Fake dependencies, used in a test">
+    <ProjectReference Include="..\..\..\src\core\Core.Rest\Core.Rest.csproj" />
+  </ItemGroup>
 </Project>

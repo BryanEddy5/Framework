@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using HumanaEdge.Webcore.Core.Common;
 using HumanaEdge.Webcore.Core.Web;
 
 namespace HumanaEdge.Webcore.Framework.Web.Tests.Stubs.Exceptions

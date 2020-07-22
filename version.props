@@ -22,6 +22,7 @@
     <MicrosoftExtensionsHostingAbstractionsVersion>3.1.6</MicrosoftExtensionsHostingAbstractionsVersion>
     <MicrosoftExtensionsPlatformAbstractionsVersion>1.1.0</MicrosoftExtensionsPlatformAbstractionsVersion>
     <MicrosoftAspNetCoreMvcNewtonsoftJsonVersion>3.1.6</MicrosoftAspNetCoreMvcNewtonsoftJsonVersion>
+    <MicrosoftExtensionsDependencyModelVersion>2.0.4</MicrosoftExtensionsDependencyModelVersion>
   </PropertyGroup>
   <PropertyGroup Label="Test framework versions">
     <CoverletVersion>2.9.0</CoverletVersion>
@@ -46,5 +47,6 @@
     <StackdriverVersion>3.0.0</StackdriverVersion>
     <CorrelationIdVersion>3.0.0</CorrelationIdVersion>
     <NewtonsoftJsonVersion>12.0.1</NewtonsoftJsonVersion>
+    <EqualsFody>4.0.1</EqualsFody>
   </PropertyGroup>
 </Project>

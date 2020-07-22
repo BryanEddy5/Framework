@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 
 namespace HumanaEdge.Webcore.Core.Rest
@@ -52,6 +53,30 @@ namespace HumanaEdge.Webcore.Core.Rest
         public TResponse ConvertTo<TResponse>()
         {
             return _restResponseDeserializer.ConvertTo<TResponse>();
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            if (!(obj is RestResponse that))
+            {
+                return false;
+            }
+
+            return StatusCode == that.StatusCode &&
+                   ResponseBytes.SequenceEqual(that.ResponseBytes) &&
+                   IsSuccessful == that.IsSuccessful;
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(StatusCode, ResponseBytes, IsSuccessful);
         }
     }
 }

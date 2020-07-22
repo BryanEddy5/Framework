@@ -15,10 +15,11 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Extensions
         /// <summary>
         /// Extension method for Autofac's ContainerBuilder called From Startup.ConfigureContainer.
         /// </summary>
+        /// <typeparam name="TEntry">A type located in the entry assembly.</typeparam>
         /// <param name="builder">Autofac's ContainerBuilder.</param>
-        internal static void RegisterWebcoreAttributedComponents(this ContainerBuilder builder)
+        internal static void RegisterWebcoreAttributedComponents<TEntry>(this ContainerBuilder builder)
         {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var assemblies = typeof(TEntry).Assembly.GetAssemblyAndDependencies(assembly => assembly.Name!.StartsWith("HumanaEdge"));
             var typesWithTransientLifetimes = new List<Type>();
             var typesWithScopedLifetimes = new List<Type>();
             var typesWithSingletonLifetimes = new List<Type>();
@@ -38,14 +39,18 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Extensions
                         case LifetimeScopeEnum.Transient:
                             typesWithTransientLifetimes.Add(t);
                             break;
+
                         case LifetimeScopeEnum.Scoped:
                             typesWithScopedLifetimes.Add(t);
                             break;
+
                         case LifetimeScopeEnum.Singleton:
                             typesWithSingletonLifetimes.Add(t);
                             break;
+
                         default:
-                            throw new InvalidEnumArgumentException($"{attribute.LifetimeScope} is currently not a supported service lifetime.");
+                            throw new InvalidEnumArgumentException(
+                                $"{attribute.LifetimeScope} is currently not a supported service lifetime.");
                     }
                 }
             }
@@ -54,8 +59,12 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Extensions
             // Transient == InstancePerDependency
             // Scoped == InstancePerLifetimeScope
             // Singleton == SingleInstance
-            builder.RegisterTypes(typesWithTransientLifetimes.ToArray()).AsImplementedInterfaces().InstancePerDependency();
-            builder.RegisterTypes(typesWithScopedLifetimes.ToArray()).AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterTypes(typesWithTransientLifetimes.ToArray())
+                .AsImplementedInterfaces()
+                .InstancePerDependency();
+            builder.RegisterTypes(typesWithScopedLifetimes.ToArray())
+                .AsImplementedInterfaces()
+                .InstancePerLifetimeScope();
             builder.RegisterTypes(typesWithSingletonLifetimes.ToArray()).AsImplementedInterfaces().SingleInstance();
         }
     }

@@ -13,11 +13,12 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Extensions
         /// Configures the use of application specific dependency injection.
         /// </summary>
         /// <param name="hostBuilder">The web host builder.</param>
+        /// <typeparam name="TEntry">A type located in the entry assembly.</typeparam>
         /// <returns>The same web host builder for fluent chaining.</returns>
-        public static IHostBuilder UseDependencyInjection(this IHostBuilder hostBuilder)
+        public static IHostBuilder UseDependencyInjection<TEntry>(this IHostBuilder hostBuilder)
         {
             return hostBuilder.UseServiceProviderFactory(new AutofacServiceProviderFactory(
-                cb => cb.RegisterWebcoreAttributedComponents()));
+                cb => cb.RegisterWebcoreAttributedComponents<TEntry>()));
         }
     }
 }
