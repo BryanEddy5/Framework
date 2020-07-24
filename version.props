@@ -22,6 +22,7 @@
     <MicrosoftExtensionsHostingAbstractionsVersion>3.1.6</MicrosoftExtensionsHostingAbstractionsVersion>
     <MicrosoftExtensionsPlatformAbstractionsVersion>1.1.0</MicrosoftExtensionsPlatformAbstractionsVersion>
     <MicrosoftAspNetCoreMvcNewtonsoftJsonVersion>3.1.6</MicrosoftAspNetCoreMvcNewtonsoftJsonVersion>
+    <MicrosoftAspNetCoreTestHostVersion>3.1.6</MicrosoftAspNetCoreTestHostVersion>
     <MicrosoftExtensionsDependencyModelVersion>2.0.4</MicrosoftExtensionsDependencyModelVersion>
     <SystemTextJsonVersion>4.6.0</SystemTextJsonVersion>
   </PropertyGroup>
@@ -38,6 +39,8 @@
     <AutofacDependencyInjectionVersion>6.0.0</AutofacDependencyInjectionVersion>
     <NewtonsoftJsonVersion>12.0.3</NewtonsoftJsonVersion>
     <FluentValidationVersion>8.6.2</FluentValidationVersion>
+    <FluentAssertionsVersion>5.10.3</FluentAssertionsVersion>
+    <FluentAssertionsJsonVersion>5.5.0</FluentAssertionsJsonVersion>
     <SerilogVersion>2.9.0</SerilogVersion>
     <SerilogAspNetCore>3.2.0</SerilogAspNetCore>
     <SerilogExtensionsLogging>3.0.1</SerilogExtensionsLogging>

@@ -2,10 +2,12 @@ using System;
 using FluentValidation.AspNetCore;
 using HumanaEdge.Webcore.Framework.Logging.Extensions;
 using HumanaEdge.Webcore.Framework.Rest.Extensions;
+using HumanaEdge.Webcore.Framework.Swagger.Extensions;
 using HumanaEdge.Webcore.Framework.Web.Exceptions;
 using HumanaEdge.Webcore.Framework.Web.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -54,6 +56,7 @@ namespace HumanaEdge.Webcore.Framework.Web
 
             app.UseHttpsRedirection();
 
+            app.UseSwaggerDocumentation(Configuration);
             app.UseRouting();
             app.UseReadyHealthChecks();
             app.UseTracing(Configuration);
@@ -77,10 +80,18 @@ namespace HumanaEdge.Webcore.Framework.Web
         /// <param name="services">The collection of service registrations that should be included in the container.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSwaggerServices<TStartup>(Configuration);
             services.AddHealthChecks();
             services.AddHttpContextAccessor();
             services.AddRequestIdAccessor();
             services.AddOptionsPattern(Configuration);
+
+            services.AddMvc(
+                options =>
+                {
+                    options.Filters.Add(new ProducesAttribute("application/json"));
+                    options.Filters.Add(new ConsumesAttribute("application/json"));
+                });
 
             services.AddControllers(options => options.AddFilters(ConfigureFilters()))
                 .AddNewtonsoftJson(

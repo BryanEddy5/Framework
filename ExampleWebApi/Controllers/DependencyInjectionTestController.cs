@@ -8,7 +8,7 @@ namespace ExampleWebApi.Controllers
     /// </summary>
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class DependencyInjectionTestController : ControllerBase
+    public class DependencyInjectionTestController
     {
         private readonly ITransientService _transientService;
         private readonly IScopedService _scopedService;

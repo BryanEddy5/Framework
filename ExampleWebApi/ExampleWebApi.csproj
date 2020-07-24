@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
+    <Description>Example Web API Description (from project-&gt;package-&gt;description)</Description>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\core\Core.DependencyInjection\Core.DependencyInjection.csproj" />
