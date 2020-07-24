@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
+    <AssemblyName>$(SolutionNamespaceRoot).Framework.Swagger.Tests</AssemblyName>
+    <RootNamespace>$(AssemblyName)</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="$(FluentAssertionsVersion)" />
+    <PackageReference Include="FluentAssertions.Json" Version="$(FluentAssertionsJsonVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreHostingVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(MicrosoftAspNetCoreTestHostVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsHostingVersion)" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\ExampleWebApi\ExampleWebApi.csproj" />
+    <ProjectReference Include="..\..\..\src\framework\Framework.Logging\Framework.Logging.csproj" />
+    <ProjectReference Include="..\..\..\src\framework\Framework.Swagger\Framework.Swagger.csproj" />
+    <ProjectReference Include="..\..\..\src\framework\Framework.Web\Framework.Web.csproj" />
+  </ItemGroup>
+</Project>

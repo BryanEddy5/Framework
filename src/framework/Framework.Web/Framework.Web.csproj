@@ -6,7 +6,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="$(FluentValidationVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(MicrosoftAspNetCoreMvcNewtonsoftJsonVersion)" />
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="$(MicrosoftExtensionsPlatformAbstractionsVersion)" />
     <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="$(StackdriverVersion)" />
     <PackageReference Include="CorrelationId" Version="$(CorrelationIdVersion)" />
@@ -16,5 +15,6 @@
     <ProjectReference Include="..\..\core\Core.Web\Core.Web.csproj" />
     <ProjectReference Include="..\Framework.Logging\Framework.Logging.csproj" />
     <ProjectReference Include="..\Framework.Rest\Framework.Rest.csproj" />
+    <ProjectReference Include="..\Framework.Swagger\Framework.Swagger.csproj" />
   </ItemGroup>
 </Project>
