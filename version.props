@@ -23,6 +23,7 @@
     <MicrosoftExtensionsPlatformAbstractionsVersion>1.1.0</MicrosoftExtensionsPlatformAbstractionsVersion>
     <MicrosoftAspNetCoreMvcNewtonsoftJsonVersion>3.1.6</MicrosoftAspNetCoreMvcNewtonsoftJsonVersion>
     <MicrosoftExtensionsDependencyModelVersion>2.0.4</MicrosoftExtensionsDependencyModelVersion>
+    <SystemTextJsonVersion>4.6.0</SystemTextJsonVersion>
   </PropertyGroup>
   <PropertyGroup Label="Test framework versions">
     <CoverletVersion>2.9.0</CoverletVersion>
@@ -30,6 +31,7 @@
     <MoqVersion>4.14.0</MoqVersion>
     <MicrosoftNetTestSdkVersion>16.6.1</MicrosoftNetTestSdkVersion>
     <AutoFixtureVersion>4.11.0</AutoFixtureVersion>
+    <FluentAssertionsVersion>5.10.3</FluentAssertionsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Third party libs">
     <AutofacVersion>5.2.0</AutofacVersion>
@@ -47,6 +49,7 @@
     <StackdriverVersion>3.0.0</StackdriverVersion>
     <CorrelationIdVersion>3.0.0</CorrelationIdVersion>
     <NewtonsoftJsonVersion>12.0.1</NewtonsoftJsonVersion>
+    <GoogleCloudKmsVersion>2.0.0</GoogleCloudKmsVersion>
     <EqualsFody>4.0.1</EqualsFody>
   </PropertyGroup>
 </Project>

@@ -9,6 +9,7 @@
     <PackageReference Include="xunit.extensibility.core" Version="$(xUnitVersion)"/>
     <PackageReference Include="xunit.runner.visualstudio" Version="$(xUnitVersion)"/>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkVersion)"/>
+    <PackageReference Include="FluentAssertions" Version="$(FluentAssertionsVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\core\Core.Testing\Core.Testing.csproj" />
