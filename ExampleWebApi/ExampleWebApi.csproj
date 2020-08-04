@@ -6,7 +6,7 @@
   <ItemGroup>
     <ProjectReference Include="..\src\core\Core.DependencyInjection\Core.DependencyInjection.csproj" />
     <ProjectReference Include="..\src\framework\Framework.DependencyInjection\Framework.DependencyInjection.csproj" />
-    <ProjectReference Include="..\src\framework\Framework.Logging\Framework.Logging.csproj" />
+    <ProjectReference Include="..\src\framework\Framework.Encryption\Framework.Encryption.csproj" />
     <ProjectReference Include="..\src\framework\Framework.Web\Framework.Web.csproj" />
   </ItemGroup>
 </Project>

@@ -49,7 +49,7 @@
     <SwashbuckleVersion>5.5.1</SwashbuckleVersion>
     <SwashbuckleFiltersVersion>5.1.2</SwashbuckleFiltersVersion>
     <MicroElementsSwashbuckleFluentValidation>3.0.0-rc.3</MicroElementsSwashbuckleFluentValidation>
-    <StackdriverVersion>3.0.0</StackdriverVersion>
+    <StackdriverVersion>4.0.0</StackdriverVersion>
     <CorrelationIdVersion>3.0.0</CorrelationIdVersion>
     <NewtonsoftJsonVersion>12.0.1</NewtonsoftJsonVersion>
     <GoogleCloudKmsVersion>2.0.0</GoogleCloudKmsVersion>
