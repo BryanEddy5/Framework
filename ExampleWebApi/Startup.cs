@@ -1,5 +1,7 @@
+using HumanaEdge.Webcore.Framework.Encryption.Extensions;
 using HumanaEdge.Webcore.Framework.Web;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ExampleWebApi
 {
@@ -15,6 +17,13 @@ namespace ExampleWebApi
         public Startup(IConfiguration configuration)
             : base(configuration)
         {
+        }
+
+        /// <inheritdoc />
+        protected override IHttpClientBuilder ConfigureAppServices(IServiceCollection services)
+        {
+            services.AddKmsEncryption(Configuration.GetSection("EncryptionServiceOptions"));
+            return services.AddHttpClient("client");
         }
     }
 }
