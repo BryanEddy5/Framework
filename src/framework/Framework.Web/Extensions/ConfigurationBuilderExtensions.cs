@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
 
 namespace HumanaEdge.Webcore.Framework.Web.Extensions
@@ -12,21 +13,37 @@ namespace HumanaEdge.Webcore.Framework.Web.Extensions
         /// Extension method for <see cref="IConfigurationBuilder" />.
         /// </summary>
         /// <param name="builder"><see cref="IConfigurationBuilder" />.</param>
+        /// <param name="args">CLI arguments.</param>
+        /// <param name="secretsName">The name of the environment variable associated with the secrets file.</param>
         /// <returns>fluently returns another <see cref="IConfigurationBuilder" />.</returns>
-        public static IConfigurationBuilder AddConfigOptions(this IConfigurationBuilder builder)
+#pragma warning disable SA1011
+        public static IConfigurationBuilder AddConfigOptions(
+            this IConfigurationBuilder builder,
+            string[]? args = null,
+            string secretsName = "SECRETS")
         {
-            builder.AddJsonFile(
-                $"{Environment.GetEnvironmentVariable("APP_ROOT")}/config/appsettings.overrides.json",
-                optional: true,
-                reloadOnChange: true);
-
-            var secretsFilePathFromEnvironment = Environment.GetEnvironmentVariable("SECRETS_PATH");
+            var secretsFilePathFromEnvironment = Environment.GetEnvironmentVariable(secretsName);
             var secretsFilePath = string.IsNullOrWhiteSpace(secretsFilePathFromEnvironment)
                 ? "secrets/appsettings.Secrets.json"
                 : secretsFilePathFromEnvironment;
 
             // values override in order added
-            return builder.AddJsonFile(secretsFilePath, true, true);
+            builder
+                .AddJsonFile("appsettings.Local.json", true, true)
+                .AddJsonFile(
+                    $"{Environment.GetEnvironmentVariable("APP_ROOT")}/config/appsettings.overrides.json",
+                    true,
+                    true)
+                .AddJsonFile(secretsFilePath, true, true)
+                .AddEnvironmentVariables();
+
+            if (args?.Any() == true)
+            {
+                builder.AddCommandLine(args);
+            }
+
+            return builder;
         }
     }
 }
+#pragma warning restore SA1011
