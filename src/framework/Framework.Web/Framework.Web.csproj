@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\core\Core.Common\Core.Common.csproj" />
     <ProjectReference Include="..\..\core\Core.Web\Core.Web.csproj" />
+    <ProjectReference Include="..\Framework.DependencyInjection\Framework.DependencyInjection.csproj" />
     <ProjectReference Include="..\Framework.Logging\Framework.Logging.csproj" />
     <ProjectReference Include="..\Framework.Rest\Framework.Rest.csproj" />
     <ProjectReference Include="..\Framework.Swagger\Framework.Swagger.csproj" />

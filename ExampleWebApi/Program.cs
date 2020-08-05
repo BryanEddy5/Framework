@@ -1,5 +1,4 @@
-using HumanaEdge.Webcore.Framework.DependencyInjection.Extensions;
-using HumanaEdge.Webcore.Framework.Logging.Extensions;
+using HumanaEdge.Webcore.Framework.Web.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
@@ -17,12 +16,16 @@ namespace ExampleWebApi
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(
+                    (hostingContext, config) =>
+                    {
+                        config.AddConfigOptions(args);
+                    })
+                .UseCustomHostBuilder<Startup>()
                 .ConfigureWebHostDefaults(
                     webBuilder =>
                     {
                         webBuilder.UseStartup<Startup>();
-                    })
-                .UseAppLogging<Startup>()
-                .UseDependencyInjection<Startup>();
+                    });
     }
 }

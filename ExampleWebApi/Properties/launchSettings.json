@@ -1,29 +1,41 @@
 {
+  "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:64245",
-      "sslPort": 44373
+      "applicationUrl": "http://localhost:38929",
+      "sslPort": 44301
     }
   },
-  "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
+      "launchUrl": "",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
       }
     },
-    "ExampleWebApi": {
+    "macOS": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
+      "launchUrl": "",
+      "applicationUrl": "https://localhost:6001;http://localhost:6000",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "https://localhost:6001;http://localhost:6000"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "APP_ROOT": "/Users/%USER%/dev/approots/webcore"
+      }
+    },
+    "windows": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "launchUrl": "",
+      "applicationUrl": "https://localhost:6001;http://localhost:6000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "APP_ROOT": "%USERPROFILE%/dev/approots/webcore"
+      }
     }
   }
 }
