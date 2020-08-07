@@ -8,7 +8,6 @@
     <PackageReference Include="FluentValidation.AspNetCore" Version="$(FluentValidationVersion)" />
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="$(MicrosoftExtensionsPlatformAbstractionsVersion)" />
     <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore" Version="$(StackdriverVersion)" />
-    <PackageReference Include="CorrelationId" Version="$(CorrelationIdVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Core.Common\Core.Common.csproj" />

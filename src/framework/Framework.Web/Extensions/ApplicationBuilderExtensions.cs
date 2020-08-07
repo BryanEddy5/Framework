@@ -1,4 +1,3 @@
-using CorrelationId;
 using Google.Cloud.Diagnostics.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -31,16 +30,6 @@ namespace HumanaEdge.Webcore.Framework.Web.Extensions
                 {
                     Predicate = _ => false // Exclude all checks and return a 200-Ok.
                 });
-        }
-
-        /// <summary>
-        /// Configures the use of middleware to generate the request id.
-        /// </summary>
-        /// <param name="app">The application builder.</param>
-        /// <returns>Returns the app builder for fluent chaining.</returns>
-        internal static IApplicationBuilder UseRequestMiddleware(this IApplicationBuilder app)
-        {
-            return app.UseCorrelationId();
         }
 
         /// <summary>

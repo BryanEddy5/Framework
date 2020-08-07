@@ -1,52 +1,28 @@
 using System.Threading.Tasks;
-using ExampleWebApi;
 using FluentAssertions.Json;
-using HumanaEdge.Webcore.Core.Testing;
-using HumanaEdge.Webcore.Framework.Logging.Extensions;
-using HumanaEdge.Webcore.Framework.Web.Extensions;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Hosting;
+using HumanaEdge.Webcore.ExampleWebApi;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
+namespace HumanaEdge.Webcore.Framework.Swagger.Tests
 {
     /// <summary>
     /// Unit tests for <see cref="DependencyInjection" />.
     /// </summary>
-    public class SwaggerTests : BaseTests
+    public class SwaggerTests : IClassFixture<WebApplicationFactory<Startup>>
     {
         private const string SwaggerPath = "swagger/v1/swagger.json";
 
-        private readonly IHost _host;
+        private readonly WebApplicationFactory<Startup> _factory;
 
         /// <summary>
         /// Common test setup.
         /// </summary>
-        public SwaggerTests()
+        /// <param name="factory">Creates a client for testing.</param>
+        public SwaggerTests(WebApplicationFactory<Startup> factory)
         {
-            var hostBuilder = Host.CreateDefaultBuilder()
-                .UseAppLogging<Startup>()
-                .ConfigureWebHostDefaults(
-                    builder =>
-                    {
-                        // Will run the Kestrel server in-process
-                        // and provide a factory for test clients
-                        builder.UseTestServer();
-                        builder.ConfigureAppConfiguration(
-                            (hostingContext, config) =>
-                            {
-                                config.AddConfigOptions();
-                            });
-
-                        // This is ExampleWebApi's Startup...
-                        // And whose build generated xml documentation...
-                        // So this test is dependent on that server build
-                        builder.UseStartup<Startup>();
-                    });
-
-            _host = hostBuilder.Start();
+            _factory = factory;
         }
 
         /// <summary>
@@ -206,7 +182,7 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
 
         private async Task<JToken> GetSwaggerJObject(string jpathSelector)
         {
-            var client = _host.GetTestClient();
+            var client = _factory.CreateDefaultClient();
             var swaggerResponseMessage = await client.GetAsync(SwaggerPath);
             var swaggerJObject = JObject.Parse(await swaggerResponseMessage.Content.ReadAsStringAsync());
             var actualValidateResult = swaggerJObject.SelectToken(jpathSelector);

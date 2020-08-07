@@ -50,9 +50,8 @@ namespace HumanaEdge.Webcore.Framework.Web
         {
             _ = env.IsDevelopment() ? app.UseDeveloperExceptionPage() : app.UseHsts();
 
-            app.UseRequestMiddleware()
-                .UseMiddleware<ExceptionHandlingMiddleware>()
-                .UseLoggingContextMiddleware();
+            app.UseMiddleware<ExceptionHandlingMiddleware>()
+                .UseRequestLoggingMiddleware();
 
             app.UseHttpsRedirection();
 
@@ -83,7 +82,6 @@ namespace HumanaEdge.Webcore.Framework.Web
             services.AddSwaggerServices<TStartup>(Configuration);
             services.AddHealthChecks();
             services.AddHttpContextAccessor();
-            services.AddRequestIdAccessor();
             services.AddOptionsPattern(Configuration);
 
             services.AddMvc(

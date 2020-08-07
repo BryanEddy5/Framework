@@ -1,6 +1,6 @@
 using System;
 
-namespace ExampleWebApi.Models
+namespace HumanaEdge.Webcore.ExampleWebApi.Models
 {
     /// <summary>
     /// sample interface for testing webcore's dependency injection.

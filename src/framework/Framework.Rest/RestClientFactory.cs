@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using HumanaEdge.Webcore.Core.Rest;
-using HumanaEdge.Webcore.Core.Web;
 
 namespace HumanaEdge.Webcore.Framework.Rest
 {
@@ -19,23 +18,15 @@ namespace HumanaEdge.Webcore.Framework.Rest
         private readonly IMediaTypeFormatter[] _mediaTypeFormatters;
 
         /// <summary>
-        /// Accessing the request id of the incoming request.
-        /// </summary>
-        private readonly IRequestIdAccessor? _requestIdAccessor;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="RestClientFactory" /> class.
         /// </summary>
         /// <param name="internalClientFactory">A factory for generating a rest client.</param>
         /// <param name="mediaTypeFormatters">A collection of media types for formatting a request.</param>
-        /// <param name="requestIdAccessor">Accessing the request id of the incoming request.</param>
         public RestClientFactory(
             IInternalClientFactory internalClientFactory,
-            IEnumerable<IMediaTypeFormatter> mediaTypeFormatters,
-            IRequestIdAccessor? requestIdAccessor = null)
+            IEnumerable<IMediaTypeFormatter> mediaTypeFormatters)
         {
             _internalClientFactory = internalClientFactory;
-            _requestIdAccessor = requestIdAccessor;
             _mediaTypeFormatters = mediaTypeFormatters.ToArray();
         }
 
@@ -45,7 +36,6 @@ namespace HumanaEdge.Webcore.Framework.Rest
             return new RestClient(
                 nameof(TRestClient),
                 _internalClientFactory,
-                _requestIdAccessor,
                 options,
                 _mediaTypeFormatters);
         }

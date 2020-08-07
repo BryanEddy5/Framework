@@ -15,16 +15,16 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
         /// </summary>
         /// <param name="title">The friendly message of the issue that is relayed.</param>
         /// <param name="requestId">A trace identifier for the request.</param>
-        /// <param name="statusCode">The returned result status code associated with the error.</param>
-        /// <param name="detail">A human-readable explanation specific to this occurrence of the problem.</param>
+        /// <param name="status">The returned result status code associated with the error.</param>
+        /// <param name="message">A human-readable explanation specific to this occurrence of the problem.</param>
         /// <param name="exception">The exception that the request failed with.</param>
         public DebugProblemDetail(
             string title,
             string requestId,
-            HttpStatusCode statusCode,
-            string detail,
+            HttpStatusCode status,
+            string message,
             Exception exception)
-            : base(title, requestId, statusCode, detail)
+            : base(title, requestId, status, message)
         {
             Exception = exception;
         }
@@ -37,7 +37,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
         public DebugProblemDetail(
             ProblemDetail problemDetail,
             Exception exception)
-            : base(problemDetail.Title, problemDetail.RequestId, problemDetail.StatusCode, problemDetail.Detail)
+            : base(problemDetail.Title, problemDetail.RequestId, problemDetail.Status, problemDetail.Message)
         {
             Exception = exception;
         }

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -8,7 +7,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
 {
     /// <summary>
-    /// An implementation of <see cref="IDocumentFilter"/> for configuring Swagger document filters.
+    /// An implementation of <see cref="IDocumentFilter" /> for configuring Swagger document filters.
     /// </summary>
     /// <typeparam name="TEntry">generic type of ConfigureSwaggerOptions that configured this filter.</typeparam>
     internal sealed class SwaggerJsonRequestDocumentFilter<TEntry> : IDocumentFilter
@@ -19,21 +18,15 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
 
         private readonly string _currentServiceHostUri;
 
-        private readonly ILogger<SwaggerJsonRequestDocumentFilter<TEntry>> _logger;
-
         /// <summary>
         /// designated ctor.
         /// </summary>
-        /// <param name="contextAccessor"><see cref="IHttpContextAccessor"/>.</param>
-        /// <param name="logger">A typed <see cref="ILogger"/> instance.</param>
+        /// <param name="contextAccessor"><see cref="IHttpContextAccessor" />.</param>
         /// <param name="configSettings">A typed IOptions instance.</param>
         public SwaggerJsonRequestDocumentFilter(
             IHttpContextAccessor contextAccessor,
-            ILogger<SwaggerJsonRequestDocumentFilter<TEntry>> logger,
             IOptions<OpenApiConfigSettings> configSettings)
         {
-            _logger = logger;
-
             var request = contextAccessor.HttpContext.Request;
             _currentServiceHostUri = $"{request.Scheme}://{request.Host}{request.PathBase}";
             _configSettings = configSettings.Value;
@@ -45,7 +38,7 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
         /// It seems to be a singleton that we continuously add to on every refresh. That's why we get repeating elements.
         /// </summary>
         /// <param name="swaggerDoc">The logical Swagger document.</param>
-        /// <param name="context"><see cref="DocumentFilterContext"/>.</param>
+        /// <param name="context"><see cref="DocumentFilterContext" />.</param>
         public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
             swaggerDoc.Servers = new List<OpenApiServer>

@@ -1,7 +1,7 @@
-using ExampleWebApi.Models;
+using HumanaEdge.Webcore.ExampleWebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ExampleWebApi.Controllers
+namespace HumanaEdge.Webcore.ExampleWebApi.Controllers
 {
     /// <summary>
     /// Sample ApiController.

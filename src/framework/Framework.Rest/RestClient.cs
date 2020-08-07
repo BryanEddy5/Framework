@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.Rest;
-using HumanaEdge.Webcore.Core.Web;
 using Polly;
 
 namespace HumanaEdge.Webcore.Framework.Rest
@@ -19,25 +18,20 @@ namespace HumanaEdge.Webcore.Framework.Rest
 
         private readonly RestClientOptions _options;
 
-        private readonly IRequestIdAccessor? _requestIdAccessor;
-
         /// <summary>
         /// Designated ctor.
         /// </summary>
-        /// <param name="clientName">The name type of the <see cref="HttpClient"/>.</param>
-        /// <param name="internalClientFactory">A factory for generating <see cref="IInternalClient"/> for sending the request.</param>
-        /// <param name="requestIdAccessor">Provides access to the request id.</param>
-        /// <param name="options">Configuration settings for outbound requests for the instance of <see cref="IRestClient"/>.</param>
+        /// <param name="clientName">The name type of the <see cref="HttpClient" />.</param>
+        /// <param name="internalClientFactory">A factory for generating <see cref="IInternalClient" /> for sending the request.</param>
+        /// <param name="options">Configuration settings for outbound requests for the instance of <see cref="IRestClient" />.</param>
         /// <param name="mediaTypeFormatters">A collection of media type formatters.</param>
         public RestClient(
             string clientName,
             IInternalClientFactory internalClientFactory,
-            IRequestIdAccessor? requestIdAccessor,
             RestClientOptions options,
             IMediaTypeFormatter[] mediaTypeFormatters)
         {
             _httpClient = internalClientFactory.CreateClient(clientName, options.BaseUri, options.Timeout);
-            _requestIdAccessor = requestIdAccessor;
             _options = options;
             _mediaTypeFormatters = mediaTypeFormatters;
         }
@@ -111,12 +105,6 @@ namespace HumanaEdge.Webcore.Framework.Rest
                 message.Headers.Add(header, (IEnumerable<string>)request.Headers[header]);
             }
 
-            // add correlation id to all outgoing requests.
-            if (_requestIdAccessor?.Header != null && _requestIdAccessor?.CorrelationId != null)
-            {
-                message.Headers.Add(_requestIdAccessor?.Header, _requestIdAccessor?.CorrelationId);
-            }
-
             return message;
         }
 
@@ -139,8 +127,11 @@ namespace HumanaEdge.Webcore.Framework.Rest
         /// </summary>
         /// <typeparam name="TRestRequest">The type of the rest request.</typeparam>
         /// <param name="restRequest">The rest request object.</param>
-        /// A function which converts the <typeparamref name="TRestRequest" />
-        /// into an <see cref="HttpRequestMessage" /> .
+        /// A function which converts the
+        /// <typeparamref name="TRestRequest" />
+        /// into an
+        /// <see cref="HttpRequestMessage" />
+        /// .
         /// <param name="cancellationToken">The cancellation token for the request.</param>
         /// <param name="restRequestConverter">Applies middleware transformation of the request.</param>
         private async Task<RestResponse> SendInternalAsync<TRestRequest>(

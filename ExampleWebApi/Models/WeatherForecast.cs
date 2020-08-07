@@ -1,7 +1,7 @@
 using System;
 using HumanaEdge.Webcore.Core.DependencyInjection;
 
-namespace ExampleWebApi.Models
+namespace HumanaEdge.Webcore.ExampleWebApi.Models
 {
     /// <summary>
     /// A simple View Model that the ExampleWebApi uses. Demonstrates Swagger feature of Webcore.
@@ -26,7 +26,7 @@ namespace ExampleWebApi.Models
         /// </summary>
         public WeatherForecast()
         {
-            Date = DateTime.Now.AddDays(1);
+            Date = DateTime.UtcNow.AddDays(1);
             TemperatureC = Rng.Next(-20, 55);
             Summary = Summaries[Rng.Next(Summaries.Length)];
         }

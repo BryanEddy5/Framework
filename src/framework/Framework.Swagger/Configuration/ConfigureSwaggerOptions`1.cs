@@ -6,7 +6,6 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
@@ -21,7 +20,9 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
     internal sealed class ConfigureSwaggerOptions<TEntry> : IConfigureOptions<SwaggerGenOptions>
     {
         private static readonly OpenApiInfo ApiInfo;
+
         private static readonly Assembly EntryAssembly;
+
         private static readonly string XmlPath;
 
         static ConfigureSwaggerOptions()
@@ -38,7 +39,7 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
         /// </summary>
         public static string BuildSourceInfo { get; }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public void Configure(SwaggerGenOptions options)
         {
             // This configures a filter that is executed every time the Swagger UI page is refreshed.
@@ -57,27 +58,31 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
             // Set the comments path for the Swagger JSON and UI.
             options.IncludeXmlComments(XmlPath);
 
-            options.AddSecurityDefinition("apikey", new OpenApiSecurityScheme()
-            {
-                Description = "Apigee API key",
-                Name = "x-api-key",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey
-            });
-
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement()
-            {
+            options.AddSecurityDefinition(
+                "apikey",
+                new OpenApiSecurityScheme
                 {
-                    new OpenApiSecurityScheme
+                    Description = "Apigee API key",
+                    Name = "x-api-key",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                });
+
+            options.AddSecurityRequirement(
+                new OpenApiSecurityRequirement
+                {
                     {
-                        Reference = new OpenApiReference
+                        new OpenApiSecurityScheme
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "apikey"
-                        }
-                    }, new List<string>()
-                }
-            });
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "apikey"
+                            }
+                        },
+                        new List<string>()
+                    }
+                });
 
             // Configures the initial hero with OpenApiInfo.
             // For some reason (and it's not obvious), this first parameter needs to match OpenApiInfo.Version below.
@@ -93,7 +98,7 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
         /// <returns><see cref="OpenApiInfo" />.</returns>
         internal static OpenApiInfo CreateInfo()
         {
-            var info = new OpenApiInfo()
+            var info = new OpenApiInfo
             {
                 Version = "v1",
                 Title = EntryAssembly?.GetCustomAttribute<AssemblyProductAttribute>()?.Product,

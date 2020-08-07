@@ -1,8 +1,8 @@
-using ExampleWebApi.Models;
+using HumanaEdge.Webcore.ExampleWebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace ExampleWebApi.Controllers
+namespace HumanaEdge.Webcore.ExampleWebApi.Controllers
 {
     /// <summary>
     /// Sample ApiController.
