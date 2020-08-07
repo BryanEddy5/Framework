@@ -36,5 +36,19 @@ namespace HumanaEdge.Webcore.Core.Rest
         {
             return await _restClient.Value.SendAsync(restRequest, cancellationToken);
         }
+
+        /// <inheritdoc />
+        public async Task<FileResponse> GetFileAsync(RestRequest restRequest, CancellationToken cancellationToken)
+        {
+            return await _restClient.Value.GetFileAsync(restRequest, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<FileResponse> GetFileAsync<TRequest>(
+            RestRequest<TRequest> restRequest,
+            CancellationToken cancellationToken)
+        {
+            return await _restClient.Value.GetFileAsync(restRequest, cancellationToken);
+        }
     }
 }

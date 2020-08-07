@@ -26,7 +26,7 @@ namespace HumanaEdge.Webcore.Core.Rest
             Dictionary<string, StringValues> defaultHeaders,
             RestRequestTransformation[] restRequestMiddleware,
             TimeSpan timeout,
-            IAsyncPolicy<RestResponse> resiliencePolicy,
+            IAsyncPolicy<BaseRestResponse> resiliencePolicy,
             JsonSerializerSettings jsonSerializerSettings)
         {
             BaseUri = baseUri;
@@ -57,7 +57,7 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// <summary>
         /// Optional. Configured strategy for resiliency. Defaults to NoOp if omitted.
         /// </summary>
-        public IAsyncPolicy<RestResponse> ResiliencePolicy { get; }
+        public IAsyncPolicy<BaseRestResponse> ResiliencePolicy { get; }
 
         /// <summary>
         /// Optional. Transformations to be applied to the outgoing http request.
@@ -102,7 +102,7 @@ namespace HumanaEdge.Webcore.Core.Rest
             /// <summary>
             /// Optional. Configured strategy for resiliency. Defaults to NoOp if omitted.
             /// </summary>
-            private IAsyncPolicy<RestResponse> _resiliencePolicy;
+            private IAsyncPolicy<BaseRestResponse> _resiliencePolicy;
 
             /// <summary>
             /// Optional. The duration of which the request will timeout.
@@ -119,7 +119,7 @@ namespace HumanaEdge.Webcore.Core.Rest
                 _defaultHeaders = new Dictionary<string, StringValues>();
                 _restRequestMiddleware = new List<RestRequestTransformation>();
                 _timeout = TimeSpan.FromSeconds(5);
-                _resiliencePolicy = Policy.NoOpAsync<RestResponse>();
+                _resiliencePolicy = Policy.NoOpAsync<BaseRestResponse>();
                 _jsonSettings = new JsonSerializerSettings()
                 {
                     ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -198,7 +198,7 @@ namespace HumanaEdge.Webcore.Core.Rest
             /// </summary>
             /// <param name="resiliencePolicy">The default resilience policy.</param>
             /// <returns>The builder instance, for fluent chaining.</returns>
-            public Builder ConfigureResiliencePolicy(IAsyncPolicy<RestResponse> resiliencePolicy)
+            public Builder ConfigureResiliencePolicy(IAsyncPolicy<BaseRestResponse> resiliencePolicy)
             {
                 _resiliencePolicy = resiliencePolicy;
                 return this;

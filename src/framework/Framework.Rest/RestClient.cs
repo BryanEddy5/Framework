@@ -39,7 +39,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
         /// <inheritdoc />
         public async Task<RestResponse> SendAsync(RestRequest restRequest, CancellationToken cancellationToken)
         {
-            return await SendInternalAsync(restRequest, cancellationToken, ConvertToHttpRequestMessage);
+            return await SendInternalAsync(restRequest, cancellationToken, ConvertToHttpRequestMessage, ConvertToRestResponse);
         }
 
         /// <inheritdoc />
@@ -47,7 +47,21 @@ namespace HumanaEdge.Webcore.Framework.Rest
             RestRequest<TRequest> restRequest,
             CancellationToken cancellationToken)
         {
-            return await SendInternalAsync(restRequest, cancellationToken, ConvertToHttpRequestMessage);
+            return await SendInternalAsync(restRequest, cancellationToken, ConvertToHttpRequestMessage, ConvertToRestResponse);
+        }
+
+        /// <inheritdoc />
+        public async Task<FileResponse> GetFileAsync(RestRequest fileRequest, CancellationToken cancellationToken)
+        {
+            return await SendInternalAsync(fileRequest, cancellationToken, ConvertToHttpRequestMessage, ConvertToStreamResponse);
+        }
+
+        /// <inheritdoc />
+        public async Task<FileResponse> GetFileAsync<TRequest>(
+            RestRequest<TRequest> fileRequest,
+            CancellationToken cancellationToken)
+        {
+            return await SendInternalAsync(fileRequest, cancellationToken, ConvertToHttpRequestMessage, ConvertToStreamResponse);
         }
 
         /// <summary>
@@ -122,10 +136,23 @@ namespace HumanaEdge.Webcore.Framework.Rest
                 httpResponseMessage.StatusCode);
         }
 
+        private async Task<FileResponse> ConvertToStreamResponse(HttpResponseMessage httpResponseMessage)
+        {
+            var responseStream = await httpResponseMessage.Content.ReadAsStreamAsync();
+
+            return new FileResponse(
+                httpResponseMessage.IsSuccessStatusCode,
+                responseStream,
+                httpResponseMessage.StatusCode,
+                httpResponseMessage.Content?.Headers?.ContentType.MediaType,
+                httpResponseMessage.Content?.Headers?.ContentDisposition.FileName);
+        }
+
         /// <summary>
         /// Orchestrates the actual HTTP request. Applies any transformations, converted to and from HTTP- classes.
         /// </summary>
         /// <typeparam name="TRestRequest">The type of the rest request.</typeparam>
+        /// <typeparam name="TRestResponse">The type of the rest response.</typeparam>
         /// <param name="restRequest">The rest request object.</param>
         /// A function which converts the
         /// <typeparamref name="TRestRequest" />
@@ -134,26 +161,29 @@ namespace HumanaEdge.Webcore.Framework.Rest
         /// .
         /// <param name="cancellationToken">The cancellation token for the request.</param>
         /// <param name="restRequestConverter">Applies middleware transformation of the request.</param>
-        private async Task<RestResponse> SendInternalAsync<TRestRequest>(
+        /// <param name="restResponseConverter">Applies middleware transformation of the response.</param>
+        private async Task<TRestResponse> SendInternalAsync<TRestRequest, TRestResponse>(
             TRestRequest restRequest,
             CancellationToken cancellationToken,
-            Func<TRestRequest, HttpRequestMessage> restRequestConverter)
+            Func<TRestRequest, HttpRequestMessage> restRequestConverter,
+            Func<HttpResponseMessage, Task<TRestResponse>> restResponseConverter)
             where TRestRequest : RestRequest
+            where TRestResponse : BaseRestResponse
         {
             var transformedRestRequest = TransformRequest(restRequest, out var resiliencePolicy);
-            return await resiliencePolicy.ExecuteAsync(
+            return (TRestResponse)await resiliencePolicy.ExecuteAsync(
                 async ct =>
                 {
                     var httpRequestMessage = restRequestConverter(transformedRestRequest);
                     var httpResponse = await _httpClient.SendAsync(httpRequestMessage, ct);
-                    return await ConvertToRestResponse(httpResponse);
+                    return await restResponseConverter(httpResponse);
                 },
                 cancellationToken);
         }
 
         private TRestRequest TransformRequest<TRestRequest>(
             TRestRequest restRequest,
-            out IAsyncPolicy<RestResponse> resiliencePolicy)
+            out IAsyncPolicy<BaseRestResponse> resiliencePolicy)
             where TRestRequest : RestRequest
         {
             var transformedRequest = restRequest;
