@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using HumanaEdge.Webcore.Framework.Logging.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Serilog;
 
@@ -16,10 +15,9 @@ namespace HumanaEdge.Webcore.Framework.Logging.Extensions
         /// </summary>
         /// <param name="app">The application builder.</param>
         /// <returns>Returns the application builder for fluent chaining.</returns>
-        public static IApplicationBuilder UseLoggingContextMiddleware(this IApplicationBuilder app)
+        public static IApplicationBuilder UseRequestLoggingMiddleware(this IApplicationBuilder app)
         {
-            return app.UseSerilogRequestLogging()
-                .UseMiddleware<LoggingContextMiddleware>();
+            return app.UseSerilogRequestLogging();
         }
     }
 }

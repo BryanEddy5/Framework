@@ -2,7 +2,7 @@ using HumanaEdge.Webcore.Framework.Web.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace ExampleWebApi
+namespace HumanaEdge.Webcore.ExampleWebApi
 {
     /// <summary>
     /// Standard Program class containing Main entry point.

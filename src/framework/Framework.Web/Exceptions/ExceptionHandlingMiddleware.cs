@@ -18,9 +18,10 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
     internal sealed class ExceptionHandlingMiddleware
     {
         /// <summary>
-        /// The default error message when an unhandled exception has been thrown.
+        /// The default error response when an exception occurs.
         /// </summary>
-        internal const string DefaultErrorMessage = "An internal error has occured. Please try again later.";
+        internal static readonly string DefaultErrorMessage =
+            $"An error occured during the request.  See {nameof(ProblemDetail.Message)} for additional detail.";
 
         /// <summary>
         /// Settings for the JSON serialization.
@@ -131,7 +132,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
             var response = GenerateProblemDetailResponse(exception, httpContext);
             var result = JsonConvert.SerializeObject(response, _jsonSettings);
             httpContext.Response.ContentType = "application/json";
-            httpContext.Response.StatusCode = (int)response.StatusCode;
+            httpContext.Response.StatusCode = (int)response.Status;
             return httpContext.Response.WriteAsync(result);
         }
     }

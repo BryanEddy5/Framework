@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace ExampleWebApi.Models
+namespace HumanaEdge.Webcore.ExampleWebApi.Models
 {
     /// <summary>
     /// TestEnum is used to test "treat enums as strings" in our APIs, both controller methods and swagger doc.

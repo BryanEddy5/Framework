@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using AutoFixture;
 using HumanaEdge.Webcore.Core.Rest;
 using HumanaEdge.Webcore.Core.Testing;
-using HumanaEdge.Webcore.Core.Web;
 using HumanaEdge.Webcore.Framework.Rest.Tests.Stubs;
 using Moq;
 using Newtonsoft.Json;
@@ -30,8 +29,6 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
 
         private readonly Mock<IMediaTypeFormatter> _mockMediaTypeFormatter;
 
-        private readonly Mock<IRequestIdAccessor> _mockRequestIdAccessor;
-
         private readonly RestClientOptions _options;
 
         /// <summary>
@@ -47,14 +44,8 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             _mockInternalClientFactory = Moq.Create<IInternalClientFactory>();
             _mockHttpClient = Moq.Create<IInternalClient>();
             _mockMediaTypeFormatter = Moq.Create<IMediaTypeFormatter>();
-            _mockRequestIdAccessor = Moq.Create<IRequestIdAccessor>();
 
             _fakeClientName = FakeData.Create<string>();
-            var fakeHeader = FakeData.Create<string>();
-            var fakeCorrelationId = FakeData.Create<string>();
-
-            _mockRequestIdAccessor.Setup(x => x.Header).Returns(fakeHeader);
-            _mockRequestIdAccessor.Setup(x => x.CorrelationId).Returns(fakeCorrelationId);
 
             _options = new RestClientOptions.Builder("https://localhost:5000")
                 .ConfigureHeader("Foo", "Bar")
@@ -74,7 +65,8 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         }
 
         /// <summary>
-        /// Verifies the behavior of <see cref="RestClient.SendAsync(RestRequest,CancellationToken)" /> with all <see cref="RestClientOptions"/> containing values.
+        /// Verifies the behavior of <see cref="RestClient.SendAsync(RestRequest,CancellationToken)" /> with all
+        /// <see cref="RestClientOptions" /> containing values.
         /// </summary>
         /// <returns>A <see cref="Task" /> representing the result of the asynchronous operation.</returns>
         [Fact]
@@ -100,7 +92,6 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             _restClient = new RestClient(
                 _fakeClientName,
                 _mockInternalClientFactory.Object,
-                _mockRequestIdAccessor.Object,
                 _options,
                 new[] { _mockMediaTypeFormatter.Object });
 
@@ -144,7 +135,6 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             _restClient = new RestClient(
                 _fakeClientName,
                 _mockInternalClientFactory.Object,
-                _mockRequestIdAccessor.Object,
                 _options,
                 new[] { _mockMediaTypeFormatter.Object });
 
@@ -156,6 +146,56 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             Assert.Empty(actual.ResponseBytes);
             Assert.Equal(fakeHttpResponseMessage.IsSuccessStatusCode, actual.IsSuccessful);
             Assert.Equal(fakeHttpResponseMessage.StatusCode, actual.StatusCode);
+        }
+
+        /// <summary>
+        /// Verifies the behavior of <see cref="RestClient.SendAsync{TRequest}(RestRequest{TRequest},CancellationToken)" />.
+        /// </summary>
+        /// <returns>A <see cref="Task" /> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task SendAsync_RestRequest_WithRequestBody_NotSupportedMediaType_Exception()
+        {
+            // arrange
+            var fakeFoo = FakeData.Create<Foo>();
+            var fakeRequest = new RestRequest<Foo>("/foo/add", HttpMethod.Post, fakeFoo, MediaType.Json);
+            _mockMediaTypeFormatter.Setup(x => x.MediaType).Returns(null as MediaType);
+
+            _restClient = new RestClient(
+                _fakeClientName,
+                _mockInternalClientFactory.Object,
+                _options,
+                new[] { _mockMediaTypeFormatter.Object });
+
+            // act assert
+            await Assert.ThrowsAsync<FormatFailedRestException>(
+                async () => await _restClient.SendAsync(fakeRequest, CancellationTokenSource.Token));
+        }
+
+        /// <summary>
+        /// Verifies the behavior of <see cref="RestClient.SendAsync{TRequest}(RestRequest{TRequest},CancellationToken)" />.
+        /// </summary>
+        /// <returns>A <see cref="Task" /> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task SendAsync_RestRequest_WithRequestBody_RequestBodyTryFormat_Exception()
+        {
+            // arrange
+            var fakeFoo = FakeData.Create<Foo>();
+            var fakeRequest = new RestRequest<Foo>("/foo/add", HttpMethod.Post, fakeFoo, MediaType.Json);
+            var mockContent = Moq.Create<HttpContent>();
+            var fakeContent = mockContent.Object;
+            _mockMediaTypeFormatter.Setup(x => x.MediaType).Returns(MediaType.Json);
+            _mockMediaTypeFormatter.Setup(x => x.TryFormat(MediaType.Json, _options, fakeFoo, out fakeContent))
+                .Returns(false);
+
+            _restClient = new RestClient(
+                _fakeClientName,
+                _mockInternalClientFactory.Object,
+                _options,
+                new[] { _mockMediaTypeFormatter.Object });
+
+            // act assert
+            await Assert.ThrowsAsync<FormatFailedRestException>(
+                async () => await _restClient.SendAsync(fakeRequest, CancellationTokenSource.Token));
         }
 
         /// <summary>
@@ -186,7 +226,6 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             _restClient = new RestClient(
                 _fakeClientName,
                 _mockInternalClientFactory.Object,
-                _mockRequestIdAccessor.Object,
                 _options,
                 new[] { _mockMediaTypeFormatter.Object });
 
@@ -198,56 +237,6 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             Assert.Equal(expectedBytes, actual.ResponseBytes);
             Assert.Equal(fakeHttpResponseMessage.IsSuccessStatusCode, actual.IsSuccessful);
             Assert.Equal(fakeHttpResponseMessage.StatusCode, actual.StatusCode);
-        }
-
-        /// <summary>
-        /// Verifies the behavior of <see cref="RestClient.SendAsync{TRequest}(RestRequest{TRequest},CancellationToken)" />.
-        /// </summary>
-        /// <returns>A <see cref="Task" /> representing the result of the asynchronous operation.</returns>
-        [Fact]
-        public async Task SendAsync_RestRequest_WithRequestBody_NotSupportedMediaType_Exception()
-        {
-            // arrange
-            var fakeFoo = FakeData.Create<Foo>();
-            var fakeRequest = new RestRequest<Foo>("/foo/add", HttpMethod.Post, fakeFoo, MediaType.Json);
-            _mockMediaTypeFormatter.Setup(x => x.MediaType).Returns(null as MediaType);
-
-            _restClient = new RestClient(
-                _fakeClientName,
-                _mockInternalClientFactory.Object,
-                _mockRequestIdAccessor.Object,
-                _options,
-                new[] { _mockMediaTypeFormatter.Object });
-
-            // act assert
-            await Assert.ThrowsAsync<FormatFailedRestException>(async () => await _restClient.SendAsync(fakeRequest, CancellationTokenSource.Token));
-        }
-
-        /// <summary>
-        /// Verifies the behavior of <see cref="RestClient.SendAsync{TRequest}(RestRequest{TRequest},CancellationToken)" />.
-        /// </summary>
-        /// <returns>A <see cref="Task" /> representing the result of the asynchronous operation.</returns>
-        [Fact]
-        public async Task SendAsync_RestRequest_WithRequestBody_RequestBodyTryFormat_Exception()
-        {
-            // arrange
-            var fakeFoo = FakeData.Create<Foo>();
-            var fakeRequest = new RestRequest<Foo>("/foo/add", HttpMethod.Post, fakeFoo, MediaType.Json);
-            var mockContent = Moq.Create<HttpContent>();
-            var fakeContent = mockContent.Object;
-            _mockMediaTypeFormatter.Setup(x => x.MediaType).Returns(MediaType.Json);
-            _mockMediaTypeFormatter.Setup(x => x.TryFormat(MediaType.Json, _options, fakeFoo, out fakeContent))
-                .Returns(false);
-
-            _restClient = new RestClient(
-                _fakeClientName,
-                _mockInternalClientFactory.Object,
-                _mockRequestIdAccessor.Object,
-                _options,
-                new[] { _mockMediaTypeFormatter.Object });
-
-            // act assert
-            await Assert.ThrowsAsync<FormatFailedRestException>(async () => await _restClient.SendAsync(fakeRequest, CancellationTokenSource.Token));
         }
     }
 }

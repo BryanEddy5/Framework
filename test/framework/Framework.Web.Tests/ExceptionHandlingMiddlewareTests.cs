@@ -60,8 +60,8 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests
             // assert
             Assert.True(httpContext.Response.Body.Length > 0);
             Assert.Null(actual["exception"]);
-            Assert.NotNull(actual["detail"]);
-            Assert.Equal(FakeNotFoundMessageException.ExceptionMessage, actual["detail"]);
+            Assert.NotNull(actual["message"]);
+            Assert.Equal(FakeNotFoundMessageException.ExceptionMessage, actual["message"]);
         }
 
         /// <summary>

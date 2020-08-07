@@ -3,7 +3,7 @@ using HumanaEdge.Webcore.Framework.Web;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ExampleWebApi
+namespace HumanaEdge.Webcore.ExampleWebApi
 {
     /// <summary>
     /// ExampleWebApi's Startup class.
