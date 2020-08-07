@@ -1,11 +1,16 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
+using FluentAssertions;
 using HumanaEdge.Webcore.Core.Rest;
 using HumanaEdge.Webcore.Core.Testing;
 using HumanaEdge.Webcore.Framework.Rest.Tests.Stubs;
@@ -34,7 +39,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         /// <summary>
         /// System under test.
         /// </summary>
-        private RestClient _restClient;
+        private readonly RestClient _restClient;
 
         /// <summary>
         /// Common test setup.
@@ -62,6 +67,12 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
 
             _mockInternalClientFactory.Setup(x => x.CreateClient(_fakeClientName, _options.BaseUri, _options.Timeout))
                 .Returns(_mockHttpClient.Object);
+
+            _restClient = new RestClient(
+                _fakeClientName,
+                _mockInternalClientFactory.Object,
+                _options,
+                new[] { _mockMediaTypeFormatter.Object });
         }
 
         /// <summary>
@@ -77,23 +88,12 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                 .UseAcceptHeader(MediaType.Json)
                 .UseHeader("test", "testing");
             var fakeHttpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK);
-            _mockHttpClient.Setup(
-                    x => x.SendAsync(
-                        It.Is<HttpRequestMessage>(
-                            r =>
-                                r.Method == fakeRequest.HttpMethod &&
-                                r.Headers.Accept.Any(h => h.MediaType == MediaType.Json.MimeType) &&
-                                r.Headers.GetValues("test").First() == "testing" &&
-                                r.RequestUri == new Uri("/hello/world", UriKind.Relative) &&
-                                r.Headers.Any(h => h.Key == "Id")),
-                        CancellationTokenSource.Token))
-                .ReturnsAsync(fakeHttpResponseMessage);
-
-            _restClient = new RestClient(
-                _fakeClientName,
-                _mockInternalClientFactory.Object,
-                _options,
-                new[] { _mockMediaTypeFormatter.Object });
+            SetUpHttpClientMock(fakeHttpResponseMessage, r =>
+                r.Method == fakeRequest.HttpMethod &&
+                r.Headers.Accept.Any(h => h.MediaType == MediaType.Json.MimeType) &&
+                r.Headers.GetValues("test").First() == "testing" &&
+                r.RequestUri == new Uri("/hello/world", UriKind.Relative) &&
+                r.Headers.Any(h => h.Key == "Id"));
 
             // act
             var actual = await _restClient.SendAsync(fakeRequest, CancellationTokenSource.Token);
@@ -122,21 +122,10 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             _mockMediaTypeFormatter.Setup(x => x.MediaType).Returns(MediaType.Json);
 
             var fakeHttpResponseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError);
-            _mockHttpClient.Setup(
-                    x => x.SendAsync(
-                        It.Is<HttpRequestMessage>(
-                            r =>
-                                r.Method == fakeRequest.HttpMethod &&
-                                r.RequestUri == new Uri("/foo/add", UriKind.Relative) &&
-                                r.Content == fakeContent),
-                        CancellationTokenSource.Token))
-                .ReturnsAsync(fakeHttpResponseMessage);
-
-            _restClient = new RestClient(
-                _fakeClientName,
-                _mockInternalClientFactory.Object,
-                _options,
-                new[] { _mockMediaTypeFormatter.Object });
+            SetUpHttpClientMock(fakeHttpResponseMessage, r =>
+                r.Method == fakeRequest.HttpMethod &&
+                r.RequestUri == new Uri("/foo/add", UriKind.Relative) &&
+                r.Content == fakeContent);
 
             // act
             var actual = await _restClient.SendAsync(fakeRequest, CancellationTokenSource.Token);
@@ -160,15 +149,73 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             var fakeRequest = new RestRequest<Foo>("/foo/add", HttpMethod.Post, fakeFoo, MediaType.Json);
             _mockMediaTypeFormatter.Setup(x => x.MediaType).Returns(null as MediaType);
 
-            _restClient = new RestClient(
-                _fakeClientName,
-                _mockInternalClientFactory.Object,
-                _options,
-                new[] { _mockMediaTypeFormatter.Object });
-
             // act assert
             await Assert.ThrowsAsync<FormatFailedRestException>(
                 async () => await _restClient.SendAsync(fakeRequest, CancellationTokenSource.Token));
+        }
+
+        /// <summary>
+        /// Testing the FileResponse is populated validly.
+        /// </summary>
+        /// <returns>A <see cref="Task" /> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task GetFileAsync_Okay()
+        {
+            // arrange
+            var fakeRequest = new RestRequest("/foo/file", HttpMethod.Get);
+            var expectedBytes = FakeData.Create<byte[]>();
+            var expectedBytesStream = new MemoryStream(expectedBytes);
+            var mockResponse = BuildMockResponseForFiles(expectedBytesStream);
+            SetUpHttpClientMock(mockResponse, r =>
+                r.Method == fakeRequest.HttpMethod &&
+                r.RequestUri == new Uri("/foo/file", UriKind.Relative));
+
+            // act
+            var actual = await _restClient.GetFileAsync(fakeRequest, CancellationTokenSource.Token);
+
+            // assert
+            actual.Should().BeOfType<FileResponse>();
+            actual.FileStream.Length.Should().Be(expectedBytesStream.Length);
+            actual.IsSuccessful.Should().Be(mockResponse.IsSuccessStatusCode);
+            actual.StatusCode.Should().Be(mockResponse.StatusCode);
+            actual.ContentType.Should().Be(mockResponse.Content.Headers.ContentType.MediaType);
+            actual.FileName.Should().Be(mockResponse.Content.Headers.ContentDisposition.FileName);
+        }
+
+        /// <summary>
+        /// Verifies the behavior of <see cref="RestClient.SendAsync{TRequest}(RestRequest{TRequest},CancellationToken)" />.
+        /// </summary>
+        /// <returns>A <see cref="Task" /> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task GetFileAsync_RestRequest_WithRequestBody()
+        {
+            // arrange
+            var fakeFoo = FakeData.Create<Foo>();
+            var fakeRequest = new RestRequest<Foo>("/foo/file", HttpMethod.Post, fakeFoo, MediaType.Json);
+            var mockContent = Moq.Create<HttpContent>();
+            var fakeContent = mockContent.Object;
+            _mockMediaTypeFormatter.Setup(x => x.TryFormat(MediaType.Json, _options, fakeFoo, out fakeContent))
+                .Returns(true);
+            _mockMediaTypeFormatter.Setup(x => x.MediaType).Returns(MediaType.Json);
+
+            var expectedBytes = FakeData.Create<byte[]>();
+            var expectedBytesStream = new MemoryStream(expectedBytes);
+            var mockResponse = BuildMockResponseForFiles(expectedBytesStream);
+            SetUpHttpClientMock(mockResponse, r =>
+                r.Method == fakeRequest.HttpMethod &&
+                r.RequestUri == new Uri("/foo/file", UriKind.Relative) &&
+                r.Content == fakeContent);
+
+            // act
+            var actual = await _restClient.GetFileAsync(fakeRequest, CancellationTokenSource.Token);
+
+            // assert
+            actual.Should().BeOfType<FileResponse>();
+            actual.FileStream.Length.Should().Be(expectedBytesStream.Length);
+            actual.IsSuccessful.Should().Be(mockResponse.IsSuccessStatusCode);
+            actual.StatusCode.Should().Be(mockResponse.StatusCode);
+            actual.ContentType.Should().Be(mockResponse.Content.Headers.ContentType.MediaType);
+            actual.FileName.Should().Be(mockResponse.Content.Headers.ContentDisposition.FileName);
         }
 
         /// <summary>
@@ -186,12 +233,6 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             _mockMediaTypeFormatter.Setup(x => x.MediaType).Returns(MediaType.Json);
             _mockMediaTypeFormatter.Setup(x => x.TryFormat(MediaType.Json, _options, fakeFoo, out fakeContent))
                 .Returns(false);
-
-            _restClient = new RestClient(
-                _fakeClientName,
-                _mockInternalClientFactory.Object,
-                _options,
-                new[] { _mockMediaTypeFormatter.Object });
 
             // act assert
             await Assert.ThrowsAsync<FormatFailedRestException>(
@@ -223,12 +264,6 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                         CancellationTokenSource.Token))
                 .ReturnsAsync(fakeHttpResponseMessage);
 
-            _restClient = new RestClient(
-                _fakeClientName,
-                _mockInternalClientFactory.Object,
-                _options,
-                new[] { _mockMediaTypeFormatter.Object });
-
             // act
             var actual = await _restClient.SendAsync(fakeRequest, CancellationTokenSource.Token);
 
@@ -237,6 +272,28 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             Assert.Equal(expectedBytes, actual.ResponseBytes);
             Assert.Equal(fakeHttpResponseMessage.IsSuccessStatusCode, actual.IsSuccessful);
             Assert.Equal(fakeHttpResponseMessage.StatusCode, actual.StatusCode);
+        }
+
+        private HttpResponseMessage BuildMockResponseForFiles(MemoryStream expectedBytesStream)
+        {
+            var content = new StreamContent(expectedBytesStream);
+
+            var mockResponse = new HttpResponseMessage(HttpStatusCode.OK);
+            mockResponse.Content = content;
+            var contentDisposition = new ContentDispositionHeaderValue("attachment");
+            contentDisposition.FileName = "SomeFile.txt";
+            mockResponse.Content.Headers.ContentDisposition = contentDisposition;
+            mockResponse.Content.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
+            return mockResponse;
+        }
+
+        private void SetUpHttpClientMock(
+            HttpResponseMessage fakeHttpResponseMessage,
+            Expression<Func<HttpRequestMessage, bool>> match)
+        {
+            _mockHttpClient.Setup(
+                    x => x.SendAsync(It.Is(match), CancellationTokenSource.Token))
+                .ReturnsAsync(fakeHttpResponseMessage);
         }
     }
 }

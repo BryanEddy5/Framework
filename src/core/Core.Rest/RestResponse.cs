@@ -7,7 +7,7 @@ namespace HumanaEdge.Webcore.Core.Rest
     /// <summary>
     /// The the response from the rest request that contains.
     /// </summary>
-    public sealed class RestResponse
+    public sealed class RestResponse : BaseRestResponse
     {
         /// <summary>
         /// A service for deserializing the response from a http request.
@@ -24,26 +24,15 @@ namespace HumanaEdge.Webcore.Core.Rest
             bool isSuccessful,
             IRestResponseDeserializer restResponseDeserializer,
             HttpStatusCode statusCode)
+            : base(isSuccessful, statusCode)
         {
-            IsSuccessful = isSuccessful;
             _restResponseDeserializer = restResponseDeserializer;
-            StatusCode = statusCode;
         }
-
-        /// <summary>
-        /// And indicator if the request was successful.
-        /// </summary>
-        public bool IsSuccessful { get; }
 
         /// <summary>
         /// The http response as a byte array allowing for inspection of the response before deserializing.
         /// </summary>
         public byte[] ResponseBytes => _restResponseDeserializer.ResponseBytes;
-
-        /// <summary>
-        /// The status code returned from the response.
-        /// </summary>
-        public HttpStatusCode StatusCode { get; }
 
         /// <summary>
         /// Converts the RESTful response to a designated <see cref="Type" />.
