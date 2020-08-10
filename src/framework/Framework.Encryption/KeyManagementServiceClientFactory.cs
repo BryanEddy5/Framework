@@ -6,7 +6,7 @@ namespace HumanaEdge.Webcore.Framework.Encryption
     /// <inheritdoc />
     internal sealed class KeyManagementServiceClientFactory : IKeyManagementServiceClientFactory
     {
-        private KeyManagementServiceClient? _keyManagementServiceClient;
+        private static KeyManagementServiceClient? _keyManagementServiceClient;
 
         /// <inheritdoc />
         public async Task<KeyManagementServiceClient> CreateAsync()

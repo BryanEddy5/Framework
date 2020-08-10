@@ -25,6 +25,7 @@
     <MicrosoftAspNetCoreTestHostVersion>3.1.6</MicrosoftAspNetCoreTestHostVersion>
     <MicrosoftExtensionsDependencyModelVersion>2.0.4</MicrosoftExtensionsDependencyModelVersion>
     <SystemTextJsonVersion>4.6.0</SystemTextJsonVersion>
+    <SystemComponentModelAnnotations>4.7.0</SystemComponentModelAnnotations>
   </PropertyGroup>
   <PropertyGroup Label="Test framework versions">
     <CoverletVersion>2.9.0</CoverletVersion>

@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using HumanaEdge.Webcore.Core.Common;
+using HumanaEdge.Webcore.Core.Common.Exceptions;
 
 namespace HumanaEdge.Webcore.Core.Rest
 {
