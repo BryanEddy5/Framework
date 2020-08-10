@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
-namespace HumanaEdge.Webcore.Core.Common
+namespace HumanaEdge.Webcore.Core.Common.Exceptions
 {
     /// <summary>
     /// An base http exception class that returns an http status code and detail for the consumer.

@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.Common;
+using HumanaEdge.Webcore.Core.Common.Exceptions;
 using HumanaEdge.Webcore.Core.Web;
 using HumanaEdge.Webcore.Framework.Web.Options;
 using Microsoft.AspNetCore.Http;

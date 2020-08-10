@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Swagger", "src\fr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework.Swagger.Tests", "test\framework\Framework.Swagger.Tests\Framework.Swagger.Tests.csproj", "{C4C04239-387B-4BF8-AAC2-81089458BBA0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Common.Tests", "test\core\Core.Common.Tests\Core.Common.Tests.csproj", "{E7473674-C3D8-48AB-AD2F-7C618E011B51}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,7 @@ Global
 		{03FAC333-61E2-4D6F-A0CF-D8C9139F06D3} = {395E096C-C1CC-4FCA-AB7B-6A84EBF584B7}
 		{B2A3D7B3-6966-4F0B-B5D6-5D28341C8A73} = {F2B29BE9-4E19-4DA1-8D6A-214AACFA4936}
 		{C4C04239-387B-4BF8-AAC2-81089458BBA0} = {395E096C-C1CC-4FCA-AB7B-6A84EBF584B7}
+		{E7473674-C3D8-48AB-AD2F-7C618E011B51} = {735FEFC2-95E6-4808-8399-AE99910D3FCE}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{46B0528B-7DC2-4E0F-BD18-EB24D41CB1F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -313,5 +316,17 @@ Global
 		{C4C04239-387B-4BF8-AAC2-81089458BBA0}.Release|x64.Build.0 = Release|Any CPU
 		{C4C04239-387B-4BF8-AAC2-81089458BBA0}.Release|x86.ActiveCfg = Release|Any CPU
 		{C4C04239-387B-4BF8-AAC2-81089458BBA0}.Release|x86.Build.0 = Release|Any CPU
+		{E7473674-C3D8-48AB-AD2F-7C618E011B51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7473674-C3D8-48AB-AD2F-7C618E011B51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7473674-C3D8-48AB-AD2F-7C618E011B51}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E7473674-C3D8-48AB-AD2F-7C618E011B51}.Debug|x64.Build.0 = Debug|Any CPU
+		{E7473674-C3D8-48AB-AD2F-7C618E011B51}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E7473674-C3D8-48AB-AD2F-7C618E011B51}.Debug|x86.Build.0 = Debug|Any CPU
+		{E7473674-C3D8-48AB-AD2F-7C618E011B51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7473674-C3D8-48AB-AD2F-7C618E011B51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7473674-C3D8-48AB-AD2F-7C618E011B51}.Release|x64.ActiveCfg = Release|Any CPU
+		{E7473674-C3D8-48AB-AD2F-7C618E011B51}.Release|x64.Build.0 = Release|Any CPU
+		{E7473674-C3D8-48AB-AD2F-7C618E011B51}.Release|x86.ActiveCfg = Release|Any CPU
+		{E7473674-C3D8-48AB-AD2F-7C618E011B51}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

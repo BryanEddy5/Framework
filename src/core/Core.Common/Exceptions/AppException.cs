@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
-namespace HumanaEdge.Webcore.Core.Common
+namespace HumanaEdge.Webcore.Core.Common.Exceptions
 {
     /// <summary>
     /// An application specific exception for transmitting errors back to the consumer.

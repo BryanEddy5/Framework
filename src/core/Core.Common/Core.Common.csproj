@@ -4,4 +4,7 @@
     <AssemblyName>$(SolutionNamespaceRoot).Core.Common</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.ComponentModel.Annotations" Version="$(SystemComponentModelAnnotations)" />
+  </ItemGroup>
 </Project>

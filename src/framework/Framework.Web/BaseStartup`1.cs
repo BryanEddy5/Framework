@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace HumanaEdge.Webcore.Framework.Web
@@ -96,6 +97,7 @@ namespace HumanaEdge.Webcore.Framework.Web
                     options =>
                     {
                         options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                        options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
                     })
                 .AddFluentValidation()
                 .AddControllersAsServices();
