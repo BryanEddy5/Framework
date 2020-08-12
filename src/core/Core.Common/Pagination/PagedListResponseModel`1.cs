@@ -7,7 +7,6 @@ namespace HumanaEdge.Webcore.Core.Common.Pagination
     /// </summary>
     /// <typeparam name="T">The type of collection being returned.</typeparam>
     public class PagedListResponseModel<T>
-        where T : class
     {
         /// <summary>
         /// The response data being returned.

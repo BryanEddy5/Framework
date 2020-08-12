@@ -3,6 +3,7 @@ using System.Linq;
 using FluentAssertions;
 using FluentAssertions.Common;
 using HumanaEdge.Webcore.Core.Common.Pagination;
+using HumanaEdge.Webcore.Core.Testing;
 using Xunit;
 
 namespace HumanaEdge.Webcore.Core.Common.Tests
@@ -11,15 +12,15 @@ namespace HumanaEdge.Webcore.Core.Common.Tests
     /// Unit tests for the <see cref="PagedListConverter" /> extension
     /// methods.
     /// </summary>
-    public class PaginationTests
+    public class PaginationTests : BaseTests
     {
         /// <summary>
         /// Validates the behavior of
-        /// <see cref="PagedListConverter.ToPagedList{T}(IReadOnlyList{T}, RequestPageOptions)" />
+        /// <see cref="PagedListConverter.ToPagedList{T}" />
         /// returns the correct response data.
         /// </summary>
         [Fact]
-        public void List_ToPagedList_ReturnsExpectedDataSet()
+        public void List_ToPaginatedList_ReturnsExpectedDataSet()
         {
             // arrange
             var list = GetSampleList();
@@ -28,9 +29,6 @@ namespace HumanaEdge.Webcore.Core.Common.Tests
             pageOptions.Offset = 3;
 
             // act
-            var newList = list.Skip(pageOptions.Offset)
-                .Take(pageOptions.Limit)
-                .ToArray();
             var pagedList = list.ToPagedList(pageOptions);
 
             // assert
@@ -41,7 +39,28 @@ namespace HumanaEdge.Webcore.Core.Common.Tests
 
         /// <summary>
         /// Validates the behavior of
-        /// <see cref="PagedListConverter.ToPagedList{T}(IReadOnlyList{T}, RequestPageOptions)" />
+        /// <see cref="PagedListConverter.ToPagedListResponseModel{T}" />
+        /// returns the correct response data.
+        /// </summary>
+        [Fact]
+        public void List_ToPagedList_ReturnsExpectedDataSet()
+        {
+            // arrange
+            var list = GetSampleList();
+            var pageOptions = new RequestPageOptions();
+
+            // act
+            var pagedList = list.ToPagedListResponseModel(pageOptions);
+
+            // assert
+            pagedList.Data.Should()
+                .HaveCount(GetSampleList().Count)
+                .And.ContainInOrder(GetSampleList());
+        }
+
+        /// <summary>
+        /// Validates the behavior of
+        /// <see cref="PagedListConverter.ToPagedListResponseModel{T}" />
         /// return the correct count.
         /// </summary>
         [Fact]
@@ -55,7 +74,7 @@ namespace HumanaEdge.Webcore.Core.Common.Tests
             var newList = list.Skip(pageOptions.Offset)
                 .Take(pageOptions.Limit)
                 .ToArray();
-            var pagedList = newList.ToPagedList(pageOptions);
+            var pagedList = newList.ToPagedListResponseModel(pageOptions);
 
             // assert
             pagedList.Data.Should().HaveCount(10);
