@@ -4,7 +4,7 @@ using System.Linq;
 namespace HumanaEdge.Webcore.Core.Common.Pagination
 {
     /// <summary>
-    /// Extension methods for <see cref="IReadOnlyList{T}" />.
+    /// Converters for <see cref="PagedListResponseModel{T}"/>.
     /// </summary>
     public static class PagedListConverter
     {
@@ -15,14 +15,12 @@ namespace HumanaEdge.Webcore.Core.Common.Pagination
         /// <param name="requestPageOptions">The pagination configuration options.</param>
         /// <typeparam name="T">The response type.</typeparam>
         /// <returns><see cref="PagedListResponseModel{T}" />That is a response contract for our consumers.</returns>
-        public static PagedListResponseModel<T> ToPagedList<T>(
+        public static PagedListResponseModel<T> ToPagedListResponseModel<T>(
             this IReadOnlyList<T> data,
-            RequestPageOptions requestPageOptions)
-            where T : class
-        {
-            return new PagedListResponseModel<T>
+            RequestPageOptions requestPageOptions) =>
+            new PagedListResponseModel<T>
             {
-                Data = data.Skip(requestPageOptions.Offset).Take(requestPageOptions.Limit).ToArray(),
+                Data = data,
                 Paging = new ResponsePageOptions
                 {
                     Offset = requestPageOptions.Offset,
@@ -30,6 +28,21 @@ namespace HumanaEdge.Webcore.Core.Common.Pagination
                     TotalCount = data.Count
                 }
             };
-        }
+
+        /// <summary>
+        /// Converts from a <see cref="IReadOnlyList{T}" /> to <see cref="PagedListResponseModel{T}" /> while paginating the data
+        /// in accordance with the <see cref="RequestPageOptions"/>.
+        /// </summary>
+        /// <param name="data">The collection to be converted.</param>
+        /// <param name="requestPageOptions">The pagination configuration options.</param>
+        /// <typeparam name="T">The response type.</typeparam>
+        /// <returns><see cref="PagedListResponseModel{T}" />That is a response contract for our consumers.</returns>
+        public static PagedListResponseModel<T> ToPagedList<T>(
+            this IReadOnlyList<T> data,
+            RequestPageOptions requestPageOptions) =>
+            data.Skip(requestPageOptions.Offset)
+                .Take(requestPageOptions.Limit)
+                .ToArray()
+                .ToPagedListResponseModel(requestPageOptions);
     }
 }
