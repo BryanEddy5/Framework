@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
 using HumanaEdge.Webcore.Core.Encryption;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 
 namespace HumanaEdge.Webcore.Framework.Encryption
@@ -50,16 +51,16 @@ namespace HumanaEdge.Webcore.Framework.Encryption
 
             var client = await _kmsClientFactory.CreateAsync();
             var result = await client.EncryptAsync(GetCryptoKeyName(_options.CurrentValue), ByteString.CopyFrom(plaintext));
-            return result.Ciphertext.ToStringUtf8();
+            return WebEncoders.Base64UrlEncode(result.Ciphertext.ToByteArray());
         }
 
         /// <inheritdoc />
         public async Task<string> DecryptSymmetric(string cipherText)
         {
+            var cipherTextBytes = WebEncoders.Base64UrlDecode(cipherText);
+
             var client = await _kmsClientFactory.CreateAsync();
-            var result = await client.DecryptAsync(
-                GetCryptoKeyName(_options.CurrentValue),
-                ByteString.CopyFrom(Encoding.UTF8.GetBytes(cipherText)));
+            var result = await client.DecryptAsync(GetCryptoKeyName(_options.CurrentValue), ByteString.CopyFrom(cipherTextBytes));
             var plaintext = result.Plaintext.ToByteArray();
             return Encoding.UTF8.GetString(plaintext);
         }
