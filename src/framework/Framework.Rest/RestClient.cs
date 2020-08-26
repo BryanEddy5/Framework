@@ -144,8 +144,8 @@ namespace HumanaEdge.Webcore.Framework.Rest
                 httpResponseMessage.IsSuccessStatusCode,
                 responseStream,
                 httpResponseMessage.StatusCode,
-                httpResponseMessage.Content?.Headers?.ContentType.MediaType,
-                httpResponseMessage.Content?.Headers?.ContentDisposition.FileName);
+                httpResponseMessage.Content?.Headers?.ContentType?.MediaType,
+                httpResponseMessage.Content?.Headers?.ContentDisposition?.FileName);
         }
 
         /// <summary>
