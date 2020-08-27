@@ -274,6 +274,35 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             Assert.Equal(fakeHttpResponseMessage.StatusCode, actual.StatusCode);
         }
 
+        /// <summary>
+        /// Verifies that no exception is thrown when the file name returns as null.
+        /// </summary>
+        /// <returns>An awaitable task.</returns>
+        [Fact]
+        public async Task GetFileAsync_NullContentDisposition_ShouldNotThrowException()
+        {
+            // arrange
+            var fakeRequest = new RestRequest("/foo/file", HttpMethod.Get);
+            var expectedBytes = FakeData.Create<byte[]>();
+            var expectedBytesStream = new MemoryStream(expectedBytes);
+            var content = new StreamContent(expectedBytesStream);
+
+            var mockResponse = new HttpResponseMessage(HttpStatusCode.OK);
+            mockResponse.Content = content;
+            mockResponse.Content.Headers.ContentDisposition = null;
+            mockResponse.Content.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
+
+            SetUpHttpClientMock(mockResponse, r =>
+                r.Method == fakeRequest.HttpMethod &&
+                r.RequestUri == new Uri("/foo/file", UriKind.Relative));
+
+            // act
+            var actual = await _restClient.GetFileAsync(fakeRequest, CancellationTokenSource.Token);
+
+            // assert
+            actual.FileName.Should().Be(null);
+        }
+
         private HttpResponseMessage BuildMockResponseForFiles(MemoryStream expectedBytesStream)
         {
             var content = new StreamContent(expectedBytesStream);
