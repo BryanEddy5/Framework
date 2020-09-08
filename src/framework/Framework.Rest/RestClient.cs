@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.Rest;
+using HumanaEdge.Webcore.Core.Telemetry;
+using HumanaEdge.Webcore.Core.Telemetry.Http;
 using Polly;
 
 namespace HumanaEdge.Webcore.Framework.Rest
@@ -18,6 +21,8 @@ namespace HumanaEdge.Webcore.Framework.Rest
 
         private readonly RestClientOptions _options;
 
+        private readonly ITelemetryFactory _telemetryFactory;
+
         /// <summary>
         /// Designated ctor.
         /// </summary>
@@ -25,21 +30,28 @@ namespace HumanaEdge.Webcore.Framework.Rest
         /// <param name="internalClientFactory">A factory for generating <see cref="IInternalClient" /> for sending the request.</param>
         /// <param name="options">Configuration settings for outbound requests for the instance of <see cref="IRestClient" />.</param>
         /// <param name="mediaTypeFormatters">A collection of media type formatters.</param>
+        /// <param name="telemetryFactory">A factory associated with telemetry.</param>
         public RestClient(
             string clientName,
             IInternalClientFactory internalClientFactory,
             RestClientOptions options,
-            IMediaTypeFormatter[] mediaTypeFormatters)
+            IMediaTypeFormatter[] mediaTypeFormatters,
+            ITelemetryFactory telemetryFactory = null!)
         {
             _httpClient = internalClientFactory.CreateClient(clientName, options.BaseUri, options.Timeout);
             _options = options;
             _mediaTypeFormatters = mediaTypeFormatters;
+            _telemetryFactory = telemetryFactory;
         }
 
         /// <inheritdoc />
         public async Task<RestResponse> SendAsync(RestRequest restRequest, CancellationToken cancellationToken)
         {
-            return await SendInternalAsync(restRequest, cancellationToken, ConvertToHttpRequestMessage, ConvertToRestResponse);
+            return await SendInternalAsync(
+                restRequest,
+                cancellationToken,
+                ConvertToHttpRequestMessage,
+                ConvertToRestResponse);
         }
 
         /// <inheritdoc />
@@ -47,13 +59,21 @@ namespace HumanaEdge.Webcore.Framework.Rest
             RestRequest<TRequest> restRequest,
             CancellationToken cancellationToken)
         {
-            return await SendInternalAsync(restRequest, cancellationToken, ConvertToHttpRequestMessage, ConvertToRestResponse);
+            return await SendInternalAsync(
+                restRequest,
+                cancellationToken,
+                ConvertToHttpRequestMessage,
+                ConvertToRestResponse);
         }
 
         /// <inheritdoc />
         public async Task<FileResponse> GetFileAsync(RestRequest fileRequest, CancellationToken cancellationToken)
         {
-            return await SendInternalAsync(fileRequest, cancellationToken, ConvertToHttpRequestMessage, ConvertToStreamResponse);
+            return await SendInternalAsync(
+                fileRequest,
+                cancellationToken,
+                ConvertToHttpRequestMessage,
+                ConvertToStreamResponse);
         }
 
         /// <inheritdoc />
@@ -61,7 +81,11 @@ namespace HumanaEdge.Webcore.Framework.Rest
             RestRequest<TRequest> fileRequest,
             CancellationToken cancellationToken)
         {
-            return await SendInternalAsync(fileRequest, cancellationToken, ConvertToHttpRequestMessage, ConvertToStreamResponse);
+            return await SendInternalAsync(
+                fileRequest,
+                cancellationToken,
+                ConvertToHttpRequestMessage,
+                ConvertToStreamResponse);
         }
 
         /// <summary>
@@ -175,10 +199,45 @@ namespace HumanaEdge.Webcore.Framework.Rest
                 async ct =>
                 {
                     var httpRequestMessage = restRequestConverter(transformedRestRequest);
-                    var httpResponse = await _httpClient.SendAsync(httpRequestMessage, ct);
+                    HttpResponseMessage httpResponse = null!;
+                    var stopWatch = new Stopwatch();
+                    stopWatch.Start();
+                    var startTime = DateTimeOffset.UtcNow;
+                    try
+                    {
+                        httpResponse = await _httpClient.SendAsync(httpRequestMessage, ct);
+                    }
+                    finally
+                    {
+                        stopWatch.Stop();
+                        TrackTelemetry(httpRequestMessage, httpResponse, startTime, stopWatch.ElapsedMilliseconds);
+                    }
+
                     return await restResponseConverter(httpResponse);
                 },
                 cancellationToken);
+        }
+
+        /// <summary>
+        ///     Short-hand method for tracking telemetry in this REST Client.
+        /// </summary>
+        /// <param name="request">The <see cref="HttpRequestMessage" /> used for this telemetry.</param>
+        /// <param name="response">The <see cref="HttpResponseMessage" /> used for this telemetry.</param>
+        /// <param name="startTime">The start time of the dependency.</param>
+        /// <param name="duration">The total duration of this request.</param>
+        private void TrackTelemetry(
+            HttpRequestMessage request,
+            HttpResponseMessage? response,
+            DateTimeOffset startTime,
+            double duration)
+        {
+            _telemetryFactory?.TrackDependencyHttpTelemetry(
+                startTime,
+                duration,
+                ((int?)response?.StatusCode)?.ToString() !,
+                request?.Method.ToString() !,
+                request?.RequestUri.ToString() !,
+                response != null && response.IsSuccessStatusCode);
         }
 
         private TRestRequest TransformRequest<TRestRequest>(

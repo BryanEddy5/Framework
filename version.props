@@ -17,12 +17,7 @@
     <XmlSerializerVersion>4.3.0</XmlSerializerVersion>
     <ComponentModelAnnotations>4.5.0</ComponentModelAnnotations>
     <MicrosoftExtensionsVersion>3.1.6</MicrosoftExtensionsVersion>
-    <MicrosoftExtensionsHostingVersion>3.1.6</MicrosoftExtensionsHostingVersion>
-    <MicrosoftExtensionsConfigurationVersion>3.1.6</MicrosoftExtensionsConfigurationVersion>
-    <MicrosoftExtensionsHostingAbstractionsVersion>3.1.6</MicrosoftExtensionsHostingAbstractionsVersion>
     <MicrosoftExtensionsPlatformAbstractionsVersion>1.1.0</MicrosoftExtensionsPlatformAbstractionsVersion>
-    <MicrosoftAspNetCoreMvcNewtonsoftJsonVersion>3.1.6</MicrosoftAspNetCoreMvcNewtonsoftJsonVersion>
-    <MicrosoftAspNetCoreTestHostVersion>3.1.6</MicrosoftAspNetCoreTestHostVersion>
     <MicrosoftExtensionsDependencyModelVersion>2.0.4</MicrosoftExtensionsDependencyModelVersion>
     <SystemTextJsonVersion>4.6.0</SystemTextJsonVersion>
     <SystemComponentModelAnnotations>4.7.0</SystemComponentModelAnnotations>
@@ -55,6 +50,6 @@
     <CorrelationIdVersion>3.0.0</CorrelationIdVersion>
     <NewtonsoftJsonVersion>12.0.1</NewtonsoftJsonVersion>
     <GoogleCloudKmsVersion>2.0.0</GoogleCloudKmsVersion>
-    <EqualsFody>4.0.1</EqualsFody>
+    <EqualsFodyVersion>4.0.1</EqualsFodyVersion>
   </PropertyGroup>
 </Project>

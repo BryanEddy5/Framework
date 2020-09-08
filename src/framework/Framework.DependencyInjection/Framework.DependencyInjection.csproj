@@ -7,9 +7,9 @@
   <ItemGroup>
     <PackageReference Include="Autofac" Version="$(AutofacVersion)" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="$(AutofacDependencyInjectionVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsConfigurationVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="$(MicrosoftExtensionsDependencyModelVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(MicrosoftExtensionsHostingAbstractionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(MicrosoftExtensionsVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Core.DependencyInjection\Core.DependencyInjection.csproj" />

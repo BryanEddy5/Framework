@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using HumanaEdge.Webcore.Framework.Logging.Extensions;
 using HumanaEdge.Webcore.Framework.Rest.Extensions;
 using HumanaEdge.Webcore.Framework.Swagger.Extensions;
+using HumanaEdge.Webcore.Framework.Telemetry;
 using HumanaEdge.Webcore.Framework.Web.Exceptions;
 using HumanaEdge.Webcore.Framework.Web.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -49,12 +50,19 @@ namespace HumanaEdge.Webcore.Framework.Web
             IWebHostEnvironment env,
             ILogger<TStartup> logger)
         {
-            _ = env.IsDevelopment() ? app.UseDeveloperExceptionPage() : app.UseHsts();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseHttpsRedirection();
+                app.UseHsts();
+            }
 
             app.UseMiddleware<ExceptionHandlingMiddleware>()
-                .UseRequestLoggingMiddleware();
-
-            app.UseHttpsRedirection();
+                .UseRequestLoggingMiddleware()
+                .UseMiddleware<RequestInfoMiddleware>();
 
             app.UseSwaggerDocumentation(Configuration);
             app.UseRouting();
@@ -106,6 +114,7 @@ namespace HumanaEdge.Webcore.Framework.Web
             services.AddTracing(Configuration, httpClientBuilder);
 
             services.AddRestClient();
+            services.AddApplicationTelemetry();
         }
 
         /// <summary>

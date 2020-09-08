@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(LibTargetFrameworkVersion)</TargetFramework>
+    <AssemblyName>$(SolutionNamespaceRoot).Core.Telemetry</AssemblyName>
+    <RootNamespace>$(AssemblyName)</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Core.Common/Core.Common.csproj"/>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Equals.Fody" Version="$(EqualsFodyVersion)" />
+  </ItemGroup>
+</Project>
