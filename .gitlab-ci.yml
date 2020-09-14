@@ -7,7 +7,6 @@ image: mcr.microsoft.com/dotnet/core/sdk:3.1
 variables:
   CONFIGURATION: Release
   NUGET_PACKAGE_FOLDER: .nuget
-  CHANNEL: alpha
   ARTIFACTORY_SOURCE: https://humanaedge.jfrog.io/humanaedge/api/nuget/v3/nuget-local
 
 stages:
@@ -53,14 +52,40 @@ test:
 ####################
 # PACK
 ####################
-pack:
-  stage: pack
-  script:
+.pack-stage:
+  before_script:
     - dotnet restore --no-cache
     - echo $(date +%Y%m%d%H%M%S)
     - export PACKAGE_VERSION=$(date -u +%Y%m%d%H%M%S)
-    - dotnet pack /p:Channel=${CHANNEL} /p:BuildTimestamp=${PACKAGE_VERSION} -c ${CONFIGURATION} -o ${NUGET_PACKAGE_FOLDER} --no-restore
-    - cd $NUGET_PACKAGE_FOLDER
-    - dotnet nuget push **/*-${PACKAGE_VERSION}.nupkg -s ${ARTIFACTORY_SOURCE} -k ${ARTIFACTORY_NUGET}
+
+.dotnet-pack: &dotnet-pack
+  - dotnet pack /p:Channel=${CHANNEL} /p:BuildTimestamp=${PACKAGE_VERSION} -c ${CONFIGURATION} -o ${NUGET_PACKAGE_FOLDER} --no-restore
+  - cd $NUGET_PACKAGE_FOLDER
+  - dotnet nuget push **/*.nupkg -s ${ARTIFACTORY_SOURCE} -k ${ARTIFACTORY_NUGET}
+
+pack-master:
+  stage: pack
+  extends: .pack-stage
+  script:
+    - export CHANNEL=alpha
+    - *dotnet-pack
   only:
     - master
+
+pack-release:
+  stage: pack
+  extends: .pack-stage
+  script:
+    - export CHANNEL=rc
+    - *dotnet-pack
+  only:
+    - /^release-.*$/
+
+pack-production:
+  stage: pack
+  extends: .pack-stage
+  script:
+    - export CHANNEL=''
+    - *dotnet-pack
+  only:
+    - production
