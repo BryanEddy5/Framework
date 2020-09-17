@@ -7,4 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\framework\Framework.Rest\Framework.Rest.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Equals.Fody" Version="$(EqualsFodyVersion)" />
+  </ItemGroup>
 </Project>

@@ -4,4 +4,7 @@
     <AssemblyName>$(SolutionNamespaceRoot).Core.Common.Tests</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Equals.Fody" Version="$(EqualsFodyVersion)" />
+  </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
 using AutoFixture;
@@ -15,6 +16,16 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
     public class RestResponseDeserializerTests : BaseTests
     {
         /// <summary>
+        /// Formats and parses based on the media type.
+        /// </summary>
+        private readonly IDictionary<MediaType, IMediaTypeFormatter> _mediaTypeFormatters =
+            new Dictionary<MediaType, IMediaTypeFormatter>
+            {
+                { MediaType.Json, new JsonMediaTypeFormatter() },
+                { MediaType.Xml, new XmlMediaTypeFormatter() }
+            };
+
+        /// <summary>
         /// System under test.
         /// </summary>
         private RestResponseDeserializer _restResponseDeserializer;
@@ -28,7 +39,6 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         {
             // arrange
             var settings = new RestClientOptions.Builder("https://localhost:5000").Build();
-            var mediaTypeFormatters = new[] { new JsonMediaTypeFormatter() };
             var expected = FakeData.Create<Foo>();
             var json = $"{{\"Name\":\"{expected.Name}\", \"Age\":{expected.Age}}}";
             var bytes = Encoding.UTF8.GetBytes(json);
@@ -37,7 +47,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
 
             // act
             _restResponseDeserializer = new RestResponseDeserializer(
-                mediaTypeFormatters,
+                _mediaTypeFormatters,
                 mediaTypeHeader,
                 bytes,
                 settings);
@@ -55,13 +65,12 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         {
             // arrange
             var settings = new RestClientOptions.Builder("https://localhost:5000").Build();
-            var mediaTypeFormatters = new[] { new JsonMediaTypeFormatter() };
             var bytes = new byte[] { };
             var mediaTypeHeader = new MediaTypeHeaderValue(MediaType.Json.MimeType);
 
             // act
             _restResponseDeserializer = new RestResponseDeserializer(
-                mediaTypeFormatters,
+                _mediaTypeFormatters,
                 mediaTypeHeader,
                 bytes,
                 settings);
@@ -79,7 +88,6 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         {
             // arrange
             var settings = new RestClientOptions.Builder("https://localhost:5000").Build();
-            var mediaTypeFormatters = new[] { new JsonMediaTypeFormatter() };
             var expected = FakeData.Create<Foo>();
             var json = $"{{\"Name\":\"{expected.Name}\", \"Age\":{expected.Age}}}";
             var bytes = Encoding.UTF8.GetBytes(json);
@@ -87,7 +95,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
 
             // act
             _restResponseDeserializer = new RestResponseDeserializer(
-                mediaTypeFormatters,
+                _mediaTypeFormatters,
                 mediaTypeHeader,
                 bytes,
                 settings);
@@ -105,7 +113,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         {
             // arrange
             var settings = new RestClientOptions.Builder("https://localhost:5000").Build();
-            var mediaTypeFormatters = Array.Empty<IMediaTypeFormatter>();
+            var mediaTypeFormatters = new Dictionary<MediaType, IMediaTypeFormatter>();
             var expected = FakeData.Create<Foo>();
             var json = $"{{\"Name\":\"{expected.Name}\", \"Age\":{expected.Age}}}";
             var bytes = Encoding.UTF8.GetBytes(json);
@@ -131,7 +139,6 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         {
             // arrange
             var settings = new RestClientOptions.Builder("https://localhost:5000").Build();
-            var mediaTypeFormatters = new[] { new JsonMediaTypeFormatter() };
             var expected = FakeData.Create<Foo>();
             var json = $"{{\"Name\":\"{expected.Name}\", \"Age\":{expected.Age}}}";
             var bytes = Encoding.UTF8.GetBytes(json);
@@ -139,7 +146,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
 
             // act
             _restResponseDeserializer = new RestResponseDeserializer(
-                mediaTypeFormatters,
+                _mediaTypeFormatters,
                 mediaTypeHeader,
                 bytes,
                 settings);
@@ -156,7 +163,6 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         {
             // arrange
             var settings = new RestClientOptions.Builder("https://localhost:5000").Build();
-            var mediaTypeFormatters = new[] { new JsonMediaTypeFormatter() };
             var expected = FakeData.Create<Foo>();
             var json = $"{{\"Name\":\"{expected.Name}\", \"Age\":{expected.Age}}}";
             var bytes = Encoding.UTF8.GetBytes(json);
@@ -164,7 +170,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
 
             // act
             _restResponseDeserializer = new RestResponseDeserializer(
-                mediaTypeFormatters,
+                _mediaTypeFormatters,
                 mediaTypeHeader,
                 bytes,
                 settings);

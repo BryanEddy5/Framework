@@ -12,7 +12,7 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// <summary>
         /// The <see cref="MediaType" />  that is associated with this formatter.
         /// </summary>
-        MediaType MediaType { get; }
+        MediaType[] MediaTypes { get; }
 
         /// <summary>
         /// Formats an outgoing http request to generate <see cref="HttpContent" /> to be used in http requests.

@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using HumanaEdge.Webcore.Core.Rest;
@@ -12,7 +13,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
     internal sealed class JsonMediaTypeFormatter : IMediaTypeFormatter
     {
         /// <inheritdoc/>
-        public MediaType MediaType => MediaType.Json;
+        public MediaType[] MediaTypes { get; } = { MediaType.Json };
 
         /// <inheritdoc />
         public bool TryFormat<T>(
@@ -21,7 +22,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
             T data,
             out HttpContent? httpContent)
         {
-            if (mediaType != MediaType)
+            if (!MediaTypes.Contains(mediaType))
             {
                 httpContent = null;
                 return false;

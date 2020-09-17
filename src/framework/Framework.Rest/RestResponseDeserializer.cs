@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using HumanaEdge.Webcore.Core.Rest;
@@ -18,7 +19,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
         /// <summary>
         /// A collection of media type formatters.
         /// </summary>
-        private readonly IMediaTypeFormatter[] _mediaTypeFormatters;
+        private readonly IDictionary<MediaType, IMediaTypeFormatter> _mediaTypeFormatters;
 
         /// <summary>
         /// The media type from the http response.
@@ -33,7 +34,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
         /// <param name="responseBytes">The content of the response body.</param>
         /// <param name="formattingSettings">The formatting settings for deserializing the request body.</param>
         public RestResponseDeserializer(
-            IMediaTypeFormatter[] mediaTypeFormatters,
+            IDictionary<MediaType, IMediaTypeFormatter> mediaTypeFormatters,
             MediaTypeHeaderValue? mediaTypeHeaderValue,
             byte[] responseBytes,
             IRestFormattingSettings formattingSettings)
@@ -61,8 +62,8 @@ namespace HumanaEdge.Webcore.Framework.Rest
                 throw new FormatFailedRestException("The response is empty.  Null cannot be formatted.");
             }
 
-            var mediaType = _mediaTypeFormatters.FirstOrDefault(
-                x => x.MediaType.MimeTypeRegexTest.IsMatch(_mediaTypeHeaderValue.MediaType));
+            var mediaType = _mediaTypeFormatters.Keys.FirstOrDefault(
+                mt => mt.MimeTypeRegexTest.IsMatch(_mediaTypeHeaderValue.MediaType));
             if (mediaType == null)
             {
                 throw new FormatFailedRestException(
@@ -71,7 +72,8 @@ namespace HumanaEdge.Webcore.Framework.Rest
 
             try
             {
-                var didFormat = mediaType.TryParse(
+                var mediaTypeFormatter = _mediaTypeFormatters[mediaType];
+                var didFormat = mediaTypeFormatter.TryParse(
                     ResponseBytes,
                     _formattingSettings,
                     _mediaTypeHeaderValue,
@@ -87,7 +89,8 @@ namespace HumanaEdge.Webcore.Framework.Rest
             catch (Exception exception)
             {
                 throw new FormatFailedRestException(
-                    $"Unable to parse response of media type {_mediaTypeHeaderValue.MediaType} for type {typeof(TResponse).Name} using formatter {nameof(IMediaTypeFormatter)}", exception);
+                    $"Unable to parse response of media type {_mediaTypeHeaderValue.MediaType} for type {typeof(TResponse).Name} using formatter {nameof(IMediaTypeFormatter)}",
+                    exception);
             }
         }
     }

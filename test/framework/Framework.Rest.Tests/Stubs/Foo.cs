@@ -3,6 +3,7 @@
     /// <summary>
     /// A stub for testing.
     /// </summary>
+    [Equals(DoNotAddEqualityOperators = true)]
     public class Foo
     {
         /// <summary>

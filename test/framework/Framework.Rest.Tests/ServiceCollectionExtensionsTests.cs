@@ -23,7 +23,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             // act
             var actualRestClientFactory = provider.GetRequiredService<IRestClientFactory>();
             var actualMediaTypeFormatters =
-                provider.GetServices<IMediaTypeFormatter>().FirstOrDefault(x => x.MediaType == MediaType.Json);
+                provider.GetServices<IMediaTypeFormatter>().FirstOrDefault(x => x.MediaTypes.Contains(MediaType.Json));
 
             // assert
             Assert.IsType<RestClientFactory>(actualRestClientFactory);
