@@ -15,6 +15,14 @@ namespace HumanaEdge.Webcore.Core.Rest
             "application/json",
             "(application|text)\\/(json|([a-z]+)\\+json)");
 
+        /// <summary>
+        ///     XML data.
+        /// </summary>
+        public static readonly MediaType Xml = new MediaType(
+            nameof(Xml),
+            "application/xml",
+            "(application|text)\\/(xml|([a-z]+)\\+xml)");
+
         private MediaType(string name, string mimeType, string mimeTypeRegex)
         {
             Name = name;

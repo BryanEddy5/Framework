@@ -17,7 +17,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
     {
         private readonly IInternalClient _httpClient;
 
-        private readonly IMediaTypeFormatter[] _mediaTypeFormatters;
+        private readonly IDictionary<MediaType, IMediaTypeFormatter> _mediaTypeFormatters;
 
         private readonly RestClientOptions _options;
 
@@ -40,7 +40,11 @@ namespace HumanaEdge.Webcore.Framework.Rest
         {
             _httpClient = internalClientFactory.CreateClient(clientName, options.BaseUri, options.Timeout);
             _options = options;
-            _mediaTypeFormatters = mediaTypeFormatters;
+            _mediaTypeFormatters = mediaTypeFormatters.SelectMany(
+                    formatter => formatter.MediaTypes.Select(
+                        mediaType =>
+                            new KeyValuePair<MediaType, IMediaTypeFormatter>(mediaType, formatter)))
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             _telemetryFactory = telemetryFactory;
         }
 
@@ -100,15 +104,13 @@ namespace HumanaEdge.Webcore.Framework.Rest
             var httpRequestMessage = ConvertToHttpRequestMessage(request as RestRequest);
             try
             {
-                var mediaType =
-                    _mediaTypeFormatters.FirstOrDefault(r => r.MediaType.MimeType == request.MediaType.MimeType);
-                if (mediaType == null)
+                if (!_mediaTypeFormatters.TryGetValue(request.MediaType, out var mediaTypeFormatter))
                 {
                     throw new FormatFailedRestException(
                         $"A formatter could not be located for media type {nameof(request.MediaType)}");
                 }
 
-                if (!mediaType.TryFormat(
+                if (!mediaTypeFormatter.TryFormat(
                     request.MediaType,
                     _options,
                     request.RequestBody,

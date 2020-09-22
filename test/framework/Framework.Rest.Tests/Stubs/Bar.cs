@@ -3,6 +3,7 @@
     /// <summary>
     /// Complex object for testing.
     /// </summary>
+    [Equals(DoNotAddEqualityOperators = true)]
     public class Bar
     {
         /// <summary>
