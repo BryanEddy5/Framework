@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup Label="Package versioning">
-    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionPrefix>1.1.0</VersionPrefix>
     <VersionSuffix Condition="'$(Channel)' != ''">$(Channel)-$(BuildTimestamp)</VersionSuffix>
   </PropertyGroup>
   <PropertyGroup Label="Runtime, .NET Framework Version, etc">
