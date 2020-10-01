@@ -20,6 +20,8 @@ namespace HumanaEdge.Webcore.Framework.Rest.Extensions
             services.AddSingleton<IInternalClientFactory, InternalClientFactory>();
             services.AddSingleton<IRestClientFactory, RestClientFactory>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IMediaTypeFormatter, JsonMediaTypeFormatter>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IMediaTypeFormatter, XmlMediaTypeFormatter>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IMediaTypeFormatter, FormUrlEncodedMediaTypeFormatter>());
             return services;
         }
     }
