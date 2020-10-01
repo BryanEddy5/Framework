@@ -40,7 +40,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
         public IRestClient CreateClient<TRestClient>(RestClientOptions options)
         {
             return new RestClient(
-                nameof(TRestClient),
+                typeof(TRestClient).Name,
                 _internalClientFactory,
                 options,
                 _mediaTypeFormatters,

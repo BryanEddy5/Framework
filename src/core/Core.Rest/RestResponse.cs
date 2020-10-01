@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 
 namespace HumanaEdge.Webcore.Core.Rest
@@ -7,6 +6,7 @@ namespace HumanaEdge.Webcore.Core.Rest
     /// <summary>
     /// The the response from the rest request that contains.
     /// </summary>
+    [Equals(DoNotAddEqualityOperators = true)]
     public sealed class RestResponse : BaseRestResponse
     {
         /// <summary>
@@ -20,14 +20,22 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// <param name="isSuccessful">An indicator if the request was successful.</param>
         /// <param name="restResponseDeserializer">A service to deserializing the response.</param>
         /// <param name="statusCode">The status code associated with the rest response.</param>
+        /// <param name="location">The location header from the http response.</param>
         public RestResponse(
             bool isSuccessful,
             IRestResponseDeserializer restResponseDeserializer,
-            HttpStatusCode statusCode)
+            HttpStatusCode statusCode,
+            Uri? location = null)
             : base(isSuccessful, statusCode)
         {
             _restResponseDeserializer = restResponseDeserializer;
+            Location = location;
         }
+
+        /// <summary>
+        /// The location header from the http response.
+        /// </summary>
+        public Uri? Location { get; }
 
         /// <summary>
         /// The http response as a byte array allowing for inspection of the response before deserializing.
@@ -42,30 +50,6 @@ namespace HumanaEdge.Webcore.Core.Rest
         public TResponse ConvertTo<TResponse>()
         {
             return _restResponseDeserializer.ConvertTo<TResponse>();
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            if (!(obj is RestResponse that))
-            {
-                return false;
-            }
-
-            return StatusCode == that.StatusCode &&
-                   ResponseBytes.SequenceEqual(that.ResponseBytes) &&
-                   IsSuccessful == that.IsSuccessful;
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(StatusCode, ResponseBytes, IsSuccessful);
         }
     }
 }

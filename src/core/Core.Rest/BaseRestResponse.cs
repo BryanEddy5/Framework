@@ -5,6 +5,7 @@ namespace HumanaEdge.Webcore.Core.Rest
     /// <summary>
     /// The base rest response that contains base properties common to all responses.
     /// </summary>
+    [Equals(DoNotAddEqualityOperators = true)]
     public abstract class BaseRestResponse
     {
         /// <summary>

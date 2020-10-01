@@ -49,28 +49,6 @@ namespace HumanaEdge.Webcore.Framework.Rest
         }
 
         /// <inheritdoc />
-        public async Task<RestResponse> SendAsync(RestRequest restRequest, CancellationToken cancellationToken)
-        {
-            return await SendInternalAsync(
-                restRequest,
-                cancellationToken,
-                ConvertToHttpRequestMessage,
-                ConvertToRestResponse);
-        }
-
-        /// <inheritdoc />
-        public async Task<RestResponse> SendAsync<TRequest>(
-            RestRequest<TRequest> restRequest,
-            CancellationToken cancellationToken)
-        {
-            return await SendInternalAsync(
-                restRequest,
-                cancellationToken,
-                ConvertToHttpRequestMessage,
-                ConvertToRestResponse);
-        }
-
-        /// <inheritdoc />
         public async Task<FileResponse> GetFileAsync(RestRequest fileRequest, CancellationToken cancellationToken)
         {
             return await SendInternalAsync(
@@ -90,6 +68,28 @@ namespace HumanaEdge.Webcore.Framework.Rest
                 cancellationToken,
                 ConvertToHttpRequestMessage,
                 ConvertToStreamResponse);
+        }
+
+        /// <inheritdoc />
+        public async Task<RestResponse> SendAsync(RestRequest restRequest, CancellationToken cancellationToken)
+        {
+            return await SendInternalAsync(
+                restRequest,
+                cancellationToken,
+                ConvertToHttpRequestMessage,
+                ConvertToRestResponse);
+        }
+
+        /// <inheritdoc />
+        public async Task<RestResponse> SendAsync<TRequest>(
+            RestRequest<TRequest> restRequest,
+            CancellationToken cancellationToken)
+        {
+            return await SendInternalAsync(
+                restRequest,
+                cancellationToken,
+                ConvertToHttpRequestMessage,
+                ConvertToRestResponse);
         }
 
         /// <summary>
@@ -159,7 +159,8 @@ namespace HumanaEdge.Webcore.Framework.Rest
             return new RestResponse(
                 httpResponseMessage.IsSuccessStatusCode,
                 deserializer,
-                httpResponseMessage.StatusCode);
+                httpResponseMessage.StatusCode,
+                httpResponseMessage.Headers?.Location);
         }
 
         private async Task<FileResponse> ConvertToStreamResponse(HttpResponseMessage httpResponseMessage)
@@ -221,7 +222,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
         }
 
         /// <summary>
-        ///     Short-hand method for tracking telemetry in this REST Client.
+        /// Short-hand method for tracking telemetry in this REST Client.
         /// </summary>
         /// <param name="request">The <see cref="HttpRequestMessage" /> used for this telemetry.</param>
         /// <param name="response">The <see cref="HttpResponseMessage" /> used for this telemetry.</param>

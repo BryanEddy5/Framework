@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 
 namespace HumanaEdge.Webcore.Core.Rest
@@ -9,8 +8,19 @@ namespace HumanaEdge.Webcore.Core.Rest
     /// <summary>
     /// Request meta data for an http request.
     /// </summary>
+    [Equals(DoNotAddEqualityOperators = true)]
     public class RestRequest
     {
+        /// <summary>
+        /// The query parameters to create the query string for the HTTP request.
+        /// </summary>
+        private readonly IDictionary<string, string> _queryParams;
+
+        /// <summary>
+        /// Path to the resource, relative to the base URI.
+        /// </summary>
+        private readonly string _relativePath;
+
         /// <summary>
         /// Designated ctor.
         /// </summary>
@@ -18,9 +28,10 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// <param name="httpMethod">The http method for the http request.</param>
         public RestRequest(string relativePath, HttpMethod httpMethod)
         {
-            RelativePath = relativePath;
+            _relativePath = relativePath;
             HttpMethod = httpMethod;
             Headers = new Dictionary<string, StringValues>();
+            _queryParams = new Dictionary<string, string>();
         }
 
         /// <summary>
@@ -34,9 +45,32 @@ namespace HumanaEdge.Webcore.Core.Rest
         public HttpMethod HttpMethod { get; }
 
         /// <summary>
-        /// The relative path for the http request.
+        /// Path to the resource, relative to the base URI.
         /// </summary>
-        public string RelativePath { get; }
+        public string RelativePath =>
+            _queryParams.Count > 0
+                ? QueryHelpers.AddQueryString(_relativePath, _queryParams)
+                : _relativePath;
+
+        /// <summary>
+        /// Add query string parameters to create a query string for the request.
+        /// </summary>
+        /// <param name="field">field to be queried.</param>
+        /// <param name="value">value to be queried against.</param>
+        /// <returns>The same instance for fluent chaining.</returns>
+        public RestRequest AddQueryParams(string field, string value)
+        {
+            if (!_queryParams.ContainsKey(field))
+            {
+                _queryParams.Add(field, value);
+            }
+            else
+            {
+                _queryParams[field] = value;
+            }
+
+            return this;
+        }
 
         /// <summary>
         /// Adds an Accept header to the http request that indicates the the response's MIME-type should be.
@@ -79,33 +113,6 @@ namespace HumanaEdge.Webcore.Core.Rest
             }
 
             return this;
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            if (!(obj is RestRequest that))
-            {
-                return false;
-            }
-
-            var a1 = Headers.ToArray();
-            var a2 = that.Headers.ToArray();
-
-            var areEqual = a1.Length == a2.Length && !a1.Except(a2).Any();
-
-            return (that.RelativePath == RelativePath) && (that.HttpMethod == HttpMethod) && areEqual;
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(RelativePath, HttpMethod, Headers);
         }
     }
 }

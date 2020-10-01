@@ -100,7 +100,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
 
             var response = new ProblemDetail(
                 DefaultErrorMessage,
-                httpContext.TraceIdentifier,
+                httpContext.TraceIdentifier ?? Guid.NewGuid().ToString(),
                 statusCode,
                 message);
             if (_options.CurrentValue.ShowExceptionDetails)
