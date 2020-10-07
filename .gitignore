@@ -48,3 +48,8 @@ logs/
 .nuget
 .nupkg
 builds
+gitlab-scripts/*
+gitlab-scripts
+
+*.test-result*.xml
+test-results/

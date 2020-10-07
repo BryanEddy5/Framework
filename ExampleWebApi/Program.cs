@@ -1,6 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using HumanaEdge.Webcore.Framework.Web.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+
+[assembly: ExcludeFromCodeCoverage]
 
 namespace HumanaEdge.Webcore.ExampleWebApi
 {
