@@ -26,6 +26,7 @@
   <PropertyGroup Label="Test framework versions">
     <CoverletVersion>2.9.0</CoverletVersion>
     <xUnitVersion>2.4.1</xUnitVersion>
+    <JunitTestLoggerVersion>2.1.78</JunitTestLoggerVersion>
     <MoqVersion>4.14.0</MoqVersion>
     <MicrosoftNetTestSdkVersion>16.6.1</MicrosoftNetTestSdkVersion>
     <AutoFixtureVersion>4.11.0</AutoFixtureVersion>
