@@ -5,7 +5,7 @@
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../Core.Common/Core.Common.csproj"/>
+    <ProjectReference Include="../Core.Common/Core.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Equals.Fody" Version="$(EqualsFodyVersion)" />

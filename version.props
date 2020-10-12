@@ -49,8 +49,9 @@
     <MicroElementsSwashbuckleFluentValidation>3.0.0-rc.3</MicroElementsSwashbuckleFluentValidation>
     <StackdriverVersion>4.0.0</StackdriverVersion>
     <CorrelationIdVersion>3.0.0</CorrelationIdVersion>
-    <NewtonsoftJsonVersion>12.0.1</NewtonsoftJsonVersion>
+    <NewtonsoftJsonVersion>12.0.3</NewtonsoftJsonVersion>
     <GoogleCloudKmsVersion>2.0.0</GoogleCloudKmsVersion>
     <EqualsFodyVersion>4.0.1</EqualsFodyVersion>
+    <GooglePubSub>2.1.0</GooglePubSub>
   </PropertyGroup>
 </Project>

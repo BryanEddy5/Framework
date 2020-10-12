@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
+    <AssemblyName>$(SolutionNamespaceRoot).Framework.PubSub.Tests</AssemblyName>
+    <RootNamespace>$(AssemblyName)</RootNamespace>
+  </PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\src\core\Core.PubSub\Core.PubSub.csproj" />
+      <ProjectReference Include="..\..\..\src\framework\Framework.PubSub\Framework.PubSub.csproj" />
+      <ProjectReference Include="..\..\..\src\core\Core.PubSub\Core.PubSub.csproj" />
+      <ProjectReference Include="..\..\..\src\core\Core.Testing\Core.Testing.csproj" />
+    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Equals.Fody" Version="$(EqualsFodyVersion)" />
+  </ItemGroup>
+</Project>

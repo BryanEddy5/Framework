@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
@@ -56,7 +57,7 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// Add query string parameters to create a query string for the request.
         /// </summary>
         /// <param name="field">field to be queried.</param>
-        /// <param name="value">value to be queried against.</param>
+        /// <param name="value">value to be queried against. Separate commas between values for a collection.</param>
         /// <returns>The same instance for fluent chaining.</returns>
         public RestRequest AddQueryParams(string field, string value)
         {
@@ -66,7 +67,29 @@ namespace HumanaEdge.Webcore.Core.Rest
             }
             else
             {
-                _queryParams[field] = value;
+                _queryParams[field] = string.Join(",", _queryParams[field], value);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Add query string parameters to create a query string for the request.
+        /// </summary>
+        /// <param name="queryParams">A dictionary to be converted to a query string.</param>
+        /// <returns>The same instance for fluent chaining.</returns>
+        public RestRequest AddQueryParams(IDictionary<string, string> queryParams)
+        {
+            foreach (var kvp in queryParams)
+            {
+                if (_queryParams.ContainsKey(kvp.Key))
+                {
+                    _queryParams[kvp.Key] = string.Join(",", _queryParams[kvp.Key], kvp.Value);
+                }
+                else
+                {
+                    _queryParams.Add(kvp.Key, kvp.Value);
+                }
             }
 
             return this;

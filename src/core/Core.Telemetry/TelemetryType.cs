@@ -18,6 +18,11 @@
         /// <summary>
         /// A dependency metric.
         /// </summary>
-        Dependency
+        Dependency,
+
+        /// <summary>
+        /// A pub/sub subscription metric.
+        /// </summary>
+        Subscription
     }
 }
