@@ -44,7 +44,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
             var encoding = Encoding.GetEncoding(encodingName);
 
             var json = encoding.GetString(bytes);
-            obj = JsonConvert.DeserializeObject<T>(json, formattingSettings.JsonSerializerSettings);
+            obj = JsonConvert.DeserializeObject<T>(json, formattingSettings.JsonSerializerSettings) !;
 
             return true;
         }

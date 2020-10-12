@@ -1,6 +1,7 @@
 using System;
 using FluentValidation.AspNetCore;
 using HumanaEdge.Webcore.Framework.Logging.Extensions;
+using HumanaEdge.Webcore.Framework.PubSub.Extensions;
 using HumanaEdge.Webcore.Framework.Rest.Extensions;
 using HumanaEdge.Webcore.Framework.Swagger.Extensions;
 using HumanaEdge.Webcore.Framework.Telemetry;
@@ -115,6 +116,7 @@ namespace HumanaEdge.Webcore.Framework.Web
 
             services.AddRestClient();
             services.AddApplicationTelemetry();
+            services.AddPubSub();
         }
 
         /// <summary>

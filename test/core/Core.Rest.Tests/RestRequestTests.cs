@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using AutoFixture;
 using HumanaEdge.Webcore.Core.Testing;
+using Microsoft.AspNetCore.WebUtilities;
 using Xunit;
 
 namespace HumanaEdge.Webcore.Core.Rest.Tests
@@ -97,6 +100,125 @@ namespace HumanaEdge.Webcore.Core.Rest.Tests
 
             // assert
             Assert.Equal(expectedHeaderValues, actual.ToArray());
+        }
+
+        /// <summary>
+        /// Validates the behavior of <see cref="RestRequest.AddQueryParams(IDictionary{string,string})" />
+        /// for a query string with a collection.
+        /// </summary>
+        [Fact]
+        public void UseQueryParams_AddQueryParamsToRequest_Collection_Validation()
+        {
+            // arrange
+            var fakeQueryParams = FakeData.Create<Dictionary<string, string>>();
+            var fakeQueryParamsCollection = new Dictionary<string, string>();
+
+            foreach (var kvp in fakeQueryParams)
+            {
+                var fakeDictionaryValue = FakeData.Create<string>();
+                fakeQueryParamsCollection[kvp.Key] = string.Join(",", fakeQueryParams[kvp.Key], fakeDictionaryValue);
+            }
+
+            var fakeRelativePath = FakeData.Create<string>();
+            var fakeHttpMethod = FakeData.Create<HttpMethod>();
+            var restRequest = new RestRequest(fakeRelativePath, fakeHttpMethod);
+            restRequest.AddQueryParams(fakeQueryParamsCollection);
+            var baseUri = new Uri("https://www.testing.com");
+            var uri = new Uri(baseUri, restRequest.RelativePath);
+
+            // act
+            var actual = QueryHelpers.ParseQuery(uri.Query).ToDictionary(x => x.Key, x => x.Value.ToString());
+
+            // assert
+            Assert.Equal(actual, fakeQueryParamsCollection);
+        }
+
+        /// <summary>
+        /// Validates the behavior of <see cref="RestRequest.AddQueryParams(IDictionary{string,string})" />.
+        /// </summary>
+        [Fact]
+        public void UseQueryParams_AddQueryParamsToRequest_Validation()
+        {
+            // arrange
+            var fakeQueryParams = FakeData.Create<Dictionary<string, string>>();
+            var fakeRelativePath = FakeData.Create<string>();
+            var fakeHttpMethod = FakeData.Create<HttpMethod>();
+            var restRequest = new RestRequest(fakeRelativePath, fakeHttpMethod);
+            restRequest.AddQueryParams(fakeQueryParams);
+            var baseUri = new Uri("https://www.testing.com");
+            var uri = new Uri(baseUri, restRequest.RelativePath);
+
+            // act
+            var actual = QueryHelpers.ParseQuery(uri.Query).ToDictionary(x => x.Key, x => x.Value.ToString());
+
+            // assert
+            Assert.Equal(actual, fakeQueryParams);
+        }
+
+        /// <summary>
+        /// Validates the behavior of <see cref="RestRequest.AddQueryParams(IDictionary{string,string})" />
+        /// when duplicate keys are present.
+        /// </summary>
+        [Fact]
+        public void UseQueryParams_AddQueryParamsToRequestWithDuplicateKey_Validation()
+        {
+            // arrange
+            var fakeKey = FakeData.Create<string>();
+            var fakeQueryStringValue1 = FakeData.Create<string>();
+            var fakeQueryStringValue2 = FakeData.Create<string>();
+            var fakeRelativePath = FakeData.Create<string>();
+            var fakeHttpMethod = FakeData.Create<HttpMethod>();
+            var restRequest = new RestRequest(fakeRelativePath, fakeHttpMethod);
+            var baseUri = new Uri("https://www.testing.com");
+            restRequest.AddQueryParams(fakeKey, fakeQueryStringValue1);
+            restRequest.AddQueryParams(fakeKey, fakeQueryStringValue2);
+            var uri = new Uri(baseUri, restRequest.RelativePath);
+
+            var expected = string.Join(",", fakeQueryStringValue1, fakeQueryStringValue2);
+
+            // act
+            var actual = QueryHelpers.ParseQuery(uri.Query).ToDictionary(x => x.Key, x => x.Value.ToString());
+
+            // assert
+            Assert.Equal(actual.First().Value, expected);
+        }
+
+        /// <summary>
+        /// Validates the behavior of <see cref="RestRequest.AddQueryParams(IDictionary{string,string})" />
+        /// when duplicate keys are present.
+        /// </summary>
+        [Fact]
+        public void UseQueryParams_AddQueryParamsToRequestWithDuplicateKeyInDictionary_Validation()
+        {
+            // arrange
+            var fakeQueryParams = FakeData.Create<Dictionary<string, string>>();
+            var fakeQueryParamsDuplicateKeys = new Dictionary<string, string>();
+            foreach (var kvp in fakeQueryParams)
+            {
+                fakeQueryParamsDuplicateKeys.Add(kvp.Key, FakeData.Create<string>());
+            }
+
+            var fakeRelativePath = FakeData.Create<string>();
+            var fakeHttpMethod = FakeData.Create<HttpMethod>();
+            var restRequest = new RestRequest(fakeRelativePath, fakeHttpMethod);
+            var baseUri = new Uri("https://www.testing.com");
+            restRequest.AddQueryParams(fakeQueryParams);
+            restRequest.AddQueryParams(fakeQueryParamsDuplicateKeys);
+            var uri = new Uri(baseUri, restRequest.RelativePath);
+
+            var expectedDictionary = fakeQueryParams.ToDictionary(
+                kvp => kvp.Key,
+                kvp =>
+                    string.Join(
+                        ",",
+                        kvp.Value,
+                        fakeQueryParamsDuplicateKeys[kvp.Key]));
+
+            // act
+            var actual = QueryHelpers.ParseQuery(uri.Query).ToDictionary(x => x.Key, x => x.Value.ToString());
+
+            // assert
+            Assert.Equal(actual, expectedDictionary);
         }
     }
 }

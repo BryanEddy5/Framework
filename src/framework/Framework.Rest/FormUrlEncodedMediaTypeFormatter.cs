@@ -24,7 +24,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
             out HttpContent httpContent)
         {
             var serializer = JsonSerializer.Create(settings.JsonSerializerSettings);
-            var jObject = JObject.FromObject(data, serializer).ToObject<Dictionary<string, string>>();
+            var jObject = JObject.FromObject(data!, serializer).ToObject<Dictionary<string, string>>();
             httpContent = new FormUrlEncodedContent(jObject);
 
             return true;
