@@ -5,13 +5,13 @@
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="$(MicrosoftExtensionsVersion)"/>
-    <PackageReference Include="Microsoft.Extensions.Primitives" Version="$(MicrosoftExtensionsVersion)"/>
-    <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)"/>
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="$(MicrosoftAspNetCoreWebUtilities)"/>
-    <PackageReference Include="Equals.Fody" Version="$(EqualsFodyVersion)"/>
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="$(MicrosoftAspNetCoreWebUtilities)" />
+    <PackageReference Include="Equals.Fody" Version="$(EqualsFodyVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core.Common\Core.Common.csproj"/>
+    <ProjectReference Include="..\Core.Common\Core.Common.csproj" />
   </ItemGroup>
 </Project>
