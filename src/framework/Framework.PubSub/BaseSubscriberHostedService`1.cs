@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Cloud.PubSub.V1;
-using HumanaEdge.Webcore.Core.Common.Exceptions;
 using HumanaEdge.Webcore.Core.PubSub;
 using HumanaEdge.Webcore.Core.Telemetry;
 using HumanaEdge.Webcore.Core.Telemetry.PubSub;

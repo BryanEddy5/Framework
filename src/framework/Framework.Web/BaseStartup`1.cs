@@ -1,5 +1,7 @@
 using System;
 using FluentValidation.AspNetCore;
+using HumanaEdge.Webcore.Framework.DependencyInjection;
+using HumanaEdge.Webcore.Framework.DependencyInjection.Extensions;
 using HumanaEdge.Webcore.Framework.Logging.Extensions;
 using HumanaEdge.Webcore.Framework.PubSub.Extensions;
 using HumanaEdge.Webcore.Framework.Rest.Extensions;
@@ -117,6 +119,9 @@ namespace HumanaEdge.Webcore.Framework.Web
             services.AddRestClient();
             services.AddApplicationTelemetry();
             services.AddPubSub();
+            var assembliesToScanForDi =
+                typeof(TStartup).Assembly.GetAssemblyAndDependencies(asm => asm.Name!.StartsWith("HumanaEdge"));
+            services.UseOptionsPattern(assembliesToScanForDi, Configuration);
         }
 
         /// <summary>
