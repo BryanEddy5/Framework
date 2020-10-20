@@ -64,7 +64,6 @@ namespace HumanaEdge.Webcore.Core.Testing
             T value)
         {
             var mockConfigurationSection = new Mock<IConfigurationSection>(MockBehavior.Strict);
-            mockConfigurationSection.Setup(s => s.Value).Returns(value?.ToString() !);
 
             return configurationSetup.Returns(mockConfigurationSection.Object);
         }
