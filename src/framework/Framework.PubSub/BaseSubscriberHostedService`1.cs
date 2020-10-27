@@ -20,18 +20,18 @@ namespace HumanaEdge.Webcore.Framework.PubSub
     /// <typeparam name="TMessage">The type of message to be received from the subscription.</typeparam>
     public abstract class BaseSubscriberHostedService<TMessage> : IHostedService
     {
-        /// <summary>
-        /// The manager for tracking telemetry.
-        /// </summary>
-        private readonly ITelemetryFactory _telemetryFactory;
-
         private readonly ILogger<BaseSubscriberHostedService<TMessage>> _logger;
+
+        private readonly ISubOrchestrationService<TMessage> _subOrchestrationService;
 
         private readonly ISubscriberClientFactory _subscriberClientFactory;
 
         private readonly SubscriptionName _subscriptionName;
 
-        private readonly ISubOrchestrationService<TMessage> _subOrchestrationService;
+        /// <summary>
+        /// The manager for tracking telemetry.
+        /// </summary>
+        private readonly ITelemetryFactory _telemetryFactory;
 
         private SubscriberClient? _subscriber;
 
@@ -42,7 +42,10 @@ namespace HumanaEdge.Webcore.Framework.PubSub
         /// <param name="logger">A logger.</param>
         /// <param name="config">The configuration for processing the message.</param>
         /// <param name="subscriberClientFactory">A factory that generates a <see cref="SubscriberClient" />.</param>
-        /// <param name="subOrchestrationService">A service that performs the business logic orchestration on the subscribed message.</param>
+        /// <param name="subOrchestrationService">
+        /// A service that performs the business logic orchestration on the subscribed
+        /// message.
+        /// </param>
         public BaseSubscriberHostedService(
             ILogger<BaseSubscriberHostedService<TMessage>> logger,
             IOptionsMonitor<PubSubOptions> config,
@@ -60,7 +63,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub
         /// <inheritdoc />
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var serializeOptions = new JsonSerializerSettings()
+            var serializeOptions = new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };

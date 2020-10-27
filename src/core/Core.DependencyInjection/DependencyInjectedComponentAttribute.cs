@@ -2,12 +2,9 @@ using System;
 
 namespace HumanaEdge.Webcore.Core.DependencyInjection
 {
-    /// <summary>
-    /// [DependencyInjected] attribute identifies a class that can be automatically injected
-    /// Classes with this attribute are detected via assembly scanning.
-    /// </summary>
+    /// <inheritdoc />
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-    public class DependencyInjectedComponentAttribute : System.Attribute
+    public class DependencyInjectedComponentAttribute : DiComponent
     {
         /// <summary>
         /// The ctor.
@@ -17,10 +14,5 @@ namespace HumanaEdge.Webcore.Core.DependencyInjection
         {
             LifetimeScope = lifetimeScope;
         }
-
-        /// <summary>
-        /// returns the desired LifetimeScope of the component to be registered.
-        /// </summary>
-        public LifetimeScopeEnum LifetimeScope { get; }
     }
 }

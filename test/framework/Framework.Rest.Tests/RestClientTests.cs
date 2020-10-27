@@ -36,17 +36,20 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         /// </summary>
         private readonly RestClient _restClient;
 
+        private Mock<IInternalClientFactory> _mockInternalClientFactory;
+
+        private string _fakeClientName;
+
         /// <summary>
         /// Common test setup.
         /// </summary>
         public RestClientTests()
         {
-            var mockInternalClientFactory = Moq.Create<IInternalClientFactory>();
+            _mockInternalClientFactory = Moq.Create<IInternalClientFactory>();
             _mockHttpClient = Moq.Create<IInternalClient>();
             _mockMediaTypeFormatter = Moq.Create<IMediaTypeFormatter>();
             _mockMediaTypeFormatter.Setup(f => f.MediaTypes).Returns(new[] { MediaType.Json });
-
-            var fakeClientName = FakeData.Create<string>();
+            _fakeClientName = FakeData.Create<string>();
 
             _options = new RestClientOptions.Builder("https://localhost:5000")
                 .ConfigureHeader("Foo", "Bar")
@@ -61,12 +64,9 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                     })
                 .Build();
 
-            mockInternalClientFactory.Setup(x => x.CreateClient(fakeClientName, _options.BaseUri, _options.Timeout))
-                .Returns(_mockHttpClient.Object);
-
             _restClient = new RestClient(
-                fakeClientName,
-                mockInternalClientFactory.Object,
+                _fakeClientName,
+                _mockInternalClientFactory.Object,
                 _options,
                 new[] { _mockMediaTypeFormatter.Object });
         }
@@ -92,6 +92,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                     r.Headers.GetValues("test").First() == "testing" &&
                     r.RequestUri == new Uri("/hello/world", UriKind.Relative) &&
                     r.Headers.Any(h => h.Key == "Id"));
+            SetupHttClientFactory();
 
             // act
             var actual = await _restClient.SendAsync(fakeRequest, CancellationTokenSource.Token);
@@ -125,6 +126,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                     r.Method == fakeRequest.HttpMethod &&
                     r.RequestUri == new Uri("/foo/add", UriKind.Relative) &&
                     r.Content == fakeContent);
+            SetupHttClientFactory();
 
             // act
             var actual = await _restClient.SendAsync(fakeRequest, CancellationTokenSource.Token);
@@ -164,6 +166,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             var expectedBytes = FakeData.Create<byte[]>();
             var expectedBytesStream = new MemoryStream(expectedBytes);
             var mockResponse = BuildMockResponseForFiles(expectedBytesStream);
+            SetupHttClientFactory();
             SetUpHttpClientMock(
                 mockResponse,
                 r =>
@@ -196,6 +199,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             var fakeContent = mockContent.Object;
             _mockMediaTypeFormatter.Setup(x => x.TryFormat(MediaType.Json, _options, fakeFoo, out fakeContent))
                 .Returns(true);
+            SetupHttClientFactory();
 
             var expectedBytes = FakeData.Create<byte[]>();
             var expectedBytesStream = new MemoryStream(expectedBytes);
@@ -253,6 +257,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var fakeHttpResponseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError);
             var expectedBytes = await content.ReadAsByteArrayAsync();
+            SetupHttClientFactory();
 
             fakeHttpResponseMessage.Content = content;
             _mockHttpClient.Setup(
@@ -286,7 +291,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             var expectedBytes = FakeData.Create<byte[]>();
             var expectedBytesStream = new MemoryStream(expectedBytes);
             var content = new StreamContent(expectedBytesStream);
-
+            SetupHttClientFactory();
             var mockResponse = new HttpResponseMessage(HttpStatusCode.OK);
             mockResponse.Content = content;
             mockResponse.Content.Headers.ContentDisposition = null;
@@ -320,11 +325,13 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
 
         private void SetUpHttpClientMock(
             HttpResponseMessage fakeHttpResponseMessage,
-            Expression<Func<HttpRequestMessage, bool>> match)
-        {
+            Expression<Func<HttpRequestMessage, bool>> match) =>
             _mockHttpClient.Setup(
                     x => x.SendAsync(It.Is(match), CancellationTokenSource.Token))
                 .ReturnsAsync(fakeHttpResponseMessage);
-        }
+
+        private void SetupHttClientFactory() =>
+            _mockInternalClientFactory.Setup(
+                x => x.CreateClient(_fakeClientName, _options.BaseUri, _options.Timeout)).Returns(_mockHttpClient.Object);
     }
 }

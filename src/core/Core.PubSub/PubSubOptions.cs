@@ -8,11 +8,11 @@ namespace HumanaEdge.Webcore.Core.PubSub
         /// <summary>
         /// The Id of the GCP Project in which the resource lives.
         /// </summary>
-        public string ProjectId { get; set; } = null!;
+        public string? ProjectId { get; set; }
 
         /// <summary>
         /// The name of the resource in GCP.
         /// </summary>
-        public string Name { get; set; } = null!;
+        public string? Name { get; set; }
     }
 }
