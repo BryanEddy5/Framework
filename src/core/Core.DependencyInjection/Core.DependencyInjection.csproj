@@ -4,4 +4,7 @@
     <AssemblyName>$(SolutionNamespaceRoot).Core.DependencyInjection</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="$(FluentValidationVersion)" />
+  </ItemGroup>
 </Project>

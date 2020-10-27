@@ -1,7 +1,10 @@
 using System.Linq;
+using FluentValidation;
 using HumanaEdge.Webcore.Core.DependencyInjection;
+using HumanaEdge.Webcore.Core.DependencyInjection.Validators;
 using HumanaEdge.Webcore.Core.Testing;
 using HumanaEdge.Webcore.Framework.DependencyInjection.Extensions;
+using HumanaEdge.Webcore.Framework.DependencyInjection.Tests.Stubs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xunit;
@@ -26,27 +29,8 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         }
 
         /// <summary>
-        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum.Transient"/> values.
-        /// </summary>
-        [Fact]
-        public void GetService_ITransientService()
-        {
-            // arrange
-
-            // act
-            var actual = _host.Services.GetService<ITransientService>();
-            var actual2 = _host.Services.GetService<ITransientService>();
-
-            // assert
-            Assert.NotNull(actual);
-            Assert.NotNull(actual2);
-            Assert.IsType<TransientComponent>(actual);
-            Assert.IsType<TransientComponent>(actual2);
-            Assert.NotEqual(actual, actual2);
-        }
-
-        /// <summary>
-        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum.Scoped"/> values.
+        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all
+        /// <see cref="LifetimeScopeEnum.Scoped" /> values.
         /// </summary>
         [Fact]
         public void GetService_IScopedService()
@@ -66,7 +50,8 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         }
 
         /// <summary>
-        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all <see cref="LifetimeScopeEnum.Singleton"/> values.
+        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all
+        /// <see cref="LifetimeScopeEnum.Singleton" /> values.
         /// </summary>
         [Fact]
         public void GetService_ISingletonService()
@@ -83,6 +68,27 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
             Assert.IsType<SingletonComponent>(actual);
             Assert.IsType<SingletonComponent>(actual2);
             Assert.Equal(actual, actual2);
+        }
+
+        /// <summary>
+        /// Verifies the behavior of <see cref="DependencyInjectedComponentAttribute" /> with all
+        /// <see cref="LifetimeScopeEnum.Transient" /> values.
+        /// </summary>
+        [Fact]
+        public void GetService_ITransientService()
+        {
+            // arrange
+
+            // act
+            var actual = _host.Services.GetService<ITransientService>();
+            var actual2 = _host.Services.GetService<ITransientService>();
+
+            // assert
+            Assert.NotNull(actual);
+            Assert.NotNull(actual2);
+            Assert.IsType<TransientComponent>(actual);
+            Assert.IsType<TransientComponent>(actual2);
+            Assert.NotEqual(actual, actual2);
         }
 
         /// <summary>
@@ -114,6 +120,25 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
             Assert.NotEmpty(actual);
             Assert.IsType<MultiService1>(actual[0]);
             Assert.IsType<MultiService2>(actual[1]);
+        }
+
+        /// <summary>
+        /// Verifies the behavior of <see cref="ValidatorAttribute"/>.
+        /// </summary>
+        [Fact]
+        public void ValidatorServiceRegistration()
+        {
+            // arrange
+            var fakeFoo = new Foo { Name = null };
+
+            // act
+            var actual = _host.Services.GetService<IValidator<Foo>>();
+            var validationResult = actual.Validate(fakeFoo);
+
+            // act
+            Assert.NotNull(actual);
+            Assert.IsType<FooValidator>(actual);
+            Assert.False(validationResult.IsValid);
         }
 
 #pragma warning disable SA1201 // Elements should appear in the correct order
@@ -155,7 +180,7 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         /// <summary>
         /// Test component for dependency injection with transient lifetime.
         /// </summary>
-        [DependencyInjectedComponent(LifetimeScopeEnum.Transient)]
+        [DependencyInjectedComponent]
         public class TransientComponent : ITransientService
         {
         }
@@ -186,7 +211,7 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         /// <summary>
         /// Test component for testing non-registration of component.
         /// </summary>
-        [DependencyInjectedComponent(LifetimeScopeEnum.Transient)]
+        [DependencyInjectedComponent]
         public class MultiService1 : IMultiService
         {
         }
@@ -194,7 +219,7 @@ namespace HumanaEdge.Webcore.Framework.DependencyInjection.Tests
         /// <summary>
         /// Test component for testing non-registration of component.
         /// </summary>
-        [DependencyInjectedComponent(LifetimeScopeEnum.Transient)]
+        [DependencyInjectedComponent]
         public class MultiService2 : IMultiService
         {
         }

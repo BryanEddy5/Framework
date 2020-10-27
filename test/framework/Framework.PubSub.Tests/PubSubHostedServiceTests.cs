@@ -8,6 +8,7 @@ using Google.Cloud.PubSub.V1;
 using Google.Protobuf;
 using HumanaEdge.Webcore.Core.PubSub;
 using HumanaEdge.Webcore.Core.Testing;
+using HumanaEdge.Webcore.Framework.PubSub.Subscription;
 using HumanaEdge.Webcore.Framework.PubSub.Tests.Stubs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

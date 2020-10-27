@@ -15,18 +15,20 @@ namespace HumanaEdge.Webcore.Framework.Rest
     /// <inheritdoc />
     internal sealed class RestClient : IRestClient
     {
-        private readonly IInternalClient _httpClient;
-
         private readonly IDictionary<MediaType, IMediaTypeFormatter> _mediaTypeFormatters;
 
         private readonly RestClientOptions _options;
 
         private readonly ITelemetryFactory _telemetryFactory;
 
+        private readonly string _clientName;
+
+        private readonly IInternalClientFactory _internalClientFactory;
+
         /// <summary>
         /// Designated ctor.
         /// </summary>
-        /// <param name="clientName">The name type of the <see cref="HttpClient" />.</param>
+        /// <param name="clientName">The name type of the <see cref="System.Net.Http.HttpClient" />.</param>
         /// <param name="internalClientFactory">A factory for generating <see cref="IInternalClient" /> for sending the request.</param>
         /// <param name="options">Configuration settings for outbound requests for the instance of <see cref="IRestClient" />.</param>
         /// <param name="mediaTypeFormatters">A collection of media type formatters.</param>
@@ -38,7 +40,8 @@ namespace HumanaEdge.Webcore.Framework.Rest
             IMediaTypeFormatter[] mediaTypeFormatters,
             ITelemetryFactory telemetryFactory = null!)
         {
-            _httpClient = internalClientFactory.CreateClient(clientName, options.BaseUri, options.Timeout);
+            _clientName = clientName;
+            _internalClientFactory = internalClientFactory;
             _options = options;
             _mediaTypeFormatters = mediaTypeFormatters.SelectMany(
                     formatter => formatter.MediaTypes.Select(
@@ -47,6 +50,8 @@ namespace HumanaEdge.Webcore.Framework.Rest
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             _telemetryFactory = telemetryFactory;
         }
+
+        private IInternalClient InternalHttpClient => _internalClientFactory.CreateClient(_clientName, _options.BaseUri, _options.Timeout);
 
         /// <inheritdoc />
         public async Task<FileResponse> GetFileAsync(RestRequest fileRequest, CancellationToken cancellationToken)
@@ -208,7 +213,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
                     var startTime = DateTimeOffset.UtcNow;
                     try
                     {
-                        httpResponse = await _httpClient.SendAsync(httpRequestMessage, ct);
+                        httpResponse = await InternalHttpClient.SendAsync(httpRequestMessage, ct);
                     }
                     finally
                     {

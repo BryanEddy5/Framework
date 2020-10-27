@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 namespace HumanaEdge.Webcore.Framework.PubSub.Subscription
 {
     /// <inheritdoc />
-    public class PubSubHostedService<TMessage> : BaseSubscriberHostedService<TMessage>
+    public sealed class PubSubHostedService<TMessage> : BaseSubscriberHostedService<TMessage>
     {
         /// <summary>
         /// Designated ctor.
@@ -14,8 +14,14 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription
         /// <param name="telemetryFactory">The telemetry manager.</param>
         /// <param name="logger">A logger.</param>
         /// <param name="config">The configuration for processing the message.</param>
-        /// <param name="subscriberClientFactory">A factory that generates a <see cref="T:Google.Cloud.PubSub.V1.SubscriberClient" />.</param>
-        /// <param name="subOrchestrationService">A service that performs the business logic orchestration on the subscribed message.</param>
+        /// <param name="subscriberClientFactory">
+        /// A factory that generates a
+        /// <see cref="T:Google.Cloud.PubSub.V1.SubscriberClient" />.
+        /// </param>
+        /// <param name="subOrchestrationService">
+        /// A service that performs the business logic orchestration on the subscribed
+        /// message.
+        /// </param>
         public PubSubHostedService(
             ILogger<BaseSubscriberHostedService<TMessage>> logger,
             IOptionsMonitor<PubSubOptions> config,
