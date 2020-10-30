@@ -22,6 +22,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub
     {
         private readonly ILogger<BaseSubscriberHostedService<TMessage>> _logger;
 
+        private readonly IOptionsMonitor<PubSubOptions> _config;
+
         private readonly ISubOrchestrationService<TMessage> _subOrchestrationService;
 
         private readonly ISubscriberClientFactory _subscriberClientFactory;
@@ -55,6 +57,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub
         {
             _telemetryFactory = telemetryFactory;
             _logger = logger;
+            _config = config;
             _subscriptionName = new SubscriptionName(config.CurrentValue.ProjectId, config.CurrentValue.Name);
             _subscriberClientFactory = subscriberClientFactory;
             _subOrchestrationService = subOrchestrationService;
@@ -69,7 +72,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub
             };
 
             _logger.LogInformation("Subscriber hosted service is running.");
-            _subscriber = await _subscriberClientFactory.GetSubscriberClient(_subscriptionName);
+            _subscriber = await _subscriberClientFactory.GetSubscriberClient(_subscriptionName, _config.CurrentValue);
 
             _ = _subscriber.StartAsync(
                 async (message, cancel) =>
