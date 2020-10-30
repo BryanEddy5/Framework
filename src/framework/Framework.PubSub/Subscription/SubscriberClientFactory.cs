@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using Google.Cloud.PubSub.V1;
+using HumanaEdge.Webcore.Core.PubSub;
 
 namespace HumanaEdge.Webcore.Framework.PubSub.Subscription
 {
@@ -8,14 +10,17 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription
     /// </summary>
     internal sealed class SubscriberClientFactory : ISubscriberClientFactory
     {
-        /// <summary>
-        /// Get the desired <see cref="Subscriber.SubscriberClient" />.
-        /// </summary>
-        /// <param name="subscriptionName">The name of the subscription to connect to.</param>
-        /// <returns>The subscriber client.</returns>
-        public async Task<SubscriberClient> GetSubscriberClient(SubscriptionName subscriptionName)
+        /// <inheritdoc/>
+        public async Task<SubscriberClient> GetSubscriberClient(
+            SubscriptionName subscriptionName,
+            PubSubOptions options)
         {
-            return await SubscriberClient.CreateAsync(subscriptionName);
+            var settings = new SubscriberClient.Settings
+            {
+                AckDeadline = TimeSpan.FromSeconds(options.AckDeadlineSeconds),
+                AckExtensionWindow = TimeSpan.FromSeconds(options.AckExtensionWindowSeconds)
+            };
+            return await SubscriberClient.CreateAsync(subscriptionName, null, settings);
         }
     }
 }

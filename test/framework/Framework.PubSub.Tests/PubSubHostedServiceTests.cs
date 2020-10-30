@@ -50,7 +50,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
             var subscriberClientFactory = Moq.Create<ISubscriberClientFactory>();
             subscriberClientFactory.Setup(
                     s =>
-                        s.GetSubscriberClient(new SubscriptionName(config.ProjectId, config.Name)))
+                        s.GetSubscriberClient(new SubscriptionName(config.ProjectId, config.Name), config))
                 .ReturnsAsync(_subscriberClient);
 
             _pubSubHostedService = new PubSubHostedService(
