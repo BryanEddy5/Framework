@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using HumanaEdge.Webcore.Core.Common.Serialization;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using Polly;
 
 namespace HumanaEdge.Webcore.Core.Rest
@@ -121,11 +120,7 @@ namespace HumanaEdge.Webcore.Core.Rest
                 _restRequestMiddleware = new List<RestRequestTransformation>();
                 _timeout = TimeSpan.FromSeconds(5);
                 _resiliencePolicy = Policy.NoOpAsync<BaseRestResponse>();
-                _jsonSettings = new JsonSerializerSettings()
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    Converters = { new StringEnumConverter() }
-                };
+                _jsonSettings = StandardSerializerConfiguration.Settings;
             }
 
             /// <summary>

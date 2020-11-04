@@ -53,5 +53,6 @@
     <GoogleCloudKmsVersion>2.0.0</GoogleCloudKmsVersion>
     <EqualsFodyVersion>4.0.1</EqualsFodyVersion>
     <GooglePubSub>2.1.0</GooglePubSub>
+    <GoogleCloudSecretManagerV1Version>1.1.0</GoogleCloudSecretManagerV1Version>
   </PropertyGroup>
 </Project>

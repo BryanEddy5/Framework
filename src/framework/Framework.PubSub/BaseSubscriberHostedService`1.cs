@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Cloud.PubSub.V1;
+using HumanaEdge.Webcore.Core.Common.Serialization;
 using HumanaEdge.Webcore.Core.PubSub;
 using HumanaEdge.Webcore.Core.Telemetry;
 using HumanaEdge.Webcore.Core.Telemetry.PubSub;
@@ -66,11 +67,6 @@ namespace HumanaEdge.Webcore.Framework.PubSub
         /// <inheritdoc />
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var serializeOptions = new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
-
             _logger.LogInformation("Subscriber hosted service is running.");
             _subscriber = await _subscriberClientFactory.GetSubscriberClient(_subscriptionName, _config.CurrentValue);
 
@@ -84,7 +80,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub
                     try
                     {
                         var deserializedMessage =
-                            JsonConvert.DeserializeObject<TMessage>(messageData, serializeOptions);
+                            JsonConvert.DeserializeObject<TMessage>(messageData, StandardSerializerConfiguration.Settings);
                         await _subOrchestrationService.ExecuteAsync(deserializedMessage!, cancel);
                         return SubscriberClient.Reply.Ack;
                     }
