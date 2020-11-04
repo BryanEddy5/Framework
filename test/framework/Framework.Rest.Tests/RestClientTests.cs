@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
+using HumanaEdge.Webcore.Core.Common.Serialization;
 using HumanaEdge.Webcore.Core.Rest;
 using HumanaEdge.Webcore.Core.Testing;
 using HumanaEdge.Webcore.Framework.Rest.Tests.Stubs;
@@ -55,7 +56,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                 .ConfigureHeader("Foo", "Bar")
                 .ConfigureTimeout(TimeSpan.FromSeconds(7))
                 .ConfigureJsonFormatting(
-                    new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() })
+                    StandardSerializerConfiguration.Settings)
                 .ConfigureMiddleware(
                     r =>
                     {

@@ -6,6 +6,7 @@ using AutoFixture;
 using FluentAssertions;
 using Google.Cloud.PubSub.V1;
 using Google.Protobuf;
+using HumanaEdge.Webcore.Core.Common.Serialization;
 using HumanaEdge.Webcore.Core.PubSub;
 using HumanaEdge.Webcore.Core.Testing;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription;
@@ -128,7 +129,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
         {
             var json = JsonConvert.SerializeObject(
                 foo,
-                new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+                StandardSerializerConfiguration.Settings);
             var bytes = Encoding.UTF8.GetBytes(json);
             return new PubsubMessage { Data = ByteString.CopyFrom(bytes) };
         }
