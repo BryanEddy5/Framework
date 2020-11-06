@@ -99,12 +99,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub
                     }
                     catch (Exception exception)
                     {
-                        _logger.LogError(
-                            exception,
-                            "An exception occured for message: {MessageId}.",
-                            message.MessageId);
                         success = false;
-                        return SubscriberClient.Reply.Nack;
+                        return HandleException(exception, message);
                     }
                     finally
                     {
@@ -119,6 +115,22 @@ namespace HumanaEdge.Webcore.Framework.PubSub
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             await _subscriber?.StopAsync(cancellationToken) !;
+        }
+
+        private SubscriberClient.Reply HandleException(Exception exception, PubsubMessage message)
+        {
+            var reply = Reply.Nack;
+            if (exception is PubSubException pubSubException)
+            {
+                reply = pubSubException.Reply;
+            }
+
+            _logger.LogError(
+                exception,
+                "An exception occured for message: {MessageId}.",
+                message.MessageId);
+
+            return (int)reply == (int)Reply.Ack ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack;
         }
 
         /// <summary>
