@@ -9,7 +9,6 @@ using Google.Protobuf;
 using HumanaEdge.Webcore.Core.Common.Serialization;
 using HumanaEdge.Webcore.Core.PubSub;
 using HumanaEdge.Webcore.Core.Testing;
-using HumanaEdge.Webcore.Framework.PubSub.Subscription;
 using HumanaEdge.Webcore.Framework.PubSub.Tests.Stubs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,7 +20,7 @@ using Xunit;
 namespace HumanaEdge.Webcore.Framework.PubSub.Tests
 {
     /// <summary>
-    /// Tests for <see cref="PubSubHostedService" />.
+    /// Tests for <see cref="BaseSubscriberHostedService{T}" />.
     /// </summary>
     public class PubSubHostedServiceTests : BaseTests
     {
@@ -116,6 +115,46 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
 
             // assert
             _subscriberClient.TestReply.Should().Be(SubscriberClient.Reply.Nack);
+        }
+
+        /// <summary>
+        /// Validates the behavior of <see cref="BaseSubscriberHostedService{T}.StartAsync(CancellationToken)"/> when an exception is thrown with <see cref="Reply.Nack"/>.
+        /// </summary>
+        /// <returns>A task.</returns>
+        [Fact]
+        public async Task StartAsync_ValidMessage_ExceptionThrown_ReturnNack()
+        {
+            // arrange
+            var fakeFoo = FakeData.Create<Foo>();
+            _subOrchestrationServiceMock.Setup(m => m.ExecuteAsync(fakeFoo, CancellationToken.None))
+                .ThrowsAsync(new NackException("test"));
+            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo);
+
+            // act
+            await _pubSubHostedService.StartAsync(CancellationToken.None);
+
+            // assert
+            _subscriberClient.TestReply.Should().Be(SubscriberClient.Reply.Nack);
+        }
+
+        /// <summary>
+        /// Validates the behavior of <see cref="BaseSubscriberHostedService{T}.StartAsync(CancellationToken)"/> when an exception is thrown with <see cref="Reply.Ack"/>.
+        /// </summary>
+        /// <returns>A task.</returns>
+        [Fact]
+        public async Task StartAsync_ValidMessage_ExceptionThrown_ReturnAck()
+        {
+            // arrange
+            var fakeFoo = FakeData.Create<Foo>();
+            _subOrchestrationServiceMock.Setup(m => m.ExecuteAsync(fakeFoo, CancellationToken.None))
+                .ThrowsAsync(new AckException("test"));
+            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo);
+
+            // act
+            await _pubSubHostedService.StartAsync(CancellationToken.None);
+
+            // assert
+            _subscriberClient.TestReply.Should().Be(SubscriberClient.Reply.Ack);
         }
 
         private PubsubMessage BuildPubsubMessage(string message)

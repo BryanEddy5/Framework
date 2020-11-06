@@ -4,4 +4,7 @@
     <AssemblyName>$(SolutionNamespaceRoot).Core.PubSub</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Common\Core.Common.csproj" />
+  </ItemGroup>
 </Project>
