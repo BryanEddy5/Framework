@@ -17,7 +17,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
         /// <param name="services">The services collection.</param>
         /// <param name="configuration">The app configuration settings.</param>
         /// <param name="httpClientBuilder">A builder for configuring named <see cref="HttpClient"/> instances.</param>
-        internal static void AddTracing(
+        public static void AddTracing(
             this IServiceCollection services,
             IConfiguration configuration,
             IHttpClientBuilder httpClientBuilder)
