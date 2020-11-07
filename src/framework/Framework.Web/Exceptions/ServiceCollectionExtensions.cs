@@ -9,7 +9,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
     /// <summary>
     /// Extension methods for the <see cref="IServiceCollection" /> class.
     /// </summary>
-    internal static class ServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
         /// <summary>
         /// Adds the google stackdriver trace service.

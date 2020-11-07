@@ -16,7 +16,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
     /// <summary>
     /// A middleware to handle exceptions thrown.
     /// </summary>
-    internal sealed class ExceptionHandlingMiddleware
+    public sealed class ExceptionHandlingMiddleware
     {
         /// <summary>
         /// The default error response when an exception occurs.

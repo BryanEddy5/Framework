@@ -8,7 +8,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
     /// Application response with debug information. Carries extra debug level information when allowed via configuration.
     /// </summary>
     [Serializable]
-    internal sealed class DebugProblemDetail : ProblemDetail
+    public sealed class DebugProblemDetail : ProblemDetail
     {
         /// <summary>
         /// Designated ctor.
