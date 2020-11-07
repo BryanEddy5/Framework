@@ -11,7 +11,7 @@ namespace HumanaEdge.Webcore.Framework.Web
     /// <summary>
     /// Middleware which establish a common set of items in the logical log context.
     /// </summary>
-    internal sealed class RequestInfoMiddleware
+    public sealed class RequestInfoMiddleware
     {
         /// <summary>
         /// Delegate to invoke the next handler in the pipeline.
