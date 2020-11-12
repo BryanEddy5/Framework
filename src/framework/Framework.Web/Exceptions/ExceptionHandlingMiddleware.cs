@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.Common;
@@ -91,6 +92,13 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
         {
             var message = exception.Message;
             var statusCode = HttpStatusCode.InternalServerError;
+
+            if (exception is AggregateException aggregateException)
+            {
+                var firstMessageAppException = (MessageAppException)aggregateException.InnerExceptions.FirstOrDefault(e => e is MessageAppException);
+                message = firstMessageAppException?.Message ?? message;
+                statusCode = firstMessageAppException?.StatusCode ?? statusCode;
+            }
 
             if (exception is MessageAppException httpException)
             {
