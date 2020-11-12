@@ -152,6 +152,27 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests
         }
 
         /// <summary>
+        /// Verifies an http status code <see cref="HttpStatusCode.NotFound"/> is returned when
+        /// <see cref="AggregateException"/> containing a <see cref="FakeNotFoundMessageException"/> is thrown.
+        /// </summary>
+        /// <returns>A Task.</returns>
+        [Fact]
+        public async Task InvokeAsync_ThrowsAggregateException()
+        {
+            // arrange
+            var httpContext = CreateHttpContext();
+            var exception = new AggregateException(new[] { new FakeNotFoundMessageException() });
+            SetupForOptions(false, exception);
+            var expected = (int)HttpStatusCode.NotFound;
+
+            // act
+            await _systemUnderTest.InvokeAsync(httpContext);
+
+            // assert
+            Assert.Equal(expected, httpContext.Response.StatusCode);
+        }
+
+        /// <summary>
         /// Builds the context for testing.
         /// </summary>
         /// <returns>HttpContext.</returns>
