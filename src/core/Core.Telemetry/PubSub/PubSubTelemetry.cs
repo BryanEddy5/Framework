@@ -7,23 +7,28 @@ namespace HumanaEdge.Webcore.Core.Telemetry.PubSub
     /// <summary>
     /// Telemetry tailored for subscriptions.
     /// </summary>
-    internal class SubscriptionTelemetry : Telemetry
+    [Equals(DoNotAddEqualityOperators = true)]
+    internal class PubSubTelemetry : Telemetry
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubscriptionTelemetry"/> class.
+        /// Initializes a new instance of the <see cref="PubSubTelemetry"/> class.
         /// </summary>
+        /// <param name="name">The name of the telemetry.</param>
+        /// <param name="telemetryType">The specific telemetry even type.</param>
         /// <param name="startTime">Start of the request.</param>
         /// <param name="messageId">The unique identifier for the pub/sub message.</param>
         /// <param name="duration">The duration of the request.</param>
         /// <param name="success">Indicator if the request was successful.</param>
         /// <param name="configuration">Configuration data for the observer.</param>
-        public SubscriptionTelemetry(
+        public PubSubTelemetry(
+            string name,
+            TelemetryType telemetryType,
             DateTimeOffset startTime,
             string messageId,
             double duration,
             bool success,
             TelemetryConfiguration? configuration)
-            : base(nameof(SubscriptionTelemetry), TelemetryType.Subscription, startTime, configuration)
+            : base(name, telemetryType, startTime, configuration)
         {
             Success = success;
             MessageId = messageId;

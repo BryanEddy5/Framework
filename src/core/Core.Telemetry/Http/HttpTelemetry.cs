@@ -6,6 +6,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Http
     /// <summary>
     /// Http Telemetry for the duration of an Http request..
     /// </summary>
+    [Equals(DoNotAddEqualityOperators = true)]
     internal abstract class HttpTelemetry : Telemetry
     {
         /// <summary>
