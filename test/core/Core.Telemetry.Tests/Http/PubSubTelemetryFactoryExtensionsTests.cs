@@ -39,7 +39,9 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests.Http
             var fakeSuccess = FakeData.Create<bool>();
             var fakeTelemetryConfiguration = FakeData.Create<TelemetryConfiguration>();
 
-            var expectedDependencyTelemetry = new SubscriptionTelemetry(
+            var expectedDependencyTelemetry = new PubSubTelemetry(
+                "SubscriptionTelemetry",
+                TelemetryType.Subscription,
                 fakeStartTime,
                 fakeMessageId,
                 fakeDuration,
@@ -52,6 +54,41 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests.Http
 
             // act
             _mockTelemetryFactory.Object.TrackSubscriptionTelemetry(
+                fakeStartTime,
+                fakeMessageId,
+                fakeDuration,
+                fakeSuccess,
+                fakeTelemetryConfiguration);
+        }
+
+        /// <summary>
+        /// Verifies the behavior of the <see cref="PubSubTelemetryFactoryExtensions.TrackPublicationTelemetry" /> method.
+        /// </summary>
+        [Fact]
+        public void TrackPublicationTelemetryTest()
+        {
+            // arrange
+            var fakeStartTime = FakeData.Create<DateTimeOffset>();
+            var fakeMessageId = FakeData.Create<string>();
+            var fakeDuration = FakeData.Create<double>();
+            var fakeSuccess = FakeData.Create<bool>();
+            var fakeTelemetryConfiguration = FakeData.Create<TelemetryConfiguration>();
+
+            var expectedDependencyTelemetry = new PubSubTelemetry(
+                "PublicationTelemetry",
+                TelemetryType.Publication,
+                fakeStartTime,
+                fakeMessageId,
+                fakeDuration,
+                fakeSuccess,
+                fakeTelemetryConfiguration);
+
+            var expectedTelemetryEvent = expectedDependencyTelemetry.ToTelemetryEvent();
+
+            _mockTelemetryFactory.Setup(fac => fac.Track(expectedTelemetryEvent));
+
+            // act
+            _mockTelemetryFactory.Object.TrackPublicationTelemetry(
                 fakeStartTime,
                 fakeMessageId,
                 fakeDuration,

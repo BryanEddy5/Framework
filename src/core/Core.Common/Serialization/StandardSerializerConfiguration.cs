@@ -12,12 +12,14 @@ namespace HumanaEdge.Webcore.Core.Common.Serialization
     public static class StandardSerializerConfiguration
     {
         /// <summary>
-        /// Standardized <see cref="JsonSerializerSettings"/>.
+        /// Standardized <see cref="JsonSerializerSettings" />.
         /// </summary>
-        public static JsonSerializerSettings Settings => new JsonSerializerSettings()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Converters = { new StringEnumConverter() }
-        };
+        public static JsonSerializerSettings Settings =>
+            new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                Converters = { new StringEnumConverter() },
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
     }
 }

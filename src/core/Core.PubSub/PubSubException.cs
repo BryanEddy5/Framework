@@ -23,6 +23,6 @@ namespace HumanaEdge.Webcore.Core.PubSub
         /// If the application can recover from the exception and the message should be retried then
         /// set to <see cref="Reply"/> to Nack.
         /// </summary>
-        public virtual Reply Reply => Reply.Ack;
+        public virtual Reply Reply => Reply.Nack;
     }
 }

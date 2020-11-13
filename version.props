@@ -21,7 +21,7 @@
     <MicrosoftExtensionsDependencyModelVersion>2.0.4</MicrosoftExtensionsDependencyModelVersion>
     <SystemTextJsonVersion>4.6.0</SystemTextJsonVersion>
     <SystemComponentModelAnnotations>4.7.0</SystemComponentModelAnnotations>
-    <MicrosoftAspNetCoreWebUtilities>2.2.0</MicrosoftAspNetCoreWebUtilities>
+    <MicrosoftAspNetCoreVersion>2.2.0</MicrosoftAspNetCoreVersion>
   </PropertyGroup>
   <PropertyGroup Label="Test framework versions">
     <CoverletVersion>2.9.0</CoverletVersion>

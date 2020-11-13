@@ -1,4 +1,5 @@
 using HumanaEdge.Webcore.Core.PubSub;
+using HumanaEdge.Webcore.Framework.PubSub.Publication;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +38,24 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
                 .AddTransient<ISubOrchestrationService<TMessage>, TMessageHandler>();
             services.AddHostedService<PubSubHostedService<TMessage>>();
             services.AddTransient<ISubscriberClientFactory, SubscriberClientFactory>();
+        }
+
+        /// <summary>
+        /// Registers a publisher client for publishing messages to a topic.
+        /// </summary>
+        /// <typeparam name="TMessage">The published message shape.</typeparam>
+        /// <typeparam name="TOptions">The configuration options for setting up the publisher client.</typeparam>
+        /// <param name="services">The service collection.</param>
+        /// <param name="configurationSection">The configuration section key for the <see cref="PublisherOptions"/>.</param>
+        public static void AddPublisherClient<TMessage, TOptions>(this IServiceCollection services, IConfigurationSection configurationSection)
+        where TMessage : class
+        where TOptions : PublisherOptions
+        {
+            services.AddOptions();
+            services.Configure<TOptions>(configurationSection);
+            services.AddSingleton<IPublisherClient<TMessage>, PublisherClient<TMessage>>();
+            services.AddSingleton<IPublisherClientFactory, PublisherClientFactory>();
+            services.AddSingleton<IPublishRequestConverter, PublishPublishRequestConverter>();
         }
     }
 }

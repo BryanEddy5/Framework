@@ -23,6 +23,11 @@
         /// <summary>
         /// A pub/sub subscription metric.
         /// </summary>
-        Subscription
+        Subscription,
+
+        /// <summary>
+        /// A pub/sub published event metric.
+        /// </summary>
+        Publication
     }
 }
