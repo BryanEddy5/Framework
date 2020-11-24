@@ -44,6 +44,8 @@
     <SerilogExtensionsLogging>3.0.1</SerilogExtensionsLogging>
     <SerilogSettingsConfiguration>3.1.0</SerilogSettingsConfiguration>
     <SerilogExceptionsVersion>5.4.0</SerilogExceptionsVersion>
+    <SerilogSinksDebugVersion>1.0.1</SerilogSinksDebugVersion>
+    <DestructuramaAttributedVersion>2.0.0</DestructuramaAttributedVersion>
     <SwashbuckleVersion>5.5.1</SwashbuckleVersion>
     <SwashbuckleFiltersVersion>5.1.2</SwashbuckleFiltersVersion>
     <MicroElementsSwashbuckleFluentValidation>3.0.0-rc.3</MicroElementsSwashbuckleFluentValidation>

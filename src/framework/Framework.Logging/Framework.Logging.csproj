@@ -5,6 +5,7 @@
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Destructurama.Attributed" Version="$(DestructuramaAttributedVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreHostingVersion)" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsVersion)" />
     <PackageReference Include="Serilog" Version="$(SerilogVersion)" />
@@ -12,6 +13,7 @@
     <PackageReference Include="Serilog.Extensions.Logging" Version="$(SerilogExtensionsLogging)" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="$(SerilogSettingsConfiguration)" />
     <PackageReference Include="Serilog.Exceptions" Version="$(SerilogExceptionsVersion)" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="$(SerilogSinksDebugVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Core.Web\Core.Web.csproj" />
