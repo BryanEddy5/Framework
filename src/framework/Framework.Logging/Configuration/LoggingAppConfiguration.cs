@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using Destructurama;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyModel;
 using Serilog;
@@ -35,6 +36,8 @@ namespace HumanaEdge.Webcore.Framework.Logging.Configuration
             var dependencyContext = DependencyContext.Load(typeof(TEntry).Assembly);
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration, dependencyContext)
+                .WriteTo.Debug()
+                .Destructure.UsingAttributes()
                 .Enrich.FromLogContext()
                 .Enrich.WithExceptionDetails()
                 .CreateLogger();
