@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using HumanaEdge.Webcore.Example.WebApi;
 using HumanaEdge.Webcore.Framework.Web.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;

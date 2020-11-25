@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
     <AssemblyName>$(SolutionNamespaceRoot).Framework.Swagger.Tests</AssemblyName>
@@ -12,7 +12,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\ExampleWebApi\ExampleWebApi.csproj" />
+    <ProjectReference Include="..\..\..\example\WebApi\WebApi.csproj" />
     <ProjectReference Include="..\..\..\src\framework\Framework.Logging\Framework.Logging.csproj" />
     <ProjectReference Include="..\..\..\src\framework\Framework.Swagger\Framework.Swagger.csproj" />
     <ProjectReference Include="..\..\..\src\framework\Framework.Web\Framework.Web.csproj" />

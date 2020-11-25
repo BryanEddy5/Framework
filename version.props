@@ -29,6 +29,7 @@
     <JunitTestLoggerVersion>2.1.78</JunitTestLoggerVersion>
     <MoqVersion>4.14.0</MoqVersion>
     <MicrosoftNetTestSdkVersion>16.6.1</MicrosoftNetTestSdkVersion>
+    <AutoBogusVersion>2.7.3</AutoBogusVersion>
     <AutoFixtureVersion>4.11.0</AutoFixtureVersion>
     <FluentAssertionsVersion>5.10.3</FluentAssertionsVersion>
   </PropertyGroup>
@@ -45,6 +46,7 @@
     <SerilogSettingsConfiguration>3.1.0</SerilogSettingsConfiguration>
     <SerilogExceptionsVersion>5.4.0</SerilogExceptionsVersion>
     <SerilogSinksDebugVersion>1.0.1</SerilogSinksDebugVersion>
+    <SerilogFormattingCompactReaderVersion>1.0.3</SerilogFormattingCompactReaderVersion>
     <DestructuramaAttributedVersion>2.0.0</DestructuramaAttributedVersion>
     <SwashbuckleVersion>5.5.1</SwashbuckleVersion>
     <SwashbuckleFiltersVersion>5.1.2</SwashbuckleFiltersVersion>
@@ -56,5 +58,6 @@
     <EqualsFodyVersion>4.0.1</EqualsFodyVersion>
     <GooglePubSub>2.1.0</GooglePubSub>
     <GoogleCloudSecretManagerV1Version>1.1.0</GoogleCloudSecretManagerV1Version>
+    <GoogleCloudStorageV1Version>3.3.0</GoogleCloudStorageV1Version>
   </PropertyGroup>
 </Project>

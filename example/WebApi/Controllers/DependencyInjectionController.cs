@@ -1,14 +1,14 @@
-using HumanaEdge.Webcore.ExampleWebApi.Models;
+using HumanaEdge.Webcore.Example.WebApi.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HumanaEdge.Webcore.ExampleWebApi.Controllers
+namespace HumanaEdge.Webcore.Example.WebApi.Controllers
 {
     /// <summary>
     /// Sample ApiController.
     /// </summary>
     [ApiController]
-    [Route("api/v1/[controller]")]
-    public class DependencyInjectionTestController
+    [Route("dependencyInjection")]
+    public class DependencyInjectionController
     {
         private readonly ITransientService _transientService;
         private readonly IScopedService _scopedService;
@@ -20,7 +20,7 @@ namespace HumanaEdge.Webcore.ExampleWebApi.Controllers
         /// <param name="transientService">An injected instance of<see cref="ITransientService"/> from webcore's DI framework.</param>
         /// <param name="scopedService">An injected instance of<see cref="IScopedService"/> from webcore's DI framework.</param>
         /// <param name="singletonService">An injected instance of<see cref="ISingletonService"/> from webcore's DI framework.</param>
-        public DependencyInjectionTestController(ITransientService transientService, IScopedService scopedService, ISingletonService singletonService)
+        public DependencyInjectionController(ITransientService transientService, IScopedService scopedService, ISingletonService singletonService)
         {
             _transientService = transientService;
             _scopedService = scopedService;

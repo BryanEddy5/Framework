@@ -2,13 +2,13 @@ using HumanaEdge.Webcore.ExampleWebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace HumanaEdge.Webcore.ExampleWebApi.Controllers
+namespace HumanaEdge.Webcore.Example.WebApi.Controllers
 {
     /// <summary>
     /// Sample ApiController.
     /// </summary>
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [Route("weather")]
     public class WeatherForecastController
     {
         private readonly ILogger<WeatherForecastController> _logger;

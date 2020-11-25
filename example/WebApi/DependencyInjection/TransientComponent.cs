@@ -1,11 +1,11 @@
 using HumanaEdge.Webcore.Core.DependencyInjection;
 
-namespace HumanaEdge.Webcore.ExampleWebApi.Models
+namespace HumanaEdge.Webcore.Example.WebApi.DependencyInjection
 {
     /// <summary>
     /// Test component for dependency injection with transient lifetime.
     /// </summary>
-    [DependencyInjectedComponent]
+    [DiComponent]
     public class TransientComponent : ITransientService
     {
     }

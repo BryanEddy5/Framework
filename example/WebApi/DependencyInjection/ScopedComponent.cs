@@ -1,11 +1,11 @@
 using HumanaEdge.Webcore.Core.DependencyInjection;
 
-namespace HumanaEdge.Webcore.ExampleWebApi.Models
+namespace HumanaEdge.Webcore.Example.WebApi.DependencyInjection
 {
     /// <summary>
     /// Test component for dependency injection with scoped lifetime.
     /// </summary>
-    [DependencyInjectedComponent(LifetimeScopeEnum.Scoped)]
+    [DiComponent(LifetimeScope = LifetimeScopeEnum.Scoped)]
     public class ScopedComponent : IScopedService
     {
     }
