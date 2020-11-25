@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using FluentAssertions.Json;
+using HumanaEdge.Webcore.Example.WebApi;
 using HumanaEdge.Webcore.ExampleWebApi;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json.Linq;
@@ -33,9 +34,9 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Tests
         public async Task ValidateSchema()
         {
             await AssertSwaggerJsonMatchesExpected(
-                    "$.components.schemas.WeatherForecast",
+                "$.components.schemas.WeatherForecast",
 #pragma warning disable SA1118 // Parameter should not span multiple lines
-                    @"
+                @"
             {
                 'type': 'object',
                 'properties': {
@@ -65,10 +66,9 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Tests
                     }
                 },
                 'additionalProperties': false,
-                'description': 'A simple View Model that the ExampleWebApi uses. Demonstrates Swagger feature of Webcore.'
-            }")
+                'description': 'A simple View Model that the WebApi uses. Demonstrates Swagger feature of Webcore.'
+            }");
 #pragma warning restore SA1118 // Parameter should not span multiple lines
-                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -79,9 +79,9 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Tests
         public async Task ValidateSecuritySchemesSection()
         {
             await AssertSwaggerJsonMatchesExpected(
-                    "$.components.securitySchemes",
+                "$.components.securitySchemes",
 #pragma warning disable SA1118 // Parameter should not span multiple lines
-                    @"
+                @"
             {
                 'apikey': {
                   'type': 'apiKey',
@@ -89,9 +89,8 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Tests
                   'name': 'x-api-key',
                   'in': 'header'
                 }
-            }")
+            }");
 #pragma warning restore SA1118 // Parameter should not span multiple lines
-                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -102,16 +101,15 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Tests
         public async Task ValidateSecuritySection()
         {
             await AssertSwaggerJsonMatchesExpected(
-                    "$.security",
+                "$.security",
 #pragma warning disable SA1118 // Parameter should not span multiple lines
-                    @"
+                @"
             [
                 {
                     'apikey': [ ]
                 }
-            ]")
+            ]");
 #pragma warning restore SA1118 // Parameter should not span multiple lines
-                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -122,9 +120,9 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Tests
         public async Task ValidateEndpointJson()
         {
             await AssertSwaggerJsonMatchesExpected(
-                    "$.paths./api/v1/WeatherForecast",
+                "$.paths./weather",
 #pragma warning disable SA1118 // Parameter should not span multiple lines
-                    @"
+                @"
             {
                 'get': {
                     'tags': [
@@ -144,9 +142,8 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Tests
                         }
                     }
                 }
-             }")
+             }");
 #pragma warning restore SA1118 // Parameter should not span multiple lines
-                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -157,9 +154,9 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Tests
         public async Task ValidateEnumAsString()
         {
             await AssertSwaggerJsonMatchesExpected(
-                    "$.components.schemas.TestEnum",
+                "$.components.schemas.TestEnum",
 #pragma warning disable SA1118 // Parameter should not span multiple lines
-                    @"
+                @"
             {
                 'enum': [
                     'Red',
@@ -169,9 +166,9 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Tests
                 ],
                 'type': 'string',
                 'description': 'TestEnum is used to test ""treat enums as strings"" in our APIs, both controller methods and swagger doc.'
-            }")
+            }");
 #pragma warning restore SA1118 // Parameter should not span multiple lines
-                .ConfigureAwait(false);
+
         }
 
         private async Task AssertSwaggerJsonMatchesExpected(string actualSwaggerJpath, string expectedJson)

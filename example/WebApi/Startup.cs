@@ -1,12 +1,15 @@
+using HumanaEdge.Webcore.Core.Encryption;
+using HumanaEdge.Webcore.Example.WebApi.Secrets;
 using HumanaEdge.Webcore.Framework.Encryption.Extensions;
+using HumanaEdge.Webcore.Framework.SecretsManager.Extensions;
 using HumanaEdge.Webcore.Framework.Web;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HumanaEdge.Webcore.ExampleWebApi
+namespace HumanaEdge.Webcore.Example.WebApi
 {
     /// <summary>
-    /// ExampleWebApi's Startup class.
+    /// WebApi's Startup class.
     /// </summary>
     public class Startup : BaseStartup<Startup>
     {
@@ -22,7 +25,8 @@ namespace HumanaEdge.Webcore.ExampleWebApi
         /// <inheritdoc />
         protected override IHttpClientBuilder ConfigureAppServices(IServiceCollection services)
         {
-            services.AddKmsEncryption(Configuration.GetSection("EncryptionServiceOptions"));
+            services.AddKmsEncryption(Configuration.GetSection(nameof(EncryptionServiceOptions)));
+            services.AddSecret<FooSecret, FooSecretsOptions>(Configuration.GetSection(nameof(FooSecretsOptions)));
             return services.AddHttpClient("client");
         }
     }

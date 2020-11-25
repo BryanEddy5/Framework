@@ -1,10 +1,11 @@
 using System;
 using HumanaEdge.Webcore.Core.DependencyInjection;
+using HumanaEdge.Webcore.Example.WebApi.DependencyInjection;
 
 namespace HumanaEdge.Webcore.ExampleWebApi.Models
 {
     /// <summary>
-    /// A simple View Model that the ExampleWebApi uses. Demonstrates Swagger feature of Webcore.
+    /// A simple View Model that the WebApi uses. Demonstrates Swagger feature of Webcore.
     /// </summary>
     [DependencyInjectedComponent]
     public class WeatherForecast : IWeatherForecast

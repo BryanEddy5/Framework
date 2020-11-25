@@ -1,4 +1,4 @@
-namespace HumanaEdge.Webcore.ExampleWebApi.Models
+namespace HumanaEdge.Webcore.Example.WebApi.DependencyInjection
 {
     /// <summary>
     /// Test service interface for transient component.

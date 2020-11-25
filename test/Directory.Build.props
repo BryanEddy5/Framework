@@ -2,6 +2,7 @@
   <Import Project="../Directory.Build.props"/>
   <PropertyGroup>
     <IsPackable>false</IsPackable>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="$(CoverletVersion)"/>

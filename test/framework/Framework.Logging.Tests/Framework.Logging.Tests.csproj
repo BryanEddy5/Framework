@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
+    <AssemblyName>$(SolutionNamespaceRoot).Framework.Logging.Tests</AssemblyName>
+    <RootNamespace>$(AssemblyName)</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoBogus" Version="$(AutoBogusVersion)" />
+    <PackageReference Include="Serilog.Formatting.Compact.Reader" Version="$(SerilogFormattingCompactReaderVersion)" />
+    <PackageReference Include="Serilog.Sinks.Map" Version="$(SerilogSinksDebugVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\example\WebApi\WebApi.csproj" />
+  </ItemGroup>
+
+</Project>
