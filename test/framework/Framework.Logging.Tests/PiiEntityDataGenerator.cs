@@ -1,17 +1,26 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Bogus;
 
 namespace HumanaEdge.Webcore.Framework.Logging.Tests
 {
+    /// <summary>
+    /// A generator of fake PiiEntities.
+    /// </summary>
     public class PiiEntityDataGenerator
     {
-        public static PiiRoleContract GetRole(Faker faker)
+        /// <summary>
+        /// Generate a fake <see cref="PiiCoreContracts.PiiRoleContract"/>.
+        /// </summary>
+        /// <param name="faker"><see cref="Faker"/>.</param>
+        /// <returns>A fake <see cref="PiiCoreContracts.PiiRoleContract"/>.</returns>
+        public static PiiCoreContracts.PiiRoleContract GetRole(Faker faker)
         {
             // 50% chance to add another role
             if (faker.Random.Number(3) > 1)
             {
-                return new PiiRoleContract
+                return new PiiCoreContracts.PiiRoleContract
                 {
                     Email = faker.Internet.Email(),
                     PhoneNumber = faker.Phone.PhoneNumber("7#########"),
@@ -23,6 +32,11 @@ namespace HumanaEdge.Webcore.Framework.Logging.Tests
             return null;
         }
 
+        /// <summary>
+        /// Returns a fake birth date in <see cref="DateTime"/> format.
+        /// </summary>
+        /// <param name="faker"><see cref="Faker"/>.</param>
+        /// <returns>A fake birth date in <see cref="DateTime"/> format.</returns>
         public static DateTime GetBirthDate(Faker faker)
         {
             return faker.Date.Past(
@@ -30,17 +44,33 @@ namespace HumanaEdge.Webcore.Framework.Logging.Tests
                 DateTime.SpecifyKind(DateTime.Parse("1980-1-1 10:00 AM"), DateTimeKind.Utc));
         }
 
+        /// <summary>
+        /// Returns a fake zipcode in string format.
+        /// </summary>
+        /// <param name="faker"><see cref="Faker"/>.</param>
+        /// <returns>A fake zipcode in string format.</returns>
         public static string Get5DigitZipCode(Faker faker)
         {
             return faker.Address.ZipCode("#####");
         }
 
+        /// <summary>
+        /// Returns an <see cref="IList{T}"/> of fake phone numbers in string format.
+        /// </summary>
+        /// <param name="faker"><see cref="Faker"/>.</param>
+        /// <returns>An <see cref="IList{T}"/> of fake phone numbers in string format.</returns>
         public static IList<string> GetPhoneNumbers(Faker faker)
         {
             return faker.Make(3, () => faker.Phone.PhoneNumber("7#########"));
         }
 
-        public static IList<PiiPhoneContract> GetPhones(Faker faker, IList<string> phoneNumbers = null)
+        /// <summary>
+        /// Return an <see cref="IList{T}"/> of fake <see cref="PiiCoreContracts.PiiPhoneContract"/>.
+        /// </summary>
+        /// <param name="faker"><see cref="Faker"/>.</param>
+        /// <param name="phoneNumbers">An <see cref="IList{T}"/> of phone numbers in string format.</param>
+        /// <returns>An <see cref="IList{T}"/> of <see cref="PiiCoreContracts.PiiPhoneContract"/>.</returns>
+        public static IList<PiiCoreContracts.PiiPhoneContract> GetPhones(Faker faker, IList<string> phoneNumbers = null)
         {
             if (phoneNumbers == null || phoneNumbers.Count == 0)
             {
@@ -48,20 +78,15 @@ namespace HumanaEdge.Webcore.Framework.Logging.Tests
             }
 
             var labels = new string[] { "home", "mobile", "work" };
-            var phones = new List<PiiPhoneContract>();
-
-            for (var i = 0; i < phoneNumbers.Count; i++)
-            {
-                var p = new PiiPhoneContract
+            var phones = phoneNumbers.Select((t, i) =>
+                new PiiCoreContracts.PiiPhoneContract
                 {
-                    PhoneNumber = phoneNumbers[i],
+                    PhoneNumber = t,
                     IsPrimary = faker.PickRandomParam(true, false),
                     IsMobile = faker.PickRandomParam(true, false),
                     Label = labels[i],
                     Extension = faker.PickRandomParam("222", "888", "999")
-                };
-                phones.Add(p);
-            }
+                }).ToList();
 
             if (!phones.Exists(x => x.IsPrimary == true))
             {
@@ -71,19 +96,30 @@ namespace HumanaEdge.Webcore.Framework.Logging.Tests
             return phones;
         }
 
-        public static IList<PiiEmailContract> GetEmails(Faker faker)
+        /// <summary>
+        /// Return an <see cref="IList{T}"/> of fake <see cref="PiiCoreContracts.PiiEmailContract"/>.
+        /// </summary>
+        /// <param name="faker"><see cref="Faker"/>.</param>
+        /// <returns>An <see cref="IList{T}"/> of <see cref="PiiCoreContracts.PiiEmailContract"/>.</returns>
+        public static IList<PiiCoreContracts.PiiEmailContract> GetEmails(Faker faker)
         {
-            return faker.Make(3,
-                (i) => new PiiEmailContract
+            return faker.Make(
+                count: 3,
+                (i) => new PiiCoreContracts.PiiEmailContract
                 {
                     EmailAddress = faker.Internet.Email(),
                     IsPrimary = faker.PickRandomParam(true, false)
                 });
         }
 
-        public static PiiAddressContract GetAddress(Faker faker)
+        /// <summary>
+        /// Return a fake <see cref="PiiCoreContracts.PiiAddressContract"/>.
+        /// </summary>
+        /// <param name="faker"><see cref="Faker"/>.</param>
+        /// <returns><see cref="PiiCoreContracts.PiiAddressContract"/>.</returns>
+        public static PiiCoreContracts.PiiAddressContract GetAddress(Faker faker)
         {
-            return new PiiAddressContract
+            return new PiiCoreContracts.PiiAddressContract
             {
                 AddressLine1 = faker.Address.StreetAddress(),
                 AddressLine2 = faker.Address.SecondaryAddress(),
@@ -94,9 +130,14 @@ namespace HumanaEdge.Webcore.Framework.Logging.Tests
             };
         }
 
-        public static PiiIdsContract GetIDs(Faker faker)
+        /// <summary>
+        /// Generate a fake <see cref="PiiCoreContracts.PiiIdsContract"/>.
+        /// </summary>
+        /// <param name="faker"><see cref="Faker"/>.</param>
+        /// <returns><see cref="PiiCoreContracts.PiiIdsContract"/>.</returns>
+        public static PiiCoreContracts.PiiIdsContract GetIDs(Faker faker)
         {
-            return new PiiIdsContract()
+            return new PiiCoreContracts.PiiIdsContract()
             {
                 MedicareId = faker.Random.String2(10),
                 MemberId = faker.Random.String2(12)
