@@ -44,6 +44,7 @@ namespace HumanaEdge.Webcore.Framework.Logging.Tests
 
             var log = new LoggerConfiguration()
                 .Destructure.UsingAttributes()
+                .WriteTo.Debug()
                 .WriteTo.Sink(new DelegatingSink(e => evt = e))
                 .CreateLogger();
 
