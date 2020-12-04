@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Google.Cloud.PubSub.V1;
 using Google.Protobuf;
 using HumanaEdge.Webcore.Core.Common.Serialization;
+using HumanaEdge.Webcore.Framework.PubSub.TraceContext;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
@@ -46,9 +48,13 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Publication
         private IDictionary<string, string> GetAttributes()
         {
             return new Dictionary<string, string>
-            {
-                { "RequestId", _httpContextAccessor?.HttpContext?.TraceIdentifier ?? Guid.NewGuid().ToString() },
-            };
+                {
+                    { TracingKeys.RequestId, _httpContextAccessor?.HttpContext?.TraceIdentifier ?? Guid.NewGuid().ToString() },
+                    { TracingKeys.TraceId, Activity.Current?.RootId ?? Guid.NewGuid().ToString() },
+                    { TracingKeys.SpanId, Activity.Current?.SpanId.ToString() ! },
+                    { TracingKeys.ParentId, Activity.Current?.ParentId ! }
+                }.Where(x => !string.IsNullOrEmpty(x.Value))
+                .ToDictionary(x => x.Key, x => x.Value);
         }
     }
 }

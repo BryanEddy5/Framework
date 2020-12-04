@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using FluentValidation.AspNetCore;
 using HumanaEdge.Webcore.Framework.DependencyInjection;
 using HumanaEdge.Webcore.Framework.DependencyInjection.Extensions;
@@ -53,6 +54,8 @@ namespace HumanaEdge.Webcore.Framework.Web
             IWebHostEnvironment env,
             ILogger<TStartup> logger)
         {
+            Activity.DefaultIdFormat = ActivityIdFormat.W3C;
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

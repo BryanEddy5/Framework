@@ -7,6 +7,7 @@ using HumanaEdge.Webcore.Core.Common.Serialization;
 using HumanaEdge.Webcore.Core.PubSub;
 using HumanaEdge.Webcore.Core.Telemetry;
 using HumanaEdge.Webcore.Core.Telemetry.PubSub;
+using HumanaEdge.Webcore.Framework.PubSub.TraceContext;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -36,6 +37,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub
         /// </summary>
         private readonly ITelemetryFactory _telemetryFactory;
 
+        private readonly IActivityFactory _activityFactory;
+
         private SubscriberClient? _subscriber;
 
         /// <summary>
@@ -49,14 +52,17 @@ namespace HumanaEdge.Webcore.Framework.PubSub
         /// A service that performs the business logic orchestration on the subscribed
         /// message.
         /// </param>
+        /// <param name="activityFactory">A factory for creating a new activity with W3C trace context.</param>
         public BaseSubscriberHostedService(
             ILogger<BaseSubscriberHostedService<TMessage>> logger,
             IOptionsMonitor<PubSubOptions> config,
             ISubscriberClientFactory subscriberClientFactory,
             ISubOrchestrationService<TMessage> subOrchestrationService,
-            ITelemetryFactory telemetryFactory = null!)
+            ITelemetryFactory telemetryFactory = null!,
+            IActivityFactory activityFactory = null!)
         {
             _telemetryFactory = telemetryFactory;
+            _activityFactory = activityFactory;
             _logger = logger;
             _config = config;
             _subscriptionName = new SubscriptionName(config.CurrentValue.ProjectId, config.CurrentValue.Name);
@@ -73,14 +79,19 @@ namespace HumanaEdge.Webcore.Framework.PubSub
             _ = _subscriber.StartAsync(
                 async (message, cancel) =>
                 {
+                    var activity = Activity.Current;
                     var success = true;
                     var stopwatch = new Stopwatch();
                     stopwatch.Start();
                     var messageData = message.Data.ToStringUtf8();
+
                     try
                     {
+                        activity = _activityFactory?.Create(message);
                         var deserializedMessage =
-                            JsonConvert.DeserializeObject<TMessage>(messageData, StandardSerializerConfiguration.Settings);
+                            JsonConvert.DeserializeObject<TMessage>(
+                                messageData,
+                                StandardSerializerConfiguration.Settings);
                         await _subOrchestrationService.ExecuteAsync(deserializedMessage!, cancel);
                         return SubscriberClient.Reply.Ack;
                     }
@@ -103,6 +114,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub
                         stopwatch.Stop();
                         var duration = stopwatch.ElapsedMilliseconds;
                         TrackTelemetry(success, duration, message);
+                        activity?.Stop();
                     }
                 });
         }
