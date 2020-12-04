@@ -14,6 +14,7 @@
     <PackageReference Include="Serilog.Settings.Configuration" Version="$(SerilogSettingsConfiguration)" />
     <PackageReference Include="Serilog.Exceptions" Version="$(SerilogExceptionsVersion)" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="$(SerilogSinksDebugVersion)" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="$(SerilogExtensionsHostingVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Core.Web\Core.Web.csproj" />

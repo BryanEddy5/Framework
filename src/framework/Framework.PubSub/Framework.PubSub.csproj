@@ -18,5 +18,6 @@
     <ProjectReference Include="..\..\core\Core.Common\Core.Common.csproj" />
     <ProjectReference Include="..\..\core\Core.PubSub\Core.PubSub.csproj" />
     <ProjectReference Include="..\..\core\Core.Telemetry\Core.Telemetry.csproj" />
+    <ProjectReference Include="..\Framework.Logging\Framework.Logging.csproj" />
   </ItemGroup>
 </Project>

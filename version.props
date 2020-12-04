@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup Label="Package versioning">
-    <VersionPrefix>1.1.0</VersionPrefix>
+    <VersionPrefix>1.2.0</VersionPrefix>
     <VersionSuffix Condition="'$(Channel)' != ''">$(Channel)-$(BuildTimestamp)</VersionSuffix>
   </PropertyGroup>
   <PropertyGroup Label="Runtime, .NET Framework Version, etc">
@@ -47,6 +47,7 @@
     <SerilogExceptionsVersion>5.4.0</SerilogExceptionsVersion>
     <SerilogSinksDebugVersion>1.0.1</SerilogSinksDebugVersion>
     <SerilogFormattingCompactReaderVersion>1.0.3</SerilogFormattingCompactReaderVersion>
+    <SerilogExtensionsHostingVersion>3.0.0</SerilogExtensionsHostingVersion>
     <DestructuramaAttributedVersion>2.0.0</DestructuramaAttributedVersion>
     <SwashbuckleVersion>5.5.1</SwashbuckleVersion>
     <SwashbuckleFiltersVersion>5.1.2</SwashbuckleFiltersVersion>

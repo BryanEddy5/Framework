@@ -1,6 +1,7 @@
 using HumanaEdge.Webcore.Core.PubSub;
 using HumanaEdge.Webcore.Framework.PubSub.Publication;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription;
+using HumanaEdge.Webcore.Framework.PubSub.TraceContext;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -34,10 +35,10 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
         {
             services.AddOptions();
             services.Configure<PubSubOptions>(configuration.GetSection(nameof(PubSubOptions)));
-            services
-                .AddTransient<ISubOrchestrationService<TMessage>, TMessageHandler>();
+            services.AddSingleton<ISubOrchestrationService<TMessage>, TMessageHandler>();
             services.AddHostedService<PubSubHostedService<TMessage>>();
-            services.AddTransient<ISubscriberClientFactory, SubscriberClientFactory>();
+            services.AddSingleton<ISubscriberClientFactory, SubscriberClientFactory>();
+            services.AddSingleton<IActivityFactory, ActivityFactory>();
         }
 
         /// <summary>

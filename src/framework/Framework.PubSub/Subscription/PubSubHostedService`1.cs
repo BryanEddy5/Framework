@@ -1,5 +1,6 @@
 ﻿using HumanaEdge.Webcore.Core.PubSub;
 using HumanaEdge.Webcore.Core.Telemetry;
+using HumanaEdge.Webcore.Framework.PubSub.TraceContext;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -22,13 +23,15 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription
         /// A service that performs the business logic orchestration on the subscribed
         /// message.
         /// </param>
+        /// <param name="activityFactory">A factory for creating a new activity with W3C trace context.</param>
         public PubSubHostedService(
             ILogger<BaseSubscriberHostedService<TMessage>> logger,
             IOptionsMonitor<PubSubOptions> config,
             ISubscriberClientFactory subscriberClientFactory,
             ISubOrchestrationService<TMessage> subOrchestrationService,
-            ITelemetryFactory telemetryFactory)
-            : base(logger, config, subscriberClientFactory, subOrchestrationService, telemetryFactory)
+            ITelemetryFactory telemetryFactory,
+            IActivityFactory activityFactory)
+            : base(logger, config, subscriberClientFactory, subOrchestrationService, telemetryFactory, activityFactory)
         {
         }
     }
