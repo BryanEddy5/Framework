@@ -36,7 +36,7 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Tests
         {
             _options = FakeData.Create<SecretsOptions>();
             _optionsMock = Moq.Create<IOptionsMonitor<SecretsOptions>>();
-            _optionsMock.Setup(x => x.CurrentValue).Returns(_options);
+            _optionsMock.Setup(x => x.Get(nameof(FakeSecret))).Returns(_options);
             _secretsHandlerMock = Moq.Create<ISecretsHandler>();
             _secretsService = new SecretsService<FakeSecret>(_secretsHandlerMock.Object, _optionsMock.Object);
         }

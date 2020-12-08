@@ -12,7 +12,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\example\WebApi\WebApi.csproj" />
+    <ProjectReference Include="..\..\..\example\src\WebApi\WebApi.csproj" />
     <ProjectReference Include="..\..\..\src\framework\Framework.Logging\Framework.Logging.csproj" />
     <ProjectReference Include="..\..\..\src\framework\Framework.Swagger\Framework.Swagger.csproj" />
     <ProjectReference Include="..\..\..\src\framework\Framework.Web\Framework.Web.csproj" />

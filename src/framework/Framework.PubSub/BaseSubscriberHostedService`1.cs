@@ -12,7 +12,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace HumanaEdge.Webcore.Framework.PubSub
 {
@@ -61,11 +60,12 @@ namespace HumanaEdge.Webcore.Framework.PubSub
             ITelemetryFactory telemetryFactory = null!,
             IActivityFactory activityFactory = null!)
         {
+            var settings = config.Get(typeof(TMessage).Name);
             _telemetryFactory = telemetryFactory;
             _activityFactory = activityFactory;
             _logger = logger;
             _config = config;
-            _subscriptionName = new SubscriptionName(config.CurrentValue.ProjectId, config.CurrentValue.Name);
+            _subscriptionName = new SubscriptionName(settings.ProjectId, settings.Name);
             _subscriberClientFactory = subscriberClientFactory;
             _subOrchestrationService = subOrchestrationService;
         }
@@ -73,8 +73,9 @@ namespace HumanaEdge.Webcore.Framework.PubSub
         /// <inheritdoc />
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            var settings = _config.Get(typeof(TMessage).Name);
             _logger.LogInformation("Subscriber hosted service is running.");
-            _subscriber = await _subscriberClientFactory.GetSubscriberClient(_subscriptionName, _config.CurrentValue);
+            _subscriber = await _subscriberClientFactory.GetSubscriberClient(_subscriptionName, settings);
 
             _ = _subscriber.StartAsync(
                 async (message, cancel) =>

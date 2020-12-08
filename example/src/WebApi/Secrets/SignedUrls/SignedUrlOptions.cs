@@ -11,7 +11,7 @@ namespace HumanaEdge.Webcore.Example.WebApi.Secrets.SignedUrls
         /// <summary>
         /// The service account for used for signed urls.
         /// </summary>
-        public string ServiceAccount { get; set; }
+        public string? ServiceAccount { get; set; }
 
         /// <summary>
         /// The lifetime of a signed url in hours.

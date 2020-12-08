@@ -1,10 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 
 namespace HumanaEdge.Webcore.Core.SecretsManager.Contracts
 {
     /// <summary>
     /// The json Key for a service account.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class ServiceAccountKey : ISecret
     {
         /// <summary>

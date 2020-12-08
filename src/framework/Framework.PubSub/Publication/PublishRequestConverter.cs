@@ -12,15 +12,15 @@ using Newtonsoft.Json;
 namespace HumanaEdge.Webcore.Framework.PubSub.Publication
 {
     /// <inheritdoc />
-    internal sealed class PublishPublishRequestConverter : IPublishRequestConverter
+    internal sealed class PublishRequestConverter : IPublishRequestConverter
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PublishPublishRequestConverter"/> class.
+        /// Initializes a new instance of the <see cref="PublishRequestConverter"/> class.
         /// </summary>
         /// <param name="httpContextAccessor">Accesses the http context.</param>
-        public PublishPublishRequestConverter(IHttpContextAccessor httpContextAccessor)
+        public PublishRequestConverter(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }

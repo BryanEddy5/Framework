@@ -18,11 +18,11 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
         /// <param name="services">The service collection.</param>
         public static void AddPubSub(this IServiceCollection services)
         {
-            services.AddTransient<ISubscriberClientFactory, SubscriberClientFactory>();
+            services.AddSingleton<ISubscriberClientFactory, SubscriberClientFactory>();
         }
 
         /// <summary>
-        /// Add a hosted service for subscribing to a GCP subscription.
+        /// Add a hosted service for subscribing to a GCP subscription.  It uses the default <see cref="PubSubOptions"/> key name.
         /// </summary>
         /// <param name="services">The service collection.</param>
         /// <param name="configuration">The app configuration settings.</param>
@@ -33,8 +33,26 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
             IConfiguration configuration)
             where TMessageHandler : class, ISubOrchestrationService<TMessage>
         {
+            services.AddSubscriptionHostedService<TMessage, TMessageHandler, PubSubOptions>(
+                configuration.GetSection(nameof(PubSubOptions)));
+        }
+
+        /// <summary>
+        /// Add a hosted service for subscribing to a GCP subscription.  Allows for multiple <see cref="PubSubOptions"/> configurations in appsettings.json.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        /// <param name="configurationSection">The app configuration settings.</param>
+        /// <typeparam name="TMessage">The deserialized message structure.</typeparam>
+        /// <typeparam name="TMessageHandler">The service that will consume the message.</typeparam>
+        /// /// <typeparam name="TOptions">The configuration options for setting up the subscription client.</typeparam>
+        public static void AddSubscriptionHostedService<TMessage, TMessageHandler, TOptions>(
+            this IServiceCollection services,
+            IConfigurationSection configurationSection)
+            where TMessageHandler : class, ISubOrchestrationService<TMessage>
+            where TOptions : PubSubOptions
+        {
             services.AddOptions();
-            services.Configure<PubSubOptions>(configuration.GetSection(nameof(PubSubOptions)));
+            services.Configure<PubSubOptions>(typeof(TMessage).Name, configurationSection);
             services.AddSingleton<ISubOrchestrationService<TMessage>, TMessageHandler>();
             services.AddHostedService<PubSubHostedService<TMessage>>();
             services.AddSingleton<ISubscriberClientFactory, SubscriberClientFactory>();
@@ -48,15 +66,17 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
         /// <typeparam name="TOptions">The configuration options for setting up the publisher client.</typeparam>
         /// <param name="services">The service collection.</param>
         /// <param name="configurationSection">The configuration section key for the <see cref="PublisherOptions"/>.</param>
-        public static void AddPublisherClient<TMessage, TOptions>(this IServiceCollection services, IConfigurationSection configurationSection)
-        where TMessage : class
-        where TOptions : PublisherOptions
+        public static void AddPublisherClient<TMessage, TOptions>(
+            this IServiceCollection services,
+            IConfigurationSection configurationSection)
+            where TMessage : class
+            where TOptions : PublisherOptions
         {
             services.AddOptions();
-            services.Configure<TOptions>(configurationSection);
+            services.Configure<PublisherOptions>(typeof(TMessage).Name, configurationSection);
             services.AddSingleton<IPublisherClient<TMessage>, PublisherClient<TMessage>>();
             services.AddSingleton<IPublisherClientFactory, PublisherClientFactory>();
-            services.AddSingleton<IPublishRequestConverter, PublishPublishRequestConverter>();
+            services.AddSingleton<IPublishRequestConverter, PublishRequestConverter>();
         }
     }
 }

@@ -61,7 +61,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
             _telemetryFactoryMock = Moq.Create<ITelemetryFactory>(MockBehavior.Loose);
             _loggerMock = Moq.Create<ILogger<PublisherClient<Foo>>>(MockBehavior.Loose);
 
-            _optionsMock.Setup(x => x.CurrentValue).Returns(_options);
+            _optionsMock.Setup(x => x.Get(nameof(Foo))).Returns(_options);
             _publisherClientFactoryMock.Setup(x => x.CreateAsync(_fakeTopicName, CancellationTokenSource.Token))
                 .ReturnsAsync(_internalPublisherClientMock.Object);
 

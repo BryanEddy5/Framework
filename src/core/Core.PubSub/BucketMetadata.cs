@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HumanaEdge.Webcore.Core.PubSub
 {
@@ -6,6 +7,7 @@ namespace HumanaEdge.Webcore.Core.PubSub
     /// The payload of a bucket subscription.
     /// Link to object shape and documentation https://cloud.google.com/storage/docs/json_api/v1/objects#resource-representations .
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class BucketMetadata
     {
         /// <summary>

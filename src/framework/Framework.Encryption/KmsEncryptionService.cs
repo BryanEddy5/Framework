@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
@@ -45,22 +46,22 @@ namespace HumanaEdge.Webcore.Framework.Encryption
         }
 
         /// <inheritdoc />
-        public async Task<string> EncryptSymmetric(string message)
+        public async Task<string> EncryptSymmetric(string message, CancellationToken cancellationToken = default)
         {
             var plaintext = Encoding.UTF8.GetBytes(message);
 
             var client = await _kmsClientFactory.CreateAsync();
-            var result = await client.EncryptAsync(GetCryptoKeyName(_options.CurrentValue), ByteString.CopyFrom(plaintext));
+            var result = await client.EncryptAsync(GetCryptoKeyName(_options.CurrentValue), ByteString.CopyFrom(plaintext), cancellationToken);
             return WebEncoders.Base64UrlEncode(result.Ciphertext.ToByteArray());
         }
 
         /// <inheritdoc />
-        public async Task<string> DecryptSymmetric(string cipherText)
+        public async Task<string> DecryptSymmetric(string cipherText, CancellationToken cancellationToken = default)
         {
             var cipherTextBytes = WebEncoders.Base64UrlDecode(cipherText);
 
             var client = await _kmsClientFactory.CreateAsync();
-            var result = await client.DecryptAsync(GetCryptoKeyName(_options.CurrentValue), ByteString.CopyFrom(cipherTextBytes));
+            var result = await client.DecryptAsync(GetCryptoKeyName(_options.CurrentValue), ByteString.CopyFrom(cipherTextBytes), cancellationToken);
             var plaintext = result.Plaintext.ToByteArray();
             return Encoding.UTF8.GetString(plaintext);
         }

@@ -3,13 +3,13 @@
     <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
     <AssemblyName>$(SolutionNamespaceRoot).Example.WebApi</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
-    <PreserveCompilationContext>true</PreserveCompilationContext>
     <Description>Example Web API Description (from project-&gt;package-&gt;description)</Description>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\framework\Framework.Encryption\Framework.Encryption.csproj" />
-    <ProjectReference Include="..\..\src\framework\Framework.SecretsManager\Framework.SecretsManager.csproj" />
-    <ProjectReference Include="..\..\src\framework\Framework.Web\Framework.Web.csproj" />
+    <ProjectReference Include="..\..\..\src\framework\Framework.Encryption\Framework.Encryption.csproj" />
+    <ProjectReference Include="..\..\..\src\framework\Framework.SecretsManager\Framework.SecretsManager.csproj" />
+    <ProjectReference Include="..\..\..\src\framework\Framework.Web\Framework.Web.csproj" />
+    <ProjectReference Include="..\Integration.CatFacts\Integration.CatFacts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Storage.V1" Version="$(GoogleCloudStorageV1Version)" />

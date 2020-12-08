@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -55,13 +56,13 @@ namespace HumanaEdge.Webcore.Framework.Encryption.Tests
                         m.EncryptAsync(
                             KmsEncryptionService.GetCryptoKeyName(_optionsValue),
                             ByteString.CopyFrom(Encoding.UTF8.GetBytes(testMessage)),
-                            null))
+                            CancellationTokenSource.Token))
                 .ReturnsAsync(encryptResponse);
 
             var service = new KmsEncryptionService(GetOptionsMock(), _mockKmsClientFactory.Object);
 
             // act
-            var encryptedBytes = await service.EncryptSymmetric(testMessage);
+            var encryptedBytes = await service.EncryptSymmetric(testMessage, CancellationTokenSource.Token);
 
             // assert
             encryptedBytes.Should()
@@ -99,13 +100,13 @@ namespace HumanaEdge.Webcore.Framework.Encryption.Tests
                         m.EncryptAsync(
                             KmsEncryptionService.GetCryptoKeyName(_optionsValue),
                             ByteString.CopyFromUtf8(testMessage),
-                            null))
+                            CancellationTokenSource.Token))
                 .ThrowsAsync(new Exception());
 
             var service = new KmsEncryptionService(GetOptionsMock(), _mockKmsClientFactory.Object);
 
             // act, assert
-            service.Awaiting(s => s.EncryptSymmetric(testMessage)).Should().Throw<Exception>();
+            service.Awaiting(s => s.EncryptSymmetric(testMessage, CancellationTokenSource.Token)).Should().Throw<Exception>();
         }
 
         /// <summary>
@@ -126,13 +127,13 @@ namespace HumanaEdge.Webcore.Framework.Encryption.Tests
                         m.DecryptAsync(
                             KmsEncryptionService.GetCryptoKeyName(_optionsValue),
                             ByteString.CopyFrom(WebEncoders.Base64UrlDecode(testString)),
-                            null))
+                            CancellationTokenSource.Token))
                 .ReturnsAsync(result);
 
             var service = new KmsEncryptionService(GetOptionsMock(), _mockKmsClientFactory.Object);
 
             // act
-            var decryptedString = await service.DecryptSymmetric(testString);
+            var decryptedString = await service.DecryptSymmetric(testString, CancellationTokenSource.Token);
 
             // assert
             responsePlaintext.Should().BeEquivalentTo(decryptedString);
@@ -170,18 +171,18 @@ namespace HumanaEdge.Webcore.Framework.Encryption.Tests
                         m.DecryptAsync(
                             KmsEncryptionService.GetCryptoKeyName(_optionsValue),
                             ByteString.CopyFrom(WebEncoders.Base64UrlDecode(testString)),
-                            null))
+                            CancellationTokenSource.Token))
                 .ThrowsAsync(new Exception());
 
             var service = new KmsEncryptionService(GetOptionsMock(), _mockKmsClientFactory.Object);
 
             // act, assert
-            service.Awaiting(s => s.DecryptSymmetric(testString)).Should().Throw<Exception>();
+            service.Awaiting(s => s.DecryptSymmetric(testString, CancellationTokenSource.Token)).Should().Throw<Exception>();
         }
 
         /// <summary>
-        /// Verifies that the encrypted value from <see cref="KmsEncryptionService.EncryptSymmetric(string)"/> can
-        /// be decrypted using <see cref="KmsEncryptionService.DecryptSymmetric(string)"/>.
+        /// Verifies that the encrypted value from <see cref="KmsEncryptionService.EncryptSymmetric(string, CancellationToken)"/> can
+        /// be decrypted using <see cref="KmsEncryptionService.DecryptSymmetric(string, CancellationToken)"/>.
         /// </summary>
         /// <returns>An awaitable task.</returns>
         [Fact]
@@ -196,7 +197,7 @@ namespace HumanaEdge.Webcore.Framework.Encryption.Tests
                         m.DecryptAsync(
                             KmsEncryptionService.GetCryptoKeyName(_optionsValue),
                             ByteString.CopyFromUtf8(fakeKey),
-                            null))
+                            CancellationTokenSource.Token))
                 .ReturnsAsync(result);
             var encryptResponse = FakeData.Create<EncryptResponse>();
             encryptResponse.Ciphertext = ByteString.CopyFromUtf8(fakeKey);
@@ -205,13 +206,13 @@ namespace HumanaEdge.Webcore.Framework.Encryption.Tests
                         m.EncryptAsync(
                             KmsEncryptionService.GetCryptoKeyName(_optionsValue),
                             ByteString.CopyFromUtf8(fakeKey),
-                            null))
+                            CancellationTokenSource.Token))
                 .ReturnsAsync(encryptResponse);
             var service = new KmsEncryptionService(GetOptionsMock(), _mockKmsClientFactory.Object);
 
             // act
-            var encryptedKey = await service.EncryptSymmetric(fakeKey);
-            var decryptedKey = await service.DecryptSymmetric(encryptedKey);
+            var encryptedKey = await service.EncryptSymmetric(fakeKey, CancellationTokenSource.Token);
+            var decryptedKey = await service.DecryptSymmetric(encryptedKey, CancellationTokenSource.Token);
 
             // assert
             decryptedKey.Should().BeEquivalentTo(fakeKey);
