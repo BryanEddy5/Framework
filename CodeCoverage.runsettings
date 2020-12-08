@@ -1,0 +1,7 @@
+<ModulePaths>
+    <Exclude>
+        <Exclude>
+            <ModulePath>.*example.*</ModulePath>
+        </Exclude>
+    </Exclude>
+</ModulePaths>

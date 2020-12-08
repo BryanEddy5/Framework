@@ -44,7 +44,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Publication
             IPublishRequestConverter publishRequestConverter,
             ITelemetryFactory telemetryFactory)
         {
-            _topicName = new TopicName(options.CurrentValue.ProjectId, options.CurrentValue.TopicName);
+            var config = options.Get(typeof(TMessage).Name);
+            _topicName = new TopicName(config.ProjectId, config.TopicName);
             _logger = logger;
             _publisherClientFactory = publisherClientFactory;
             _publishRequestConverter = publishRequestConverter;

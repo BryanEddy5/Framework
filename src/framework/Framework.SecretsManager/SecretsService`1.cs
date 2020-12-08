@@ -29,6 +29,6 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager
 
         /// <inheritdoc />
         public async Task<TSecret> GetAsync(CancellationToken cancellationToken) =>
-            await _handler.GetAsync<TSecret>(_options.CurrentValue.ToSecretsKey(), cancellationToken);
+            await _handler.GetAsync<TSecret>(_options.Get(typeof(TSecret).Name).ToSecretsKey(), cancellationToken);
     }
 }

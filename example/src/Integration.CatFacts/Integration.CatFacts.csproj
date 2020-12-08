@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(LibTargetFrameworkVersion)</TargetFramework>
+    <AssemblyName>$(SolutionNamespaceRoot).Example.Integration.CatFacts</AssemblyName>
+    <RootNamespace>$(AssemblyName)</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\core\Core.DependencyInjection\Core.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\..\src\core\Core.Rest\Core.Rest.csproj" />
+    <ProjectReference Include="..\Models.Immutable\Models.Immutable.csproj" />
+  </ItemGroup>
+</Project>

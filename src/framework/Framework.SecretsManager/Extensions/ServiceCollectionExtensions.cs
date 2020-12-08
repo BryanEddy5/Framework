@@ -42,7 +42,7 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Extensions
             where TSecret : ISecret
             where TSecretOptions : SecretsOptions
         {
-            services.Configure<TSecretOptions>(configuration);
+            services.Configure<SecretsOptions>(typeof(TSecret).Name, configuration);
             return services.AddSecret<TSecret>();
         }
 

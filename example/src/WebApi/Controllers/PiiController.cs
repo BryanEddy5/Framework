@@ -7,7 +7,7 @@ namespace HumanaEdge.Webcore.Example.WebApi.Controllers
     /// <summary>
     /// Tests PII Logging.
     /// </summary>
-    [Route("api/v1/[controller]")]
+    [Route("Pii")]
     [ApiController]
     public class PiiController : ControllerBase
     {
@@ -57,80 +57,80 @@ namespace HumanaEdge.Webcore.Example.WebApi.Controllers
             /// 123456789 results in "***".
             /// </summary>
             [LogMasked]
-            public string DefaultMasked { get; set; }
+            public string? DefaultMasked { get; set; }
 
             /// <summary>
             ///  123456789 results in "REMOVED".
             /// </summary>
             [LogMasked(Text = "REMOVED")]
-            public string CustomMasked { get; set; }
+            public string? CustomMasked { get; set; }
 
             /// <summary>
             ///  123456789 results in "123***".
             /// </summary>
             [LogMasked(ShowFirst = 3)]
-            public string ShowFirstThreeThenDefaultMasked { get; set; }
+            public string? ShowFirstThreeThenDefaultMasked { get; set; }
 
             /// <summary>
             ///  123456789 results in "123******".
             /// </summary>
             [LogMasked(ShowFirst = 3, PreserveLength = true)]
-            public string ShowFirstThreeThenDefaultMaskedPreserveLength { get; set; }
+            public string? ShowFirstThreeThenDefaultMaskedPreserveLength { get; set; }
 
             /// <summary>
             /// 123456789 results in "***789".
             /// </summary>
             [LogMasked(ShowLast = 3)]
-            public string ShowLastThreeThenDefaultMasked { get; set; }
+            public string? ShowLastThreeThenDefaultMasked { get; set; }
 
             /// <summary>
             /// 123456789 results in "******789".
             /// </summary>
             [LogMasked(ShowLast = 3, PreserveLength = true)]
-            public string ShowLastThreeThenDefaultMaskedPreserveLength { get; set; }
+            public string? ShowLastThreeThenDefaultMaskedPreserveLength { get; set; }
 
             /// <summary>
             ///  123456789 results in "123REMOVED".
             /// </summary>
             [LogMasked(Text = "REMOVED", ShowFirst = 3)]
-            public string ShowFirstThreeThenCustomMask { get; set; }
+            public string? ShowFirstThreeThenCustomMask { get; set; }
 
             /// <summary>
             ///  123456789 results in "REMOVED789".
             /// </summary>
             [LogMasked(Text = "REMOVED", ShowLast = 3)]
-            public string ShowLastThreeThenCustomMask { get; set; }
+            public string? ShowLastThreeThenCustomMask { get; set; }
 
             /// <summary>
             ///  123456789 results in "******789".
             /// </summary>
             [LogMasked(ShowLast = 3, PreserveLength = true)]
-            public string ShowLastThreeThenCustomMaskPreserveLength { get; set; }
+            public string? ShowLastThreeThenCustomMaskPreserveLength { get; set; }
 
             /// <summary>
             ///  123456789 results in "123******".
             /// </summary>
             [LogMasked(ShowFirst = 3, PreserveLength = true)]
-            public string ShowFirstThreeThenCustomMaskPreserveLength { get; set; }
+            public string? ShowFirstThreeThenCustomMaskPreserveLength { get; set; }
 
             /// <summary>
             /// 123456789 results in "123***789".
             /// </summary>
             [LogMasked(ShowFirst = 3, ShowLast = 3)]
-            public string ShowFirstAndLastThreeAndDefaultMaskInTheMiddle { get; set; }
+            public string? ShowFirstAndLastThreeAndDefaultMaskInTheMiddle { get; set; }
 
             /// <summary>
             ///  123456789 results in "123REMOVED789".
             /// </summary>
             [LogMasked(Text = "REMOVED", ShowFirst = 3, ShowLast = 3)]
-            public string ShowFirstAndLastThreeAndCustomMaskInTheMiddle { get; set; }
+            public string? ShowFirstAndLastThreeAndCustomMaskInTheMiddle { get; set; }
 
             /// <summary>
             ///  NOTE PreserveLength=true is ignored in this case
             ///  123456789 results in "123REMOVED789".
             /// </summary>
             [LogMasked(Text = "REMOVED", ShowFirst = 3, ShowLast = 3, PreserveLength = true)]
-            public string ShowFirstAndLastThreeAndCustomMaskInTheMiddle2 { get; set; }
+            public string? ShowFirstAndLastThreeAndCustomMaskInTheMiddle2 { get; set; }
         }
     }
 }
