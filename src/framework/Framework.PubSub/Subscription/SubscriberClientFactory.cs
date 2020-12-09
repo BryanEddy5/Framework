@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Google.Api.Gax;
 using Google.Cloud.PubSub.V1;
 using HumanaEdge.Webcore.Core.PubSub;
 
@@ -18,7 +19,9 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription
             var settings = new SubscriberClient.Settings
             {
                 AckDeadline = TimeSpan.FromSeconds(options.AckDeadlineSeconds),
-                AckExtensionWindow = TimeSpan.FromSeconds(options.AckExtensionWindowSeconds)
+                AckExtensionWindow = TimeSpan.FromSeconds(options.AckExtensionWindowSeconds),
+                FlowControlSettings = new FlowControlSettings(
+                    options.MaxMessageCount, options.MaxMessageByteCount)
             };
             return await SubscriberClient.CreateAsync(subscriptionName, null, settings);
         }

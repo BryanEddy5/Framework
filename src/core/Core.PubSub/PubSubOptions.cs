@@ -28,5 +28,15 @@ namespace HumanaEdge.Webcore.Core.PubSub
         /// The Id of the GCP Project in which the resource lives.
         /// </summary>
         public string? ProjectId { get; set; }
+
+        /// <summary>
+        /// The maximum amount of messages that will be processed in parallel.
+        /// </summary>
+        public long? MaxMessageCount { get; set; }
+
+        /// <summary>
+        /// The maximum size of message payload that the application will process in bytes.
+        /// </summary>
+        public long? MaxMessageByteCount { get; set; }
     }
 }
