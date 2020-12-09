@@ -86,6 +86,16 @@ The client incorporates telemetry of type `Subscription` that indicates if the m
 1. [Create a class that matches the shape of the Topic Message](example/src/WebApi/PubSub/FooContract.cs)
 1. [Register the service with classes from previous steps](example/src/WebApi/Startup.cs#L38)
 1. [Add configuration settings to appsettings.json](example/src/WebApi/appsettings.json#L27)
+#### Configuration - PubSubOptions
+Limiting number of messages processed in parallel has proven to be a valuable configuration setting.  By limiting the number of messages being processed we can ensure other integrated services aren't overwhelmed.  This was highlighted in the case of `ah-prv-contracting` sending hundreds of concurrent requests to `Nexus`.  
+Example of configuration in `appsettings.json`
+```
+  "FooPublisherOptions": {
+    "ProjectId": "project-containing-topic",
+    "TopicName": "the-topic-name",
+    "MaxMessageCount": 1 // Limits the number of messages processed in parallel to 1
+  },
+```
 
 
 #### Pub/Sub Exception
