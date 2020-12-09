@@ -90,11 +90,11 @@ The client incorporates telemetry of type `Subscription` that indicates if the m
 Limiting number of messages processed in parallel has proven to be a valuable configuration setting.  By limiting the number of messages being processed we can ensure other integrated services aren't overwhelmed.  This was highlighted in the case of `ah-prv-contracting` sending hundreds of concurrent requests to `Nexus`.  
 Example of configuration in `appsettings.json`
 ```
-  "FooPublisherOptions": {
-    "ProjectId": "project-containing-topic",
-    "TopicName": "the-topic-name",
+  "FooSubscriptionOptions": {
+    "ProjectId": "some-project-id",
+    "Name": "the-subscription-name",
     "MaxMessageCount": 1 // Limits the number of messages processed in parallel to 1
-  },
+  }
 ```
 
 
