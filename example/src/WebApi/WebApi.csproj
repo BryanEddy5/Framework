@@ -6,12 +6,19 @@
     <Description>Example Web API Description (from project-&gt;package-&gt;description)</Description>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\framework\Framework.Encryption\Framework.Encryption.csproj" />
-    <ProjectReference Include="..\..\..\src\framework\Framework.SecretsManager\Framework.SecretsManager.csproj" />
-    <ProjectReference Include="..\..\..\src\framework\Framework.Web\Framework.Web.csproj" />
-    <ProjectReference Include="..\Integration.CatFacts\Integration.CatFacts.csproj" />
+    <ProjectReference Include="../../../src/framework/Framework.Encryption/Framework.Encryption.csproj" />
+    <ProjectReference Include="../../../src/framework/Framework.SecretsManager/Framework.SecretsManager.csproj" />
+    <ProjectReference Include="../../../src/framework/Framework.Web/Framework.Web.csproj" />
+    <ProjectReference Include="../../../src/core/Core.Logging/Core.Logging.csproj" />
+    <ProjectReference Include="../Integration.CatFacts/Integration.CatFacts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Storage.V1" Version="$(GoogleCloudStorageV1Version)" />
-  </ItemGroup>
+    <PackageReference Include="Serilog.AspNetCore" Version="$(SerilogAspNetCoreVersion)" />
+    <PackageReference Include="Serilog.Exceptions" Version="$(SerilogExceptionsVersion)" />
+    <PackageReference Include="Serilog.Expressions" Version="$(SerilogExpressionsVersion)" />
+    <PackageReference Include="Serilog.Formatting.Compact" Version="$(SerilogFormattingCompactVersion)" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="$(SerilogSettingsConfigurationVersion)" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="$(SerilogSinksConsoleVersion)" />
+ </ItemGroup>
 </Project>

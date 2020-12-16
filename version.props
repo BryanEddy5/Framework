@@ -34,31 +34,33 @@
     <FluentAssertionsVersion>5.10.3</FluentAssertionsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Third party libs">
-    <AutofacVersion>5.2.0</AutofacVersion>
     <AutofacDependencyInjectionVersion>6.0.0</AutofacDependencyInjectionVersion>
-    <NewtonsoftJsonVersion>12.0.3</NewtonsoftJsonVersion>
-    <FluentValidationVersion>8.6.2</FluentValidationVersion>
-    <FluentAssertionsVersion>5.10.3</FluentAssertionsVersion>
-    <FluentAssertionsJsonVersion>5.5.0</FluentAssertionsJsonVersion>
-    <SerilogVersion>2.9.0</SerilogVersion>
-    <SerilogAspNetCore>3.2.0</SerilogAspNetCore>
-    <SerilogExtensionsLogging>3.0.1</SerilogExtensionsLogging>
-    <SerilogSettingsConfiguration>3.1.0</SerilogSettingsConfiguration>
-    <SerilogExceptionsVersion>5.4.0</SerilogExceptionsVersion>
-    <SerilogSinksDebugVersion>1.0.1</SerilogSinksDebugVersion>
-    <SerilogFormattingCompactReaderVersion>1.0.3</SerilogFormattingCompactReaderVersion>
-    <SerilogExtensionsHostingVersion>3.0.0</SerilogExtensionsHostingVersion>
-    <DestructuramaAttributedVersion>2.0.0</DestructuramaAttributedVersion>
-    <SwashbuckleVersion>5.5.1</SwashbuckleVersion>
-    <SwashbuckleFiltersVersion>5.1.2</SwashbuckleFiltersVersion>
-    <MicroElementsSwashbuckleFluentValidation>3.0.0-rc.3</MicroElementsSwashbuckleFluentValidation>
-    <StackdriverVersion>4.0.0</StackdriverVersion>
+    <AutofacVersion>5.2.0</AutofacVersion>
     <CorrelationIdVersion>3.0.0</CorrelationIdVersion>
-    <NewtonsoftJsonVersion>12.0.3</NewtonsoftJsonVersion>
-    <GoogleCloudKmsVersion>2.0.0</GoogleCloudKmsVersion>
+    <DestructuramaAttributedVersion>2.0.0</DestructuramaAttributedVersion>
     <EqualsFodyVersion>4.0.1</EqualsFodyVersion>
-    <GooglePubSub>2.1.0</GooglePubSub>
+    <FluentAssertionsJsonVersion>5.5.0</FluentAssertionsJsonVersion>
+    <FluentAssertionsVersion>5.10.3</FluentAssertionsVersion>
+    <FluentValidationVersion>8.6.2</FluentValidationVersion>
+    <GoogleCloudKmsVersion>2.0.0</GoogleCloudKmsVersion>
     <GoogleCloudSecretManagerV1Version>1.1.0</GoogleCloudSecretManagerV1Version>
     <GoogleCloudStorageV1Version>3.3.0</GoogleCloudStorageV1Version>
+    <GooglePubSub>2.1.0</GooglePubSub>
+    <MicroElementsSwashbuckleFluentValidation>3.0.0-rc.3</MicroElementsSwashbuckleFluentValidation>
+    <NewtonsoftJsonVersion>12.0.3</NewtonsoftJsonVersion>
+    <SerilogAspNetCoreVersion>3.2.0</SerilogAspNetCoreVersion>
+    <SerilogExceptionsVersion>5.4.0</SerilogExceptionsVersion>
+    <SerilogExpressionsVersion>1.0.0</SerilogExpressionsVersion>
+    <SerilogExtensionsHostingVersion>3.0.0</SerilogExtensionsHostingVersion>
+    <SerilogExtensionsLoggingVersion>3.0.1</SerilogExtensionsLoggingVersion>
+    <SerilogFormattingCompactVersion>1.1.0</SerilogFormattingCompactVersion>
+    <SerilogFormattingCompactReaderVersion>1.0.3</SerilogFormattingCompactReaderVersion>
+    <SerilogSettingsConfigurationVersion>3.1.0</SerilogSettingsConfigurationVersion>
+    <SerilogSinksConsoleVersion>3.1.1</SerilogSinksConsoleVersion>
+    <SerilogSinksDebugVersion>1.0.1</SerilogSinksDebugVersion>
+    <SerilogVersion>2.10.0</SerilogVersion>
+    <StackdriverVersion>4.0.0</StackdriverVersion>
+    <SwashbuckleFiltersVersion>5.1.2</SwashbuckleFiltersVersion>
+    <SwashbuckleVersion>5.5.1</SwashbuckleVersion>
   </PropertyGroup>
 </Project>
