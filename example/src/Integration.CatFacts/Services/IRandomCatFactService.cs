@@ -15,7 +15,7 @@ namespace HumanaEdge.Webcore.Example.Integration.CatFacts.Services
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A random cat fact of the day.</returns>
-        Task<CatFact> GetAsync(CancellationToken cancellationToken);
+        Task<CatFact?> GetAsync(CancellationToken cancellationToken);
 
         /// <summary>
         /// Creates a random cat fact.
