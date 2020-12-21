@@ -171,6 +171,36 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Tests
 
         }
 
+        /// <summary>
+        /// Validates that all non prod envs and prod envs are listed in the servers section.
+        /// </summary>
+        /// <returns>A <see cref="Task" /> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task ValidateAllEnvs()
+        {
+            await AssertSwaggerJsonMatchesExpected(
+                "$.servers",
+#pragma warning disable SA1118 // Parameter should not span multiple lines
+                @"[
+                  {
+                    'url': 'http://localhost'
+                  },
+                  {
+                    'url': 'https://apigw-np.humanaedge.com/api/cxp/example'
+                  },
+                  {
+                    'url': 'https://apigw-np.humanaedge.com/api/cxp/example-sit'
+                  },
+                  {
+                    'url': 'https://apigw-np.humanaedge.com/api/cxp/example-uat'
+                  },
+                  {
+                    'url': 'https://apigw.humanaedge.com/api/cxp/example'
+                  }
+                ]");
+#pragma warning restore SA1118 // Parameter should not span multiple lines
+        }
+
         private async Task AssertSwaggerJsonMatchesExpected(string actualSwaggerJpath, string expectedJson)
         {
             var actualValidateResult = await GetSwaggerJObject(actualSwaggerJpath);
