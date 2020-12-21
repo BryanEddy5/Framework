@@ -56,6 +56,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
         /// <typeparam name="TResponse">The <see cref="Type" /> to be deserialized to.</typeparam>
         /// <returns>The designated <see cref="Type" />.</returns>
         public TResponse ConvertTo<TResponse>()
+            where TResponse : class
         {
             if (ResponseBytes.Length == 0 || _mediaTypeHeaderValue?.MediaType == null)
             {

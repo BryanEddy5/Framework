@@ -36,7 +36,7 @@ namespace HumanaEdge.Webcore.Example.Integration.CatFacts.Services
         }
 
         /// <inheritdoc />
-        public async Task<CatFact> GetAsync(CancellationToken cancellationToken)
+        public async Task<CatFact?> GetAsync(CancellationToken cancellationToken)
         {
             var request = new RestRequest(RelativePath, HttpMethod.Get);
 
@@ -52,7 +52,7 @@ namespace HumanaEdge.Webcore.Example.Integration.CatFacts.Services
                 throw new CatFactsException($"Cat Facts integration failed. HTTP Status Code: {response.StatusCode}");
             }
 
-            return response.ConvertTo<RandomCatFactsResponse>().ToCatFact();
+            return response.ConvertTo<RandomCatFactsResponse>()?.ToCatFact();
         }
 
         /// <inheritdoc/>

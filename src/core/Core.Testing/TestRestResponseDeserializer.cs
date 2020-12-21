@@ -28,9 +28,10 @@ namespace HumanaEdge.Webcore.Core.Testing
         public byte[] ResponseBytes { get; }
 
         /// <inheritdoc/>
-        public TResponse ConvertTo<TResponse>()
+        public TResponse? ConvertTo<TResponse>()
+            where TResponse : class
         {
-            return (TResponse)_responseGenerator(typeof(TResponse));
+            return _responseGenerator(typeof(TResponse)) as TResponse;
         }
     }
 }

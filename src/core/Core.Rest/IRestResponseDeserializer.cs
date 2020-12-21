@@ -17,6 +17,7 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// </summary>
         /// <typeparam name="TResponse">The <see cref="Type" /> to be deserialized to.</typeparam>
         /// <returns>The designated <see cref="Type" /> to be deserialized.</returns>
-        TResponse ConvertTo<TResponse>();
+        TResponse? ConvertTo<TResponse>()
+            where TResponse : class;
     }
 }

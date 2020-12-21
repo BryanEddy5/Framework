@@ -34,10 +34,10 @@ namespace HumanaEdge.Webcore.Example.WebApi.Controllers
         /// <param name="cancellationToken">The request cancellation token.</param>
         /// <returns>A random, fun cat fact.</returns>
         [HttpGet]
-        public async Task<ActionResult<RandomCatFactResponse>> Get(CancellationToken cancellationToken)
+        public async Task<ActionResult<RandomCatFactResponse?>> Get(CancellationToken cancellationToken)
         {
             var catFact = await _randomCatFactService.GetAsync(cancellationToken);
-            return catFact.ToRandomCatFactResponse();
+            return catFact?.ToRandomCatFactResponse();
         }
     }
 }
