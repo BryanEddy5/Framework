@@ -44,6 +44,8 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
             swaggerDoc.Servers = new List<OpenApiServer>
             {
                 new OpenApiServer { Url = _configSettings.NonProdServerBaseAndSuffix },
+                new OpenApiServer { Url = $"{_configSettings.NonProdServerBaseAndSuffix}-sit" },
+                new OpenApiServer { Url = $"{_configSettings.NonProdServerBaseAndSuffix}-uat" },
                 new OpenApiServer { Url = _configSettings.ProductionServerBaseAndSuffix }
             };
             if (_currentServiceHostUri.Contains("localhost"))
