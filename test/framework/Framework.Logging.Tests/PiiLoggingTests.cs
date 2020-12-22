@@ -91,7 +91,7 @@ namespace HumanaEdge.Webcore.Framework.Logging.Tests
             // Assert
             var logJson = sw.ToString();
             var logLines = logJson.Split(
-                new[] { Environment.NewLine },
+                new[] { "\n" }, // line separator that Serilog produces is always \n even on Windows.
                 StringSplitOptions.None);
 
             foreach (var line in logLines.Where(l => !string.IsNullOrWhiteSpace(l)))
