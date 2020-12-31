@@ -227,6 +227,148 @@ Steps to configure overrides:
 }
 
 ```
+## PII Logging and Masking
+The HumanaEdge.Webcore.Framework.Logging package itself includes the Destructurama package which allows attributed based masking for PII-sensitive properties of any objects that are serialized via Serilog into Stackdriver. So, for example, one can safely log an Entity object for diagnostic purposes into Stackdriver because all the PII-sensitive properties will be masked appropriately. Here is a complete example (as of 2020-12-31) of supported masks that can be applied to properties.
+
+```
+        /// <summary>
+        /// A sample credit card class to demonstrate Destructurama.Attributed masking.
+        /// </summary>
+        public class CreditCard
+        {
+            /// <summary>
+            /// 123456789 results in "***".
+            /// </summary>
+            [LogMasked]
+            public string? DefaultMasked { get; set; }
+
+            /// <summary>
+            ///  123456789 results in "REMOVED".
+            /// </summary>
+            [LogMasked(Text = "REMOVED")]
+            public string? CustomMasked { get; set; }
+
+            /// <summary>
+            ///  123456789 results in "123***".
+            /// </summary>
+            [LogMasked(ShowFirst = 3)]
+            public string? ShowFirstThreeThenDefaultMasked { get; set; }
+
+            /// <summary>
+            ///  123456789 results in "123******".
+            /// </summary>
+            [LogMasked(ShowFirst = 3, PreserveLength = true)]
+            public string? ShowFirstThreeThenDefaultMaskedPreserveLength { get; set; }
+
+            /// <summary>
+            /// 123456789 results in "***789".
+            /// </summary>
+            [LogMasked(ShowLast = 3)]
+            public string? ShowLastThreeThenDefaultMasked { get; set; }
+
+            /// <summary>
+            /// 123456789 results in "******789".
+            /// </summary>
+            [LogMasked(ShowLast = 3, PreserveLength = true)]
+            public string? ShowLastThreeThenDefaultMaskedPreserveLength { get; set; }
+
+            /// <summary>
+            ///  123456789 results in "123REMOVED".
+            /// </summary>
+            [LogMasked(Text = "REMOVED", ShowFirst = 3)]
+            public string? ShowFirstThreeThenCustomMask { get; set; }
+
+            /// <summary>
+            ///  123456789 results in "REMOVED789".
+            /// </summary>
+            [LogMasked(Text = "REMOVED", ShowLast = 3)]
+            public string? ShowLastThreeThenCustomMask { get; set; }
+
+            /// <summary>
+            ///  123456789 results in "******789".
+            /// </summary>
+            [LogMasked(ShowLast = 3, PreserveLength = true)]
+            public string? ShowLastThreeThenCustomMaskPreserveLength { get; set; }
+
+            /// <summary>
+            ///  123456789 results in "123******".
+            /// </summary>
+            [LogMasked(ShowFirst = 3, PreserveLength = true)]
+            public string? ShowFirstThreeThenCustomMaskPreserveLength { get; set; }
+
+            /// <summary>
+            /// 123456789 results in "123***789".
+            /// </summary>
+            [LogMasked(ShowFirst = 3, ShowLast = 3)]
+            public string? ShowFirstAndLastThreeAndDefaultMaskInTheMiddle { get; set; }
+
+            /// <summary>
+            ///  123456789 results in "123REMOVED789".
+            /// </summary>
+            [LogMasked(Text = "REMOVED", ShowFirst = 3, ShowLast = 3)]
+            public string? ShowFirstAndLastThreeAndCustomMaskInTheMiddle { get; set; }
+
+            /// <summary>
+            ///  NOTE PreserveLength=true is ignored in this case
+            ///  123456789 results in "123REMOVED789".
+            /// </summary>
+            [LogMasked(Text = "REMOVED", ShowFirst = 3, ShowLast = 3, PreserveLength = true)]
+            public string? ShowFirstAndLastThreeAndCustomMaskInTheMiddle2 { get; set; }
+        }
+```
+The test for validating that these properties are indeed masked as specified when logged lives [here](https://gitlab.humanaedge.com/glb/webcore/-/blob/master/test/framework/Framework.Logging.Tests/PiiLoggingTests.cs).
+
+In HumanaEdge.Integration.Nexus (a Nuget package which Nexus clients consume in order to integrate with Nexus), Entities uses these attributes as follows, so any Nexus client that uses these contracts can safely log Entity objects into Stackdriver without worrying about PII leakage.
+```
+    public class BaseEntityContract<TIds, TRole, TPhone, TEmail>
+        where TIds : IdsContract
+        where TRole : RoleContract
+        where TPhone : PhoneContract
+        where TEmail : EmailContract
+    {
+        public virtual string EntityId { get; set; }
+
+        public TIds Ids { get; set; }
+
+        [LogMasked(PreserveLength = true, ShowLast = 1)]
+        public string FirstName { get; set; }
+
+        [LogMasked(PreserveLength = true, ShowLast = 1)]
+        public string LastName { get; set; }
+
+        [LogMasked(PreserveLength = true)]
+        public string MiddleName { get; set; }
+
+        [LogMasked(PreserveLength = true, ShowLast = 1)]
+        public string PreferredName { get; set; }
+
+        [LogMasked(PreserveLength = true)]
+        public string Title { get; set; }
+
+        [LogMasked(PreserveLength = true)]
+        public string Suffix { get; set; }
+
+        public string Gender { get; set; }
+
+        [LogMasked(PreserveLength = true, ShowLast = 5)]
+        public virtual string BirthDate { get; set; }
+
+        // Other properties snipped for brevity
+    }
+
+    public class IdsContract
+    {
+        [LogMasked(PreserveLength = true, ShowLast = 4)]
+        public virtual string SSN { get; set; }
+
+        [LogMasked(PreserveLength = true, ShowFirst = 1, ShowLast = 2)]
+        public string MedicareId { get; set; }
+
+        [LogMasked(PreserveLength = true, ShowFirst = 1, ShowLast = 2)]
+        public string MemberId { get; set; }
+    }
+```
+Please refer to Destructurama's [github](https://github.com/destructurama/attributed) for additional documentation and future enhacements that may become available upon refreshing this package.
 
 ## W3C Trace Context
 By default all of our services (when utilizing webcore) will propagate trace identifiers.   Tracing is critical because it allows us to tie together logs and events from a single request as it crosses boundaries of microservices either through HTTP or Pub/Sub messages.
