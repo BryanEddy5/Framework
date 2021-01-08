@@ -9,6 +9,7 @@
     <PackageReference Include="AutoFixture" Version="$(AutoFixtureVersion)" />
     <PackageReference Include="AutoFixture.Xunit2" Version="$(AutoFixtureVersion)" />
     <PackageReference Include="AutoFixture.AutoMoq" Version="$(AutoFixtureVersion)" />
+    <PackageReference Include="RestSharp" Version="$(RestSharpVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core.Rest\Core.Rest.csproj" />
