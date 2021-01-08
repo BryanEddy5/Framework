@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
+    <AssemblyName>$(SolutionNamespaceRoot).Framework.Testing</AssemblyName>
+    <RootNamespace>$(AssemblyName)</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(MicrosoftExtensionsVersion)"/>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsVersion)"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsVersion)"/>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Xunit.DependencyInjection" Version="$(xUnitDependencyInjectionVersion)"/>
+    <PackageReference Include="RestSharp" Version="$(RestSharpVersion)"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\Core.Testing\Core.Testing.csproj"/>
+  </ItemGroup>
+</Project>
