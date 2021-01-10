@@ -66,9 +66,9 @@ namespace HumanaEdge.Webcore.Framework.Web
                 app.UseHsts();
             }
 
-            app.UseMiddleware<ExceptionHandlingMiddleware>()
+            app.UseMiddleware<RequestInfoMiddleware>()
                 .UseRequestLoggingMiddleware()
-                .UseMiddleware<RequestInfoMiddleware>();
+                .UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseSwaggerDocumentation(Configuration);
             app.UseRouting();
