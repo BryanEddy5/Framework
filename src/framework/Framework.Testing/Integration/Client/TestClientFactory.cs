@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using HumanaEdge.Webcore.Core.Rest;
 using HumanaEdge.Webcore.Core.Testing.Client;
 using HumanaEdge.Webcore.Core.Testing.Transformations;
 using HumanaEdge.Webcore.Framework.Testing.Integration.Serializers;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RestSharp;
+using IRestClient = RestSharp.IRestClient;
 
 namespace HumanaEdge.Webcore.Framework.Testing.Integration.Client
 {
@@ -44,7 +46,7 @@ namespace HumanaEdge.Webcore.Framework.Testing.Integration.Client
             var restClient = new RestClient(new Uri(requestOptions.BaseUrl!));
             CreateRequest(requestOptions, restClient);
 
-            restClient.AddHandler("application/json", () => new NewtonsoftSerializer(GetSettings()));
+            restClient.AddHandler(MediaType.Json.MimeType, () => new NewtonsoftSerializer(GetSettings()));
 
             var asyncTransformations = _asyncRequestTransformations.Where(x => x.ClientNames.Contains(name)).ToArray();
             var transformations = _requestTransformations.Where(x => x.ClientNames.Contains(name)).ToArray();

@@ -1,3 +1,4 @@
+using HumanaEdge.Webcore.Core.Rest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -25,7 +26,7 @@ namespace HumanaEdge.Webcore.Framework.Testing.Integration.Serializers
         /// <inheritdoc />
         public string ContentType
         {
-            get => "application/json";
+            get => MediaType.Json.MimeType;
             set { }
         }
 
