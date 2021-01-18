@@ -1,7 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ILogger = Serilog.ILogger;
 
 namespace HumanaEdge.Webcore.Example.WebApi.Controllers
 {
