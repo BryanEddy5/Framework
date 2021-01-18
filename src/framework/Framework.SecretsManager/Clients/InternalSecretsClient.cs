@@ -1,12 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Cloud.SecretManager.V1;
 using HumanaEdge.Webcore.Core.Common.Serialization;
 using HumanaEdge.Webcore.Core.SecretsManager.Contracts;
+using HumanaEdge.Webcore.Core.SecretsManager.Converters;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 
 namespace HumanaEdge.Webcore.Framework.SecretsManager.Clients
 {
@@ -21,15 +21,32 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Clients
             SecretsKey secretsOptions,
             CancellationToken cancellationToken)
         {
+            var result = await GetSecret(secretsOptions, cancellationToken);
+            return JsonConvert.DeserializeObject<TSecret>(
+                result.Payload.Data.ToStringUtf8(),
+                StandardSerializerConfiguration.Settings) !;
+        }
+
+        /// <inheritdoc />
+        public async Task<Stream> GetAsync(SecretsOptions secretsOptions, CancellationToken cancellationToken)
+        {
+            var result = await GetSecret(secretsOptions.ToSecretsKey(), cancellationToken);
+
+            return new MemoryStream(result.Payload.Data.ToByteArray());
+        }
+
+        private async Task<AccessSecretVersionResponse> GetSecret(
+            SecretsKey secretsOptions,
+            CancellationToken cancellationToken)
+        {
             _client ??= await SecretManagerServiceClient.CreateAsync(cancellationToken);
 
-            var result = await _client.AccessSecretVersionAsync(
+            return await _client.AccessSecretVersionAsync(
                 new SecretVersionName(
                     secretsOptions.ProjectId,
                     secretsOptions.SecretId,
                     secretsOptions.SecretVersionId),
                 cancellationToken);
-            return JsonConvert.DeserializeObject<TSecret>(result.Payload.Data.ToStringUtf8(), StandardSerializerConfiguration.Settings) !;
         }
     }
 }

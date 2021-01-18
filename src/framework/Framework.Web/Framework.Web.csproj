@@ -16,6 +16,7 @@
     <ProjectReference Include="..\Framework.Logging\Framework.Logging.csproj" />
     <ProjectReference Include="..\Framework.PubSub\Framework.PubSub.csproj" />
     <ProjectReference Include="..\Framework.Rest\Framework.Rest.csproj" />
+    <ProjectReference Include="..\Framework.SecretsManager\Framework.SecretsManager.csproj" />
     <ProjectReference Include="..\Framework.Swagger\Framework.Swagger.csproj" />
     <ProjectReference Include="..\Framework.Telemetry\Framework.Telemetry.csproj" />
   </ItemGroup>

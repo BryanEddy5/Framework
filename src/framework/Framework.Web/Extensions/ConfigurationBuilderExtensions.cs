@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using HumanaEdge.Webcore.Framework.SecretsManager.Extensions;
 using Microsoft.Extensions.Configuration;
 
 namespace HumanaEdge.Webcore.Framework.Web.Extensions
@@ -21,9 +22,9 @@ namespace HumanaEdge.Webcore.Framework.Web.Extensions
         public static IConfigurationBuilder AddConfigOptions(
             this IConfigurationBuilder builder,
             string[]? args = null,
-            string secretsName = "SECRETS")
+            string? secretsName = null)
         {
-            var secretsFilePathFromEnvironment = Environment.GetEnvironmentVariable(secretsName);
+            var secretsFilePathFromEnvironment = Environment.GetEnvironmentVariable(secretsName ?? "SECRETS");
             var secretsFilePath = string.IsNullOrWhiteSpace(secretsFilePathFromEnvironment)
                 ? "secrets/appsettings.Secrets.json"
                 : secretsFilePathFromEnvironment;
@@ -36,6 +37,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Extensions
                     true,
                     true)
                 .AddJsonFile(secretsFilePath, true, true)
+                .AddGcpSecrets(secretsName)
                 .AddEnvironmentVariables();
 
             if (args?.Any() == true)
