@@ -18,6 +18,7 @@
     <PackageReference Include="Serilog.Extensions.Hosting" Version="$(SerilogExtensionsHostingVersion)" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\core\Core.Logging\Core.Logging.csproj" />
     <ProjectReference Include="..\..\core\Core.Web\Core.Web.csproj" />
   </ItemGroup>
 </Project>
