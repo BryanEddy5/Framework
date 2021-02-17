@@ -1,4 +1,5 @@
 using System;
+using Google.Api;
 using HumanaEdge.Webcore.Core.SecretsManager.Contracts;
 using HumanaEdge.Webcore.Framework.SecretsManager.Clients;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +25,8 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Extensions
         {
             var secretProject = Environment.GetEnvironmentVariable("GCP_SECRETS_PROJECT");
             secretId ??= Environment.GetEnvironmentVariable("GITLAB_PROJECT_NAME");
-            if (secretProject != null)
+            var isActive = Environment.GetEnvironmentVariable("GCP_SECRETS_ACTIVE");
+            if (secretProject != null && isActive != null)
             {
                 var stream = new InternalSecretsClient().GetAsync(
                         new SecretsOptions
