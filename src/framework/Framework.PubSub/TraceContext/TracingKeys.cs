@@ -29,5 +29,10 @@ namespace HumanaEdge.Webcore.Framework.PubSub.TraceContext
         /// A unique identifier for the request.
         /// </summary>
         public const string RequestId = "RequestId";
+
+        /// <summary>
+        /// Conforms to the W3C traceparent header that propagates trace context for distributed systems.
+        /// </summary>
+        public const string TraceParent = "traceparent";
     }
 }

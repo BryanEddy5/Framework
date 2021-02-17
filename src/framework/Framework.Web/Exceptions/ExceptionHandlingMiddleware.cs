@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -106,11 +107,13 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
                 statusCode = httpException.StatusCode;
             }
 
+            var traceId = Activity.Current?.TraceId.ToString();
             var response = new ProblemDetail(
                 DefaultErrorMessage,
                 httpContext.TraceIdentifier ?? Guid.NewGuid().ToString(),
                 statusCode,
-                message);
+                message,
+                traceId !);
             if (_options.CurrentValue.ShowExceptionDetails)
             {
                 response = new DebugProblemDetail(
