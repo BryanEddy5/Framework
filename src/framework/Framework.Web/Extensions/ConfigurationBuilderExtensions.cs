@@ -29,14 +29,21 @@ namespace HumanaEdge.Webcore.Framework.Web.Extensions
                 ? "secrets/appsettings.Secrets.json"
                 : secretsFilePathFromEnvironment;
 
+            var reloadOnChange = false;
+
+            // We don't hot swap configuration settings when deployed.  Hot reload configuration changes only when running locally.
+#if DEBUG
+            reloadOnChange = true;
+#endif
+
             // values override in order added
             builder
-                .AddJsonFile("appsettings.Local.json", true, true)
+                .AddJsonFile("appsettings.Local.json", true, reloadOnChange)
                 .AddJsonFile(
                     $"{Environment.GetEnvironmentVariable("APP_ROOT")}/config/appsettings.overrides.json",
                     true,
-                    true)
-                .AddJsonFile(secretsFilePath, true, true)
+                    reloadOnChange)
+                .AddJsonFile(secretsFilePath, true, reloadOnChange)
                 .AddGcpSecrets(secretsName)
                 .AddEnvironmentVariables();
 
