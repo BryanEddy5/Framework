@@ -53,7 +53,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Publication
                     { TracingKeys.TraceId, Activity.Current?.RootId ?? Guid.NewGuid().ToString() },
                     { TracingKeys.SpanId, Activity.Current?.SpanId.ToString() ! },
                     { TracingKeys.ParentId, Activity.Current?.ParentId ! },
-                    { TracingKeys.TraceParent, Activity.Current?.TraceId.ToString() ! }
+                    { TracingKeys.TraceParent, Activity.Current?.Id ! }
                 }.Where(x => !string.IsNullOrEmpty(x.Value))
                 .ToDictionary(x => x.Key, x => x.Value);
         }

@@ -107,7 +107,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
                 statusCode = httpException.StatusCode;
             }
 
-            var traceId = Activity.Current?.TraceId.ToString();
+            var traceId = Activity.Current?.Id;
             var response = new ProblemDetail(
                 DefaultErrorMessage,
                 httpContext.TraceIdentifier ?? Guid.NewGuid().ToString(),
