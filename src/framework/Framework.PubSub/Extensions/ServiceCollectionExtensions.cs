@@ -1,3 +1,4 @@
+using System;
 using HumanaEdge.Webcore.Core.PubSub;
 using HumanaEdge.Webcore.Framework.PubSub.Publication;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription;
@@ -51,6 +52,22 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
             where TMessageHandler : class, ISubOrchestrationService<TMessage>
             where TOptions : PubSubOptions
         {
+            services.AddSubscriptionHostedService<TMessage, TMessageHandler>(configurationSection);
+        }
+
+        /// <summary>
+        /// Add a hosted service for subscribing to a GCP subscription.  Allows for multiple <see cref="PubSubOptions"/> configurations in appsettings.json.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        /// <param name="configurationSection">The app configuration settings.</param>
+        /// <typeparam name="TMessage">The deserialized message structure.</typeparam>
+        /// <typeparam name="TMessageHandler">The service that will consume the message.</typeparam>
+        public static void AddSubscriptionHostedService<TMessage, TMessageHandler>(
+            this IServiceCollection services,
+            IConfigurationSection configurationSection)
+            where TMessageHandler : class, ISubOrchestrationService<TMessage>
+            where TMessage : class
+        {
             services.AddOptions();
             services.Configure<PubSubOptions>(typeof(TMessage).Name, configurationSection);
             services.AddSingleton<ISubOrchestrationService<TMessage>, TMessageHandler>();
@@ -66,11 +83,26 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
         /// <typeparam name="TOptions">The configuration options for setting up the publisher client.</typeparam>
         /// <param name="services">The service collection.</param>
         /// <param name="configurationSection">The configuration section key for the <see cref="PublisherOptions"/>.</param>
+        [Obsolete("This method has been deprecated and replaced by AddPublisherClient<TMessage>")]
         public static void AddPublisherClient<TMessage, TOptions>(
             this IServiceCollection services,
             IConfigurationSection configurationSection)
             where TMessage : class
             where TOptions : PublisherOptions
+        {
+            services.AddPublisherClient<TMessage>(configurationSection);
+        }
+
+        /// <summary>
+        /// Registers a publisher client for publishing messages to a topic.
+        /// </summary>
+        /// <typeparam name="TMessage">The published message shape.</typeparam>
+        /// <param name="services">The service collection.</param>
+        /// <param name="configurationSection">The configuration section key for the <see cref="PublisherOptions"/>.</param>
+        public static void AddPublisherClient<TMessage>(
+            this IServiceCollection services,
+            IConfigurationSection configurationSection)
+            where TMessage : class
         {
             services.AddOptions();
             services.Configure<PublisherOptions>(typeof(TMessage).Name, configurationSection);
