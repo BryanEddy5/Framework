@@ -79,7 +79,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "An unhandled exception occurred during processing of the request.");
+                _logger.LogInformation(exception, "An exception was thrown");
                 await HandleExceptionAsync(exception, httpContext);
             }
         }
@@ -137,7 +137,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
             {
                 _logger.LogError(
                     exception,
-                    "The response has already started, the error handler will not be executed.");
+                    "The response has already started, the error handler will not be executed");
                 exception.Rethrow();
             }
 

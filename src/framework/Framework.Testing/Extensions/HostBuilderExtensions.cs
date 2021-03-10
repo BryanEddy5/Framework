@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using HumanaEdge.Webcore.Framework.SecretsManager.Extensions;
 using HumanaEdge.Webcore.Framework.Testing.EnvironmentSetup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,7 +37,7 @@ namespace HumanaEdge.Webcore.Framework.Testing.Extensions
                 .AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"Configuration.{env}.json", false, true)
                 .AddJsonFile("Secrets/Configuration.Secrets.json", true, true)
-                .AddEnvironmentVariables($"TEST_SECRET_{env}");
+                .AddGcpSecrets();
         }
     }
 }
