@@ -79,7 +79,7 @@ Offers simple symmetric encryption and decryption in utf-8 base64 url encoded st
 1. [Add configuration settings to appsettings.json](example/src/WebApi/appsettings.json#L21)
 1. [Inject IEncryptionService](example/src/WebApi/Encryption/UseEncryptionService.cs#L20)
 
-## Pub/Sub Subscription
+## Pub/Sub Subscriber
 Creates an instance of `IHostedService` that pulls from a Pub/Sub Subscription.  The published message will not be acked or nacked until the process handler has completed the request.  If an exception is not thrown and the process completes then the message will be acked.  The default behavior for an exception thrown is to nack the message to be retried.  This flow can be controlled utilizing `PubSubException` and overriding the `Reply` property to `Ack` instead of `Nack` if the exception is not recoverable (meaning that the exception will persist with future attempts.)  The suggest course of action for exceptions thrown is to `Nack` the message and incorporate a Dead Letter Queue (in the form of another GCP Topic and subscription) to push the message to aftre it has failed after so many attempts (10 being the current max attempts in GCP).
 The client incorporates telemetry of type `Subscription` that indicates if the message was successfully `Ack`ed, the duration of the subscription handling, and the unique message id of the message that was processed.
 1. [Create an implementation of ISubOrchestrationService<TMessage>](example/src/WebApi/PubSub/Subscription/FooSubscriptionHandler.cs)
@@ -106,7 +106,7 @@ The default behavior for an exception thrown is to retry it which will be perfor
     - [Unrecoverable exception](example/src/WebApi/PubSub/Subscription/UnrecoverableException.cs)
 1. Throw the custom exception. 
 
-## Pub/Sub Publication
+## Pub/Sub Publisher
 A `IPublisherClient<TMessage>` is used to publish messages of shape `TMessage` to a topic in a designated project.  The project settings are configured via the `appsettings.json`
 The client incorporates telemetry of type `Publication` that indicates if the message was successfully published, how long it took to publish the message, and the message id of the published message.
 1. [Create a class that matches the shape of the Topic Message](example/src/WebApi/PubSub/FooContract.cs)

@@ -1,4 +1,5 @@
 using HumanaEdge.Webcore.Core.Encryption;
+using HumanaEdge.Webcore.Core.PubSub;
 using HumanaEdge.Webcore.Example.WebApi.PubSub;
 using HumanaEdge.Webcore.Example.WebApi.PubSub.Publication;
 using HumanaEdge.Webcore.Example.WebApi.PubSub.Subscription;
@@ -35,8 +36,8 @@ namespace HumanaEdge.Webcore.Example.WebApi
         {
             services.AddKmsEncryption(Configuration.GetSection(nameof(EncryptionServiceOptions))); // Register Encryption Service
             services.AddSecret<FooSecret, FooSecretsOptions>(Configuration.GetSection(nameof(FooSecretsOptions))); // Register Secrets Manager Service
-            services.AddSubscriptionHostedService<FooContract, FooSubscriptionHandler, FooSubscriptionOptions>(Configuration.GetSection(nameof(FooSubscriptionOptions))); // Register Subscription Handler
-            services.AddPublisherClient<FooContract, FooPublisherOptions>(Configuration.GetSection(nameof(FooPublisherOptions))); // Register Publisher Client
+            services.AddSubscriptionHostedService<FooContract, FooSubscriptionHandler>(Configuration.GetSection("FooSubscriptionOptions")); // Register Subscription Handler
+            services.AddPublisherClient<FooContract>(Configuration.GetSection("FooPublisherOptions")); // Register Publisher Client
             return services.AddHttpClient("client");  // Pass back a named http client to be used for tracing
         }
     }
