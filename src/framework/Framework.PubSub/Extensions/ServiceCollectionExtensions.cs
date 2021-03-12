@@ -33,8 +33,9 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
             where TMessageHandler : class, ISubOrchestrationService<TMessage>
+            where TMessage : class
         {
-            services.AddSubscriptionHostedService<TMessage, TMessageHandler, PubSubOptions>(
+            services.AddSubscriptionHostedService<TMessage, TMessageHandler>(
                 configuration.GetSection(nameof(PubSubOptions)));
         }
 
@@ -51,6 +52,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
             IConfigurationSection configurationSection)
             where TMessageHandler : class, ISubOrchestrationService<TMessage>
             where TOptions : PubSubOptions
+            where TMessage : class
         {
             services.AddSubscriptionHostedService<TMessage, TMessageHandler>(configurationSection);
         }
