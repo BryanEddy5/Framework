@@ -49,7 +49,7 @@
     <EqualsFodyVersion>4.0.1</EqualsFodyVersion>
     <FluentAssertionsJsonVersion>5.5.0</FluentAssertionsJsonVersion>
     <FluentAssertionsVersion>5.10.3</FluentAssertionsVersion>
-    <FluentValidationVersion>8.6.2</FluentValidationVersion>
+    <FluentValidationVersion>9.5.3</FluentValidationVersion>
     <GoogleCloudKmsVersion>2.0.0</GoogleCloudKmsVersion>
     <GoogleCloudSecretManagerV1Version>1.1.0</GoogleCloudSecretManagerV1Version>
     <GoogleCloudStorageV1Version>3.3.0</GoogleCloudStorageV1Version>
