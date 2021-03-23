@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyModel;
 using Serilog;
 using Serilog.Debugging;
+using Serilog.Enrichers.Span;
 using Serilog.Exceptions;
 
 namespace HumanaEdge.Webcore.Framework.Logging.Configuration
@@ -36,6 +37,7 @@ namespace HumanaEdge.Webcore.Framework.Logging.Configuration
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration, dependencyContext)
                 .WriteTo.Debug()
+                .Enrich.WithSpan()
                 .Destructure.UsingAttributes()
                 .Enrich.FromLogContext()
                 .Enrich.WithExceptionDetails()

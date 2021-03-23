@@ -77,9 +77,8 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             // assert
             Assert.True(didFormat);
             var binaryContent = httpContent as ByteArrayContent;
-            Assert.NotNull(binaryContent);
+            var bytes = await httpContent.ReadAsByteArrayAsync();
             Assert.Equal(expectedContent.Headers.ToString(), httpContent.Headers.ToString());
-            var bytes = await binaryContent.ReadAsByteArrayAsync();
             Assert.Equal(expectedBytes, bytes);
         }
     }

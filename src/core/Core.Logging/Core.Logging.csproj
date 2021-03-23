@@ -1,11 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
-        <AssemblyName>HumanaEdge.Webcore.Core.Logging</AssemblyName>
-        <RootNamespace>HumanaEdge.Webcore.Core.Logging</RootNamespace>
+      <TargetFrameworks>$(TargetFramework31);$(TargetFramework50)</TargetFrameworks>
+        <AssemblyName>$(SolutionNamespaceRoot).Core.Logging</AssemblyName>
+        <RootNamespace>$(AssemblyName)</RootNamespace>
     </PropertyGroup>
-
     <ItemGroup>
       <PackageReference Include="Serilog" Version="$(SerilogVersion)" />
       <PackageReference Include="Serilog.Expressions" Version="$(SerilogExpressionsVersion)" />

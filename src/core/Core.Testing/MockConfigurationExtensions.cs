@@ -30,7 +30,7 @@ namespace HumanaEdge.Webcore.Core.Testing
                         v =>
                         {
                             var mock = new Mock<IConfigurationSection>(MockBehavior.Strict);
-                            mock.Setup(m => m.Value).Returns(v!.ToString());
+                            mock.Setup(m => m.Value).Returns(v!.ToString()!);
                             return mock.Object;
                         }));
 

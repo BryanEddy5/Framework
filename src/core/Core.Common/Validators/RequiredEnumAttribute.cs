@@ -13,7 +13,7 @@ namespace HumanaEdge.Webcore.Core.Common.Validators
         /// </summary>
         /// <param name="value">The object to test if it is a valid <see cref="Enum" />.</param>
         /// <returns>An identifier if it is valid.</returns>
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             if (value == null)
             {

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
+    <TargetFrameworks>$(TargetFramework50);$(TargetFramework31)</TargetFrameworks>
     <AssemblyName>$(SolutionNamespaceRoot).Example.Integration.CatFacts.Tests</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>

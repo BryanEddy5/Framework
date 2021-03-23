@@ -11,17 +11,17 @@ namespace HumanaEdge.Webcore.Core.DependencyInjection
     public enum LifetimeScopeEnum
     {
         /// <summary>
-        /// Specifies instance per resolution
+        /// Specifies instance per resolution.
         /// </summary>
         Transient,
 
         /// <summary>
-        /// Specifies instance per request (such as in a WebApi call)
+        /// Specifies instance per request (such as in a WebApi call).
         /// </summary>
         Scoped,
 
         /// <summary>
-        /// Specifies a singleton
+        /// Specifies a singleton.
         /// </summary>
         Singleton
     }

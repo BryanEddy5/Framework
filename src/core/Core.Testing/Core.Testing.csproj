@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>$(LibTargetFrameworkVersion)</TargetFramework>
+    <TargetFrameworks>$(LibTargetFramework);$(TargetFramework50)</TargetFrameworks>
     <AssemblyName>$(SolutionNamespaceRoot).Core.Testing</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>

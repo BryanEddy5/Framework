@@ -3,13 +3,13 @@
 # set defaults
 export CI_PROJECT_DIR=${CI_PROJECT_DIR:-$PWD}
 export TEST_RESULTS_DIR=${TEST_RESULTS_DIR:-$CI_PROJECT_DIR/test-results}
-export COBERTURA_REPORT=${COBERTURA_REPORT:-$TEST_RESULTS_DIR/coverage.cobertura.xml}
+export COBERTURA_REPORT=${COBERTURA_REPORT:-$TEST_RESULTS_DIR/coverage.net5.0.cobertura.xml}
 export COVERLET_OUTPUT=${TEST_RESULTS_DIR}/coverlet.output.txt
 function run() { echo \'"$@"\'; $@; }
 
 rm -rf $TEST_RESULTS_DIR || true # delete old dir if its there
 mkdir -p $TEST_RESULTS_DIR
-echo "{}" > $TEST_RESULTS_DIR/coverage.json
+echo "{}" > $TEST_RESULTS_DIR/coverage.net5.0.json.json
 
 export PATH="$PATH:$HOME/.dotnet/tools"
 dotnet tool install -g dotnet-reportgenerator-globaltool || true
@@ -19,11 +19,11 @@ dotnet tool install -g dotnet-reportgenerator-globaltool || true
 # /p:Exclude='[*.Tests*]*' \
 # /p:Exclude='*.Tests*' \
 # /p:ExcludeByFile='test/*' \
-run dotnet test --test-adapter-path:. \
+run dotnet test --test-adapter-path:. -f net5.0 \
   --logger:"junit;LogFilePath=$TEST_RESULTS_DIR/{assembly}.test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose" \
   /p:CollectCoverage=true \
   /p:CoverletOutputFormat=\"json,cobertura\" \
-  /p:CoverletOutput="$TEST_RESULTS_DIR/" /p:MergeWith="$TEST_RESULTS_DIR/coverage.json" \
+  /p:CoverletOutput="$TEST_RESULTS_DIR/" /p:MergeWith="$TEST_RESULTS_DIR/coverage.net5.0.json" \
   || export TEST_ERROR=$? # so we don't get early exit, we can process the the report.
 
 reportgenerator "-reports:$COBERTURA_REPORT" \

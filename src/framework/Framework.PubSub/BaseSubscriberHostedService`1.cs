@@ -123,7 +123,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub
         /// <inheritdoc />
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            await _subscriber?.StopAsync(cancellationToken) !;
+            await _subscriber?.StopAsync(cancellationToken)!;
         }
 
         private SubscriberClient.Reply HandleException(Exception exception, PubsubMessage message)

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
+    <TargetFrameworks>$(TargetFramework50);$(TargetFramework31)</TargetFrameworks>
     <AssemblyName>$(SolutionNamespaceRoot).Example.WebApi</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
     <Description>Example Web API Description (from project-&gt;package-&gt;description)</Description>
