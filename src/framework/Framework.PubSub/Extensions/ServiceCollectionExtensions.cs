@@ -85,7 +85,6 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
         /// <typeparam name="TOptions">The configuration options for setting up the publisher client.</typeparam>
         /// <param name="services">The service collection.</param>
         /// <param name="configurationSection">The configuration section key for the <see cref="PublisherOptions"/>.</param>
-        [Obsolete("This method has been deprecated and replaced by AddPublisherClient<TMessage>")]
         public static void AddPublisherClient<TMessage, TOptions>(
             this IServiceCollection services,
             IConfigurationSection configurationSection)
