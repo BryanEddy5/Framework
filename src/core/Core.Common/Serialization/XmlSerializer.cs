@@ -86,7 +86,7 @@ namespace HumanaEdge.Webcore.Core.Common.Serialization
         public static T Deserialize<T>(Stream stream)
         {
             var serializer = XmlSerializerInstances.GetOrAdd(typeof(T), CreateSerializer);
-            return (T)serializer.Deserialize(stream);
+            return (T)serializer.Deserialize(stream)!;
         }
 
         /// <summary>

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
+    <TargetFrameworks>$(TargetFramework31);$(TargetFramework50)</TargetFrameworks>
     <AssemblyName>$(SolutionNamespaceRoot).Framework.Logging</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>
@@ -9,6 +9,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreHostingVersion)" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsVersion)" />
     <PackageReference Include="Serilog" Version="$(SerilogVersion)" />
+    <PackageReference Include="Serilog.Enrichers.Span" Version="$(SerilogEnrichersSpanVersion)" />
     <PackageReference Include="Serilog.Expressions" Version="$(SerilogExpressionsVersion)" />
     <PackageReference Include="Serilog.AspNetCore" Version="$(SerilogAspNetCoreVersion)" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="$(SerilogExtensionsLoggingVersion)" />

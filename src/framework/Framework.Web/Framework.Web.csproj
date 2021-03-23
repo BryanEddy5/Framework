@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
+    <TargetFrameworks>$(TargetFramework31);$(TargetFramework50)</TargetFrameworks>
     <AssemblyName>$(SolutionNamespaceRoot).Framework.Web</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>

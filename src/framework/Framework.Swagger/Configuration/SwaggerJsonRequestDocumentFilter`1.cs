@@ -27,7 +27,7 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
             IHttpContextAccessor contextAccessor,
             IOptions<OpenApiConfigSettings> configSettings)
         {
-            var request = contextAccessor.HttpContext.Request;
+            var request = contextAccessor.HttpContext!.Request;
             _currentServiceHostUri = $"{request.Scheme}://{request.Host}{request.PathBase}";
             _configSettings = configSettings.Value;
         }

@@ -1,15 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
+    <TargetFrameworks>$(TargetFramework50);$(TargetFramework31)</TargetFrameworks>
     <AssemblyName>$(SolutionNamespaceRoot).Framework.Swagger.Tests</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="$(FluentAssertionsVersion)" />
     <PackageReference Include="FluentAssertions.Json" Version="$(FluentAssertionsJsonVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreHostingVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(MicrosoftExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(MicrosoftExtensionsVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\example\src\WebApi\WebApi.csproj" />

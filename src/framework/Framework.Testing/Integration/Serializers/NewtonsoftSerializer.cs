@@ -40,7 +40,7 @@ namespace HumanaEdge.Webcore.Framework.Testing.Integration.Serializers
                 jsonString = JObject.Parse(response.Content).SelectToken(response.Request.RootElement)?.ToString();
             }
 
-            return JsonConvert.DeserializeObject<T>(jsonString !, _settings) !;
+            return JsonConvert.DeserializeObject<T>(jsonString !, _settings)!;
         }
 
         /// <summary>

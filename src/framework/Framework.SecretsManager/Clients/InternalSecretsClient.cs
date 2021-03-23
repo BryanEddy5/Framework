@@ -24,7 +24,7 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Clients
             var result = await GetSecret(secretsOptions, cancellationToken);
             return JsonConvert.DeserializeObject<TSecret>(
                 result.Payload.Data.ToStringUtf8(),
-                StandardSerializerConfiguration.Settings) !;
+                StandardSerializerConfiguration.Settings)!;
         }
 
         /// <inheritdoc />

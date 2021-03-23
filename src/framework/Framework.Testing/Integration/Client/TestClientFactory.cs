@@ -59,7 +59,7 @@ namespace HumanaEdge.Webcore.Framework.Testing.Integration.Client
 
         private IRestClient CreateRequest(TestClientOptions options, IRestClient restClient)
         {
-            var headers = options.Headers.ToDictionary(x => x.Key, x => x.Value);
+            var headers = options.Headers.ToDictionary(x => x.Key!, x => x.Value!);
             return restClient.AddDefaultHeaders(headers!);
         }
 

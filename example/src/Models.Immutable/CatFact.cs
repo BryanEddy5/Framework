@@ -1,7 +1,19 @@
 ﻿namespace HumanaEdge.Webcore.Example.Models.Immutable
 {
+#if NET5_0_OR_GREATER
     /// <summary>
-    /// A domain model representing a cat fact.
+    /// Cat facts baby.
+    /// </summary>
+    public sealed record CatFact
+    {
+        /// <summary>
+        /// The text of the cat fact.
+        /// </summary>
+        public string? Text { get; init; }
+    }
+#else
+    /// <summary>
+    /// Cat facts baby.
     /// </summary>
     public sealed class CatFact
     {
@@ -17,6 +29,7 @@
         /// <summary>
         /// The text of the cat fact.
         /// </summary>
-        public string Text { get; }
+        public string? Text { get; }
     }
+#endif
 }

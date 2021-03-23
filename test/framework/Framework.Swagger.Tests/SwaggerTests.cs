@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using FluentAssertions.Json;
 using HumanaEdge.Webcore.Example.WebApi;
-using HumanaEdge.Webcore.ExampleWebApi;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json.Linq;
 using Xunit;

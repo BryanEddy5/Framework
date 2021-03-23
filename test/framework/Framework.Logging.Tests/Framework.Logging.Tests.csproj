@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
+    <TargetFrameworks>$(TargetFramework50);$(TargetFramework31)</TargetFrameworks>
     <AssemblyName>$(SolutionNamespaceRoot).Framework.Logging.Tests</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
     <IsPackable>false</IsPackable>
@@ -9,6 +9,7 @@
     <PackageReference Include="AutoBogus" Version="$(AutoBogusVersion)" />
     <PackageReference Include="Serilog.Formatting.Compact.Reader" Version="$(SerilogFormattingCompactReaderVersion)" />
     <PackageReference Include="Serilog.Sinks.Map" Version="$(SerilogSinksDebugVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(MicrosoftExtensionsVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\example\src\WebApi\WebApi.csproj" />

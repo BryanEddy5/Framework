@@ -51,7 +51,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Publication
                 {
                     { TracingKeys.RequestId, _httpContextAccessor?.HttpContext?.TraceIdentifier ?? Guid.NewGuid().ToString() },
                     { TracingKeys.TraceId, Activity.Current?.RootId ?? Guid.NewGuid().ToString() },
-                    { TracingKeys.SpanId, Activity.Current?.SpanId.ToString() ! },
+                    { TracingKeys.SpanId, Activity.Current?.SpanId.ToString()! },
                     { TracingKeys.ParentId, Activity.Current?.ParentId ! },
                     { TracingKeys.TraceParent, Activity.Current?.Id ! }
                 }.Where(x => !string.IsNullOrEmpty(x.Value))

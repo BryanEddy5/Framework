@@ -13,7 +13,13 @@ namespace HumanaEdge.Webcore.Example.Integration.CatFacts.Converter
         /// </summary>
         /// <param name="randomCatFactsResponse">The response containing a random cat fact.</param>
         /// <returns>A domain model of a cat fact.</returns>
-        public static CatFact ToCatFact(this RandomCatFactsResponse randomCatFactsResponse) =>
-            new CatFact(randomCatFactsResponse.Text !);
+        public static CatFact ToCatFact(this RandomCatFactsResponse randomCatFactsResponse)
+        {
+#if NET5_0_OR_GREATER
+            return new CatFact { Text = randomCatFactsResponse.Text };
+#else
+            return new CatFact(randomCatFactsResponse.Text!);
+#endif
+        }
     }
 }

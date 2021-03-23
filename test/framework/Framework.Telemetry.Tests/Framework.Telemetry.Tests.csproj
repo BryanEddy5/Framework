@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
+    <TargetFrameworks>$(TargetFramework31);$(TargetFramework50)</TargetFrameworks>
     <AssemblyName>$(SolutionNamespaceRoot).Framework.Telemetry.Tests</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\core\Core.Testing\Core.Testing.csproj" />
     <ProjectReference Include="..\..\..\src\framework\Framework.Telemetry\Framework.Telemetry.csproj" />
   </ItemGroup>
 </Project>

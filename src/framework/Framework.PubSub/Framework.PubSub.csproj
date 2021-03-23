@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>$(AppTargetFrameworkVersion)</TargetFramework>
+    <TargetFrameworks>$(TargetFramework31);$(TargetFramework50)</TargetFrameworks>
     <AssemblyName>$(SolutionNamespaceRoot).Framework.PubSub</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>
@@ -13,6 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Cloud.PubSub.V1" Version="$(GooglePubSub)" />
+    <PackageReference Include="Grpc.Core" Version="$(GrpcCoreVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Core.Common\Core.Common.csproj" />

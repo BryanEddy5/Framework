@@ -96,7 +96,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
 
             if (exception is AggregateException aggregateException)
             {
-                var firstMessageAppException = (MessageAppException)aggregateException.InnerExceptions.FirstOrDefault(e => e is MessageAppException);
+                var firstMessageAppException = aggregateException.InnerExceptions.FirstOrDefault(e => e is MessageAppException) as MessageAppException;
                 message = firstMessageAppException?.Message ?? message;
                 statusCode = firstMessageAppException?.StatusCode ?? statusCode;
             }

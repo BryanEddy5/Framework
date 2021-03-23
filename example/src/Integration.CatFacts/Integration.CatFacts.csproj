@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>$(LibTargetFrameworkVersion)</TargetFramework>
+    <TargetFrameworks>$(TargetFramework50);$(LibTargetFramework)</TargetFrameworks>
     <AssemblyName>$(SolutionNamespaceRoot).Example.Integration.CatFacts</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>

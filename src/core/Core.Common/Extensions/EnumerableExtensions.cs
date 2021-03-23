@@ -20,6 +20,7 @@ namespace HumanaEdge.Webcore.Core.Common.Extensions
         public static Dictionary<TKey, TValue> IndexBy<TKey, TValue>(
             this IEnumerable<TValue> values,
             Func<TValue, TKey> indexer)
+        where TKey : notnull
         {
             return values.ToDictionary(indexer, val => val);
         }

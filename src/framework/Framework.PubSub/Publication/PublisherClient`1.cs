@@ -65,7 +65,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Publication
                 async request =>
                 {
                     var stopWatch = new Stopwatch();
-                    string messageId = null !;
+                    string? messageId = null;
                     var success = false;
                     try
                     {

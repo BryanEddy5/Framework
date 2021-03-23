@@ -242,9 +242,9 @@ namespace HumanaEdge.Webcore.Framework.Rest
             _telemetryFactory?.TrackDependencyHttpTelemetry(
                 startTime,
                 duration,
-                ((int?)response?.StatusCode)?.ToString() !,
-                request?.Method.ToString() !,
-                request?.RequestUri.ToString() !,
+                ((int?)response?.StatusCode)?.ToString()!,
+                request?.Method.ToString()!,
+                request?.RequestUri?.ToString()!,
                 response != null && response.IsSuccessStatusCode);
         }
 
