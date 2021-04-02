@@ -96,7 +96,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub
                         await _subOrchestrationService.ExecuteAsync(deserializedMessage!, cancel);
                         return SubscriberClient.Reply.Ack;
                     }
-                    catch (JsonReaderException exception)
+                    catch (JsonException exception)
                     {
                         _logger.LogError(
                             exception,
