@@ -32,7 +32,7 @@ namespace HumanaEdge.Webcore.Core.PubSub
         /// <summary>
         /// The maximum amount of messages that will be processed in parallel.
         /// </summary>
-        public long? MaxMessageCount { get; set; }
+        public long? MaxMessageCount { get; set; } = 1;
 
         /// <summary>
         /// The maximum size of message payload that the application will process in bytes.
