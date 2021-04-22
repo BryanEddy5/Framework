@@ -74,7 +74,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             var settings = _config.Get(typeof(TMessage).Name);
-            _logger.LogInformation("Subscriber hosted service is running.");
+            _logger.LogInformation("Subscriber hosted service is running for {@Subscription}", _subscriptionName);
             _subscriber = await _subscriberClientFactory.GetSubscriberClient(_subscriptionName, settings);
 
             _ = _subscriber.StartAsync(
