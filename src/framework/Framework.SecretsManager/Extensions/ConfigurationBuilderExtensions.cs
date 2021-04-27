@@ -14,6 +14,16 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Extensions
     public static class ConfigurationBuilderExtensions
     {
         /// <summary>
+        /// The environment variable for the project that contains the secret.
+        /// </summary>
+        private const string SecretProjectEnvironmentVariable = "GCP_SECRETS_PROJECT";
+
+        /// <summary>
+        /// The environment variable for the secret name.
+        /// </summary>
+        private const string SecretNameEnvironmentVariable = "GITLAB_PROJECT_NAME";
+
+        /// <summary>
         /// Adds secrets from GCP secrets manager to the configuration.
         /// </summary>
         /// <param name="builder">The config builder.</param>
@@ -23,11 +33,21 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Extensions
             this IConfigurationBuilder builder,
             string? secretId = null)
         {
-            var secretProject = Environment.GetEnvironmentVariable("GCP_SECRETS_PROJECT");
-            secretId ??= Environment.GetEnvironmentVariable("GITLAB_PROJECT_NAME");
+            var secretProject = Environment.GetEnvironmentVariable(SecretProjectEnvironmentVariable);
+            secretId ??= Environment.GetEnvironmentVariable(SecretNameEnvironmentVariable);
             var isActive = Environment.GetEnvironmentVariable("GCP_SECRETS_ACTIVE");
-            if (secretProject != null && isActive == "true")
+            if (isActive == "true")
             {
+                if (secretProject == null)
+                {
+                    throw new ArgumentNullException($"The environment variable {SecretProjectEnvironmentVariable} is null");
+                }
+
+                if (secretId == null)
+                {
+                    throw new ArgumentNullException($"The environment variable {SecretNameEnvironmentVariable} is null");
+                }
+
                 var stream = new InternalSecretsClient().GetAsync(
                         new SecretsOptions
                         {
