@@ -402,3 +402,13 @@ In order to trace requests that produce Published Messages, the GCP published me
 
 ### HTTP
 HTTP requests follow the same pattern as Pub/Sub except they are passed as headers instead of attributes.  Fortunately .Net Core 3.0+ takes care of all of the implementation details right out-of-the-box.  It will pull the tracer identifiers from the `Diagnostic.Activity` and add them to the HTTP request.
+
+## Secrets Management
+Microservices leverage Google Cloud Platform's Secret Manager (GSM) for storing and retrieving secrets. Secrets are pulled at runtime during the application bootstrapping process (startup) while building the configuration file using [`IConfigurationBuilder` extension method](src/framework/Framework.SecretsManager/Extensions/ConfigurationBuilderExtensions.cs).
+Secrets are maintained by developers in Gitlab's CI/CD variables each with an underscore indicating the specific environment the secrets will be utilized in.
+- SECRETS_dev -> DEV (NP)
+- SECRETS_sit -> SIT
+- SECRETS_uat -> UAT
+- SECRETS_prod -> PROD (Production)
+
+During the continuous deployment process secrets are loaded from Gitlab to GSM prior to the application being deployed ensuring they are loaded once the application (K8 Workload) starts the bootstrapping process.
