@@ -60,7 +60,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub
             ITelemetryFactory telemetryFactory = null!,
             IActivityFactory activityFactory = null!)
         {
-            var settings = config.Get(typeof(TMessage).Name);
+            var settings = config.Get(typeof(TMessage).FullName);
             _telemetryFactory = telemetryFactory;
             _activityFactory = activityFactory;
             _logger = logger;
@@ -73,7 +73,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub
         /// <inheritdoc />
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var settings = _config.Get(typeof(TMessage).Name);
+            var settings = _config.Get(typeof(TMessage).FullName);
             _logger.LogInformation("Subscriber hosted service is running for {@Subscription}", _subscriptionName);
             _subscriber = await _subscriberClientFactory.GetSubscriberClient(_subscriptionName, settings);
 

@@ -42,7 +42,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
 
             var config = FakeData.Create<PubSubOptions>();
             var optionsMock = Moq.Create<IOptionsMonitor<PubSubOptions>>();
-            optionsMock.Setup(p => p.Get(nameof(Foo))).Returns(config);
+            optionsMock.Setup(p => p.Get(typeof(Foo).FullName)).Returns(config);
 
             _subOrchestrationServiceMock = Moq.Create<ISubOrchestrationService<Foo>>();
 
