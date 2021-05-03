@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.Common.Serialization;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
@@ -18,6 +20,7 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// <param name="baseUri">The base Uri for the outgoing request.</param>
         /// <param name="defaultHeaders">Optional. Default headers to be sent with all client http requests.</param>
         /// <param name="restRequestMiddleware">Optional. Transformations to be applied to the outgoing http request.</param>
+        /// <param name="restRequestMiddlewareAsync">Optional. Asynchronous transformations to be applied to the outgoing http request.</param>
         /// <param name="timeout">Optional. The duration of which the request will timeout.</param>
         /// <param name="resiliencePolicy">Optional. Configured strategy for resiliency. Defaults to NoOp if omitted.</param>
         /// <param name="jsonSerializerSettings">Settings for JSON formatting.</param>
@@ -25,6 +28,7 @@ namespace HumanaEdge.Webcore.Core.Rest
             Uri baseUri,
             Dictionary<string, StringValues> defaultHeaders,
             RestRequestTransformation[] restRequestMiddleware,
+            RestRequestTransformationAsync[] restRequestMiddlewareAsync,
             TimeSpan timeout,
             IAsyncPolicy<BaseRestResponse> resiliencePolicy,
             JsonSerializerSettings jsonSerializerSettings)
@@ -32,6 +36,7 @@ namespace HumanaEdge.Webcore.Core.Rest
             BaseUri = baseUri;
             DefaultHeaders = defaultHeaders;
             RestRequestMiddleware = restRequestMiddleware;
+            RestRequestMiddlewareAsync = restRequestMiddlewareAsync;
             Timeout = timeout;
             ResiliencePolicy = resiliencePolicy;
             JsonSerializerSettings = jsonSerializerSettings;
@@ -43,6 +48,16 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// <param name="restRequest">The outbound request.</param>
         /// <returns>The transformed rest request.</returns>
         public delegate RestRequest RestRequestTransformation(RestRequest restRequest);
+
+        /// <summary>
+        /// Signature for configurable transformations on all async outbound instances of <see cref="RestRequest" />.
+        /// </summary>
+        /// <param name="restRequest">The outbound request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The transformed rest request.</returns>
+        public delegate Task<RestRequest> RestRequestTransformationAsync(
+            RestRequest restRequest,
+            CancellationToken cancellationToken);
 
         /// <summary>
         /// The base URI of the request.
@@ -63,6 +78,11 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// Optional. Transformations to be applied to the outgoing http request.
         /// </summary>
         public RestRequestTransformation[] RestRequestMiddleware { get; }
+
+        /// <summary>
+        /// Optional. Asynchronous transformations to be applied to the outgoing http request.
+        /// </summary>
+        public RestRequestTransformationAsync[] RestRequestMiddlewareAsync { get; }
 
         /// <summary>
         /// Optional. The duration of which the request will timeout.
@@ -95,6 +115,11 @@ namespace HumanaEdge.Webcore.Core.Rest
             private readonly List<RestRequestTransformation> _restRequestMiddleware;
 
             /// <summary>
+            /// Optional. Asynchronous transformations to be applied to the outgoing http request.
+            /// </summary>
+            private readonly List<RestRequestTransformationAsync> _restRequestMiddlewareAsync;
+
+            /// <summary>
             /// Settings for JSON formatting.
             /// </summary>
             private JsonSerializerSettings _jsonSettings;
@@ -118,6 +143,7 @@ namespace HumanaEdge.Webcore.Core.Rest
                 _baseUri = baseUri;
                 _defaultHeaders = new Dictionary<string, StringValues>();
                 _restRequestMiddleware = new List<RestRequestTransformation>();
+                _restRequestMiddlewareAsync = new List<RestRequestTransformationAsync>();
                 _timeout = TimeSpan.FromSeconds(5);
                 _resiliencePolicy = Policy.NoOpAsync<BaseRestResponse>();
                 _jsonSettings = StandardSerializerConfiguration.Settings;
@@ -143,6 +169,7 @@ namespace HumanaEdge.Webcore.Core.Rest
                     _baseUri,
                     _defaultHeaders,
                     _restRequestMiddleware.ToArray(),
+                    _restRequestMiddlewareAsync.ToArray(),
                     _timeout,
                     _resiliencePolicy,
                     _jsonSettings);
@@ -187,6 +214,17 @@ namespace HumanaEdge.Webcore.Core.Rest
             public Builder ConfigureMiddleware(RestRequestTransformation transformation)
             {
                 _restRequestMiddleware.Add(transformation);
+                return this;
+            }
+
+            /// <summary>
+            /// Applies an async transformation to all outbound instances of <see cref="RestRequest" />.
+            /// </summary>
+            /// <param name="transformationAsync">The asynchronous transformation.</param>
+            /// <returns>The builder instance, for fluent chaining.</returns>
+            public Builder ConfigureMiddlewareAsync(RestRequestTransformationAsync transformationAsync)
+            {
+                _restRequestMiddlewareAsync.Add(transformationAsync);
                 return this;
             }
 

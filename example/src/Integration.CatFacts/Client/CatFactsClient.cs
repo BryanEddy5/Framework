@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.DependencyInjection;
 using HumanaEdge.Webcore.Core.Rest;
 using Microsoft.Extensions.Logging;
@@ -60,6 +62,19 @@ namespace HumanaEdge.Webcore.Example.Integration.CatFacts.Client
                 .ConfigureResiliencePolicy(resiliencePolicy) // The resiliency policy for retrying
                 .ConfigureHeader(options.ApiKey.HeaderKey, options.ApiKey.HeaderValue) // Configure common headers that will be sent for all outbound requests.
                 .ConfigureTimeout(timeout) // Set the timeout for outgoing requests
+                .ConfigureMiddlewareAsync(
+                    async (restRequest, cancellationToken) =>
+                    { // perform some kind of asynchronous action as middleware with every outgoing request.
+                        await Task.Delay(1000, cancellationToken);
+                        restRequest.UseHeader("x-jeremy-is", "asynchronously-active");
+                        return restRequest;
+                    })
+                .ConfigureMiddleware(
+                    restRequest =>
+                    { // perform some kind of synchronous action as middleware with every outgoing request.
+                        restRequest.UseHeader("x-jeremy-is", "synchronously-satisfying");
+                        return restRequest;
+                    })
                 .Build(); // Use builder pattern to create the settings.
         }
     }
