@@ -199,11 +199,11 @@ namespace HumanaEdge.Webcore.Framework.Rest
             CancellationToken cancellationToken,
             Func<TRestRequest, HttpRequestMessage> restRequestConverter,
             Func<HttpResponseMessage, Task<TRestResponse>> restResponseConverter)
-            where TRestRequest : RestRequest
-            where TRestResponse : BaseRestResponse
+                where TRestRequest : RestRequest
+                where TRestResponse : BaseRestResponse
         {
-            var transformedRestRequest = TransformRequest(restRequest, out var resiliencePolicy);
-            return (TRestResponse)await resiliencePolicy.ExecuteAsync(
+            var transformedRestRequest = await TransformRequest(restRequest, cancellationToken);
+            return (TRestResponse)await _options.ResiliencePolicy.ExecuteAsync(
                 async ct =>
                 {
                     var httpRequestMessage = restRequestConverter(transformedRestRequest);
@@ -248,13 +248,12 @@ namespace HumanaEdge.Webcore.Framework.Rest
                 response != null && response.IsSuccessStatusCode);
         }
 
-        private TRestRequest TransformRequest<TRestRequest>(
+        private async Task<TRestRequest> TransformRequest<TRestRequest>(
             TRestRequest restRequest,
-            out IAsyncPolicy<BaseRestResponse> resiliencePolicy)
-            where TRestRequest : RestRequest
+            CancellationToken cancellationToken)
+                where TRestRequest : RestRequest
         {
             var transformedRequest = restRequest;
-            resiliencePolicy = _options.ResiliencePolicy;
 
             // greedy allocation to array to avoid exceptions due to modifying the collection while enumerating over it.
             var defaultHeaderKeysToAdd = _options.DefaultHeaders.Keys.Except(restRequest.Headers.Keys).ToArray();
@@ -265,10 +264,15 @@ namespace HumanaEdge.Webcore.Framework.Rest
                 transformedRequest.Headers[key] = _options.DefaultHeaders[key];
             }
 
-            // apply transformations.
+            // apply synchronous transformations.
             foreach (var transformation in _options.RestRequestMiddleware)
             {
                 transformedRequest = (TRestRequest)transformation(restRequest);
+            }
+
+            foreach (var asyncTransformation in _options.RestRequestMiddlewareAsync)
+            {
+                transformedRequest = (TRestRequest)await asyncTransformation(restRequest, cancellationToken);
             }
 
             return transformedRequest;

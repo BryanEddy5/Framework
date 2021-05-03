@@ -55,13 +55,19 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             _options = new RestClientOptions.Builder("https://localhost:5000")
                 .ConfigureHeader("Foo", "Bar")
                 .ConfigureTimeout(TimeSpan.FromSeconds(7))
-                .ConfigureJsonFormatting(
-                    StandardSerializerConfiguration.Settings)
+                .ConfigureJsonFormatting(StandardSerializerConfiguration.Settings)
                 .ConfigureMiddleware(
                     r =>
                     {
                         r.Headers["Id"] = Guid.NewGuid().ToString();
                         return r;
+                    })
+                .ConfigureMiddlewareAsync(
+                    async (restRequest, cancellationToken) =>
+                    {
+                        restRequest.UseHeader("x-jeremy-is", "awesomely-asynchronous");
+                        await Task.Delay(1000, cancellationToken);
+                        return restRequest;
                     })
                 .Build();
 
@@ -92,7 +98,8 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                     r.Headers.Accept.Any(h => h.MediaType == MediaType.Json.MimeType) &&
                     r.Headers.GetValues("test").First() == "testing" &&
                     r.RequestUri == new Uri("/hello/world", UriKind.Relative) &&
-                    r.Headers.Any(h => h.Key == "Id"));
+                    r.Headers.Any(h => h.Key == "Id") &&
+                    r.Headers.Any(h => h.Key == "x-jeremy-is"));
             SetupHttClientFactory();
 
             // act
