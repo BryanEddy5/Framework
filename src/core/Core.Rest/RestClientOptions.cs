@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.Common.Serialization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Polly;
@@ -145,8 +148,8 @@ namespace HumanaEdge.Webcore.Core.Rest
                 _restRequestMiddleware = new List<RestRequestTransformation>();
                 _restRequestMiddlewareAsync = new List<RestRequestTransformationAsync>();
                 _timeout = TimeSpan.FromSeconds(5);
-                _resiliencePolicy = Policy.NoOpAsync<BaseRestResponse>();
                 _jsonSettings = StandardSerializerConfiguration.Settings;
+                _resiliencePolicy = DefaultResiliencePolicy();
             }
 
             /// <summary>
@@ -248,6 +251,23 @@ namespace HumanaEdge.Webcore.Core.Rest
             {
                 _timeout = timeout;
                 return this;
+            }
+
+            /// <summary>
+            /// Creates the default resilience policy configuration.
+            /// </summary>
+            /// <returns> The resilience policy. </returns>
+            private IAsyncPolicy<BaseRestResponse> DefaultResiliencePolicy()
+            {
+                var jitterer = new Random();
+                var maxAttempts = 6;
+                var backOffIntervals = Enumerable.Range(1, maxAttempts)
+                    .Select(
+                        t => TimeSpan.FromMilliseconds(Math.Pow(2, t)) + TimeSpan.FromMilliseconds(jitterer.Next(0, 100)))
+                    .ToArray();
+                return Policy<BaseRestResponse>.HandleResult(
+                        r => r.StatusCode == HttpStatusCode.BadGateway || r.StatusCode == HttpStatusCode.GatewayTimeout)
+                    .WaitAndRetryAsync(backOffIntervals);
             }
         }
     }
