@@ -412,3 +412,16 @@ Secrets are maintained by developers in Gitlab's CI/CD variables each with an un
 - SECRETS_prod -> PROD (Production)
 
 During the continuous deployment process secrets are loaded from Gitlab to GSM prior to the application being deployed ensuring they are loaded once the application (K8 Workload) starts the bootstrapping process.
+
+### Accessing in Code
+Accessing secrets in code is done by the same method as accessing any other configuration value by utilizing the (Options Pattern)[https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0#use-ioptionssnapshot-to-read-updated-data].
+
+### Using secrets locally
+Each .Net Solution (repository) has (launchSettings.json)[example/src/WebApi/Properties/launchSettings.json] file that contains configuration settings for running locally.
+Under the `environmentVariables` section a location to locally stored secrets is defined for `APP_ROOT` which will load a file named `appsettings.overrides.json`. Developers should store their secrets in this location. Storing secrets outside of the repository is a best practice for it prevents the possibility of the secrets accidentally being committed to source control.
+Storing secrets in this manner allows for the developer to store local secrets for each Solution they work in. 
+
+#### **Be sure to update the folder name when creating a new project**.
+Example: 
+- Api Template path = "APP_ROOT": "/Users/%USER%/dev/approots/api-template"
+- New Solution = "APP_ROOT": "/Users/%USER%/dev/approots/new-solution-name"
