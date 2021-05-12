@@ -20,7 +20,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
     /// </summary>
     public class ServiceCollectionExtensionsTests : BaseTests
     {
-        private static readonly string _messageKey = typeof(PubSubOptions).FullName!;
+        private static readonly string _messageKey = nameof(PubSubOptions)!;
 
         /// <summary>
         /// Verifies the behavior of the
