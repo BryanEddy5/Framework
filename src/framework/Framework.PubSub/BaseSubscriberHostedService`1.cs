@@ -84,23 +84,27 @@ namespace HumanaEdge.Webcore.Framework.PubSub
                     var success = true;
                     var stopwatch = new Stopwatch();
                     stopwatch.Start();
-                    var messageData = message.Data.ToStringUtf8();
-
                     try
                     {
                         activity = _activityFactory?.Create(message);
-                        var deserializedMessage =
-                            JsonConvert.DeserializeObject<TMessage>(
-                                messageData,
-                                StandardSerializerConfiguration.Settings);
-                        await _subOrchestrationService.ExecuteAsync(deserializedMessage!, cancel);
+                        var deserializedMessage = new Lazy<TMessage>(
+                            () => JsonConvert.DeserializeObject<TMessage>(
+                                message.Data.ToStringUtf8(),
+                                StandardSerializerConfiguration.Settings)!);
+                        var subscriptionMessage = new SubscriptionMessage<TMessage>(
+                            message.Data.ToByteArray(),
+                            deserializedMessage !);
+                        await _subOrchestrationService.ExecuteAsync(
+                            subscriptionMessage,
+                            cancel);
+
                         return SubscriberClient.Reply.Ack;
                     }
                     catch (JsonException exception)
                     {
                         _logger.LogError(
                             exception,
-                            "Message is not in the correct format to be parsed: {MessageId}.",
+                            "Message is not in the correct format to be parsed: {MessageId}",
                             message.MessageId);
                         success = false;
                         return SubscriberClient.Reply.Ack;

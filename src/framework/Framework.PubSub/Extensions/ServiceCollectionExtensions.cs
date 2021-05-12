@@ -36,7 +36,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
             where TMessage : class
         {
             services.AddSubscriptionHostedService<TMessage, TMessageHandler>(
-                configuration.GetSection(nameof(PubSubOptions)));
+                configuration.GetSection(typeof(PubSubOptions).FullName));
         }
 
         /// <summary>
