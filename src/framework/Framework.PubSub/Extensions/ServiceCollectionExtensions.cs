@@ -106,7 +106,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
             where TMessage : class
         {
             services.AddOptions();
-            services.Configure<PublisherOptions>(typeof(TMessage).FullName, configurationSection);
+            services.Configure<PublisherOptions>(typeof(TMessage).Name, configurationSection);
             services.AddSingleton<IPublisherClient<TMessage>, PublisherClient<TMessage>>();
             services.AddSingleton<IPublisherClientFactory, PublisherClientFactory>();
             services.AddSingleton<IPublishRequestConverter, PublishRequestConverter>();
