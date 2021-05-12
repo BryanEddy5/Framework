@@ -8,6 +8,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription
 {
     /// <inheritdoc />
     public sealed class PubSubHostedService<TMessage> : BaseSubscriberHostedService<TMessage>
+        where TMessage : class
     {
         /// <summary>
         /// Designated ctor.
@@ -25,13 +26,19 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription
         /// </param>
         /// <param name="activityFactory">A factory for creating a new activity with W3C trace context.</param>
         public PubSubHostedService(
-            ILogger<BaseSubscriberHostedService<TMessage>> logger,
+            ILoggerFactory logger,
             IOptionsMonitor<PubSubOptions> config,
             ISubscriberClientFactory subscriberClientFactory,
             ISubOrchestrationService<TMessage> subOrchestrationService,
             ITelemetryFactory telemetryFactory,
             IActivityFactory activityFactory)
-            : base(logger, config, subscriberClientFactory, subOrchestrationService, telemetryFactory, activityFactory)
+            : base(
+                logger.CreateLogger<BaseSubscriberHostedService<TMessage>>(),
+                config,
+                subscriberClientFactory,
+                subOrchestrationService,
+                telemetryFactory,
+                activityFactory)
         {
         }
     }

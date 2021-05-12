@@ -28,14 +28,14 @@ namespace HumanaEdge.Webcore.Example.WebApi.PubSub.Subscription
         /// <param name="message">The published message shape.</param>
         /// <param name="cancellationToken">A cancellation token that can be invoked if the Acknowledgement window is exceeded.</param>
         /// <returns>An awaitable task for asynchronous execution.</returns>
-        public Task ExecuteAsync(FooContract message, CancellationToken cancellationToken)
+        public Task ExecuteAsync(FooContract? message, CancellationToken cancellationToken)
         {
-            if (message.Name == "Some exceptional condition")
+            if (message?.Name == "Some exceptional condition")
             {
                 throw new UnrecoverableException();
             }
 
-            if (message.Name == "Another exceptional condition")
+            if (message?.Name == "Another exceptional condition")
             {
                 throw new RecoverableException();
             }

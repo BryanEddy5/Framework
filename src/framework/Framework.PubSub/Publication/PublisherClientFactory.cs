@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Cloud.PubSub.V1;
@@ -7,6 +8,7 @@ using Grpc.Core;
 namespace HumanaEdge.Webcore.Framework.PubSub.Publication
 {
     /// <inheritdoc />
+    [ExcludeFromCodeCoverage]
     internal sealed class PublisherClientFactory : IPublisherClientFactory
     {
         /// <summary>

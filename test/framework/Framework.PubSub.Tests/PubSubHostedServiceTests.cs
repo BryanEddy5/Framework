@@ -26,37 +26,43 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
     {
         private readonly Mock<ISubOrchestrationService<Foo>> _subOrchestrationServiceMock;
 
+        private readonly FakeSubscriberClient _subscriberClient;
+
+        private readonly Mock<ILogger<PubSubHostedService>> _logger;
+
+        private readonly Mock<ISubscriberClientFactory> _subscriberClientFactory;
+
+        private readonly Mock<IOptionsMonitor<PubSubOptions>> _optionsMock;
+
         /// <summary>
         /// SUT.
         /// </summary>
-        private readonly PubSubHostedService _pubSubHostedService;
-
-        private readonly FakeSubscriberClient _subscriberClient;
+        private PubSubHostedService _pubSubHostedService;
 
         /// <summary>
         /// Ctor.
         /// </summary>
         public PubSubHostedServiceTests()
         {
-            var logger = Moq.Create<ILogger<PubSubHostedService>>(MockBehavior.Loose);
+            _logger = Moq.Create<ILogger<PubSubHostedService>>(MockBehavior.Loose);
 
             var config = FakeData.Create<PubSubOptions>();
-            var optionsMock = Moq.Create<IOptionsMonitor<PubSubOptions>>();
-            optionsMock.Setup(p => p.Get(typeof(Foo).FullName)).Returns(config);
+            _optionsMock = Moq.Create<IOptionsMonitor<PubSubOptions>>();
+            _optionsMock.Setup(p => p.Get(typeof(Foo).FullName)).Returns(config);
 
             _subOrchestrationServiceMock = Moq.Create<ISubOrchestrationService<Foo>>();
 
             _subscriberClient = new FakeSubscriberClient();
-            var subscriberClientFactory = Moq.Create<ISubscriberClientFactory>();
-            subscriberClientFactory.Setup(
+            _subscriberClientFactory = Moq.Create<ISubscriberClientFactory>();
+            _subscriberClientFactory.Setup(
                     s =>
                         s.GetSubscriberClient(new SubscriptionName(config.ProjectId, config.Name), config))
                 .ReturnsAsync(_subscriberClient);
 
             _pubSubHostedService = new PubSubHostedService(
-                logger.Object,
-                optionsMock.Object,
-                subscriberClientFactory.Object,
+                _logger.Object,
+                _optionsMock.Object,
+                _subscriberClientFactory.Object,
                 _subOrchestrationServiceMock.Object);
         }
 
@@ -69,6 +75,13 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
         {
             // arrange
             _subscriberClient.TestMessage = BuildPubsubMessage("blahblahblah");
+            var fooSubscriptionHandler = new FooSubscriptionHandler();
+
+            _pubSubHostedService = new PubSubHostedService(
+                _logger.Object,
+                _optionsMock.Object,
+                _subscriberClientFactory.Object,
+                fooSubscriptionHandler);
 
             // act
             await _pubSubHostedService.StartAsync(CancellationTokenSource.Token);
@@ -86,9 +99,12 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
         {
             // arrange
             var fakeFoo = FakeData.Create<Foo>();
-            _subOrchestrationServiceMock.Setup(x => x.ExecuteAsync(fakeFoo, CancellationToken.None))
-                .Returns(Task.CompletedTask);
             _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo);
+            var fakeSubscriptionMessage = new SubscriptionMessage<Foo>(
+                _subscriberClient.TestMessage.Data.ToByteArray(),
+                new Lazy<Foo>(() => fakeFoo));
+            _subOrchestrationServiceMock.Setup(x => x.ExecuteAsync(fakeSubscriptionMessage, CancellationToken.None))
+                .Returns(Task.CompletedTask);
 
             // act
             await _pubSubHostedService.StartAsync(CancellationToken.None);
@@ -106,9 +122,12 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
         {
             // arrange
             var fakeFoo = FakeData.Create<Foo>();
-            _subOrchestrationServiceMock.Setup(m => m.ExecuteAsync(fakeFoo, CancellationToken.None))
-                .Throws<Exception>();
             _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo);
+            var fakeSubscriptionMessage = new SubscriptionMessage<Foo>(
+                _subscriberClient.TestMessage.Data.ToByteArray(),
+                new Lazy<Foo>(() => fakeFoo));
+            _subOrchestrationServiceMock.Setup(m => m.ExecuteAsync(fakeSubscriptionMessage, CancellationToken.None))
+                .Throws<Exception>();
 
             // act
             await _pubSubHostedService.StartAsync(CancellationToken.None);
@@ -126,9 +145,12 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
         {
             // arrange
             var fakeFoo = FakeData.Create<Foo>();
-            _subOrchestrationServiceMock.Setup(m => m.ExecuteAsync(fakeFoo, CancellationToken.None))
-                .ThrowsAsync(new NackException("test"));
             _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo);
+            var fakeSubscriptionMessage = new SubscriptionMessage<Foo>(
+                _subscriberClient.TestMessage.Data.ToByteArray(),
+                new Lazy<Foo>(() => fakeFoo));
+            _subOrchestrationServiceMock.Setup(m => m.ExecuteAsync(fakeSubscriptionMessage, CancellationToken.None))
+                .ThrowsAsync(new NackException("test"));
 
             // act
             await _pubSubHostedService.StartAsync(CancellationToken.None);
@@ -146,9 +168,38 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
         {
             // arrange
             var fakeFoo = FakeData.Create<Foo>();
-            _subOrchestrationServiceMock.Setup(m => m.ExecuteAsync(fakeFoo, CancellationToken.None))
-                .ThrowsAsync(new AckException("test"));
             _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo);
+            var fakeSubscriptionMessage = new SubscriptionMessage<Foo>(
+                _subscriberClient.TestMessage.Data.ToByteArray(),
+                new Lazy<Foo>(() => fakeFoo));
+            _subOrchestrationServiceMock.Setup(m => m.ExecuteAsync(fakeSubscriptionMessage, CancellationToken.None))
+                .ThrowsAsync(new AckException("test"));
+
+            // act
+            await _pubSubHostedService.StartAsync(CancellationToken.None);
+
+            // assert
+            _subscriberClient.TestReply.Should().Be(SubscriberClient.Reply.Ack);
+        }
+
+        /// <summary>
+        /// Validates the behavior of <see cref="BaseSubscriberHostedService{T}.StartAsync(CancellationToken)"/> is backwards compatible
+        /// with <see cref="ISubOrchestrationService{TMessage}.ExecuteAsync(TMessage, CancellationToken)"/>.
+        /// </summary>
+        /// <returns>A task.</returns>
+        [Fact]
+        public async Task BackwardsCompatible()
+        {
+            // arrange
+            var fakeFoo = FakeData.Create<Foo>();
+            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo);
+            var fooSubscriptionHandler = new FooSubscriptionHandler();
+
+            _pubSubHostedService = new PubSubHostedService(
+                _logger.Object,
+                _optionsMock.Object,
+                _subscriberClientFactory.Object,
+                fooSubscriptionHandler);
 
             // act
             await _pubSubHostedService.StartAsync(CancellationToken.None);
