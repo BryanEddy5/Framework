@@ -79,6 +79,18 @@ Offers simple symmetric encryption and decryption in utf-8 base64 url encoded st
 1. [Add configuration settings to appsettings.json](example/src/WebApi/appsettings.json#L21)
 1. [Inject IEncryptionService](example/src/WebApi/Encryption/UseEncryptionService.cs#L20)
 
+## MessageAppException
+`MessageAppException` allows for communicating a message and http status code back to the consumer. These exceptions are caught by hte Exception Handling middleware that will inspect the exception and set the response equal to the message and assigned http status code.
+As use case for this scenario would be a resource not found (404). Upon retrieving a resource from an external source (database, RESTful service, etc) a status code of 404 can be attached with a message of `The resource of Foo is not found`.  This removes the need to implement the `result inspection` anti pattern of communicating back to consuming services that a resource has not been found. 
+Exceptions are our first class citizen for communicating errors to consumers.
+
+Developers should extend `MessageAppException` and override the http status code in order to set it in the response.
+Example: [Resource Not Found](example/src/Integration.CatFacts/Exceptions/NotFoundCatFactsExceptions.cs)
+
+You can also include a separate message to be logged that supports structured logging to enrich the log context with additional information.
+Example: [Structured Exception Logging](example/src/WebApi/Controllers/ExceptionController.cs)
+
+
 ## Pub/Sub Subscriber
 Creates an instance of `IHostedService` that pulls from a Pub/Sub Subscription.  The published message will not be acked or nacked until the process handler has completed the request.  If an exception is not thrown and the process completes then the message will be acked.  The default behavior for an exception thrown is to nack the message to be retried.  This flow can be controlled utilizing `PubSubException` and overriding the `Reply` property to `Ack` instead of `Nack` if the exception is not recoverable (meaning that the exception will persist with future attempts.)  The suggest course of action for exceptions thrown is to `Nack` the message and incorporate a Dead Letter Queue (in the form of another GCP Topic and subscription) to push the message to aftre it has failed after so many attempts (10 being the current max attempts in GCP).
 The client incorporates telemetry of type `Subscription` that indicates if the message was successfully `Ack`ed, the duration of the subscription handling, and the unique message id of the message that was processed.

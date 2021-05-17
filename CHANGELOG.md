@@ -2,6 +2,8 @@
 ### Added
 - new `RestClientOptions.Builder` option: `.ConfigureMiddlewareAsync()`<br/>
   for adding asynchronous operations that should happen with every outgoing request.
+  
+- Structured logging for `MessageAppException` has been added.  Exceptions can now utilize structured logging for the message payload.
 
 ### Changed
 - Upgraded all libraries to multi-target both .Net 5.0 and .Net 3.1 or .Net Standard 2.1.
