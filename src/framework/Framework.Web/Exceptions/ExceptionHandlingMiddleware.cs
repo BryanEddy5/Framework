@@ -79,7 +79,6 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
             }
             catch (Exception exception)
             {
-                _logger.LogInformation(exception, "An exception was thrown");
                 await HandleExceptionAsync(exception, httpContext);
             }
         }
@@ -105,6 +104,11 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
             {
                 message = httpException.Message;
                 statusCode = httpException.StatusCode;
+                _logger.LogInformation(exception, httpException.LoggedMessage, httpException.Args);
+            }
+            else
+            {
+                _logger.LogInformation(exception, "An exception was thrown");
             }
 
             var traceId = Activity.Current?.Id;

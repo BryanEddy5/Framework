@@ -1,8 +1,11 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoFixture;
+using FluentAssertions;
+using HumanaEdge.Webcore.Core.Common.Exceptions;
 using HumanaEdge.Webcore.Core.Testing;
 using HumanaEdge.Webcore.Framework.Web.Exceptions;
 using HumanaEdge.Webcore.Framework.Web.Options;
@@ -61,6 +64,30 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests
             Assert.True(httpContext.Response.Body.Length > 0);
             Assert.Null(actual["exception"]);
             Assert.NotNull(actual["message"]);
+            Assert.Equal(FakeNotFoundMessageException.ExceptionMessage, actual["message"]);
+        }
+
+        /// <summary>
+        /// Verifies the <see cref="HttpContext.Response" /> does not contain <see cref="MessageAppException.LoggedMessage" />.
+        /// </summary>
+        /// <returns>An awaitable task.</returns>
+        [Fact]
+        public async Task InvokeAsync_ResponseDoesNotContainLoggedMessage()
+        {
+            // arrange
+            var httpContext = CreateHttpContext();
+            SetupForOptions(false, new FakeComplexLoggingException());
+
+            // act
+            await _systemUnderTest.InvokeAsync(httpContext);
+            var actual = await ResponseBodyToString(httpContext);
+
+            // assert
+            Assert.True(httpContext.Response.Body.Length > 0);
+            Assert.Null(actual["exception"]);
+            Assert.NotNull(actual["message"]);
+            actual["message"].ToString().Should().NotContain(FakeComplexLoggingException.ExceptionLoggedMessage);
+            actual["message"].ToString().Should().Contain(FakeComplexLoggingException.ExceptionMessage);
             Assert.Equal(FakeNotFoundMessageException.ExceptionMessage, actual["message"]);
         }
 
@@ -194,7 +221,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests
             httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
             var responseBodyStreamReader = new StreamReader(httpContext.Response.Body);
             var response = await responseBodyStreamReader.ReadToEndAsync();
-            return JToken.Parse(response);
+            return JObject.Parse(response);
         }
 
         /// <summary>
