@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Net;
-using HumanaEdge.Webcore.Core.Common;
 using HumanaEdge.Webcore.Core.Common.Exceptions;
-using HumanaEdge.Webcore.Core.Web;
+using HumanaEdge.Webcore.Example.WebApi.Models;
 
 namespace HumanaEdge.Webcore.Framework.Web.Tests.Stubs.Exceptions
 {
     /// <summary>
-    /// A stubbed out exception that has a <see cref="HttpStatusCode.NotFound" /> status code.
+    /// An exception containing a complex object to be logged.
     /// </summary>
     [Serializable]
     internal sealed class FakeComplexLoggingException : MessageAppException
@@ -26,11 +24,11 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests.Stubs.Exceptions
         /// Designated ctor.
         /// </summary>
         public FakeComplexLoggingException()
-            : base(ExceptionMessage, ExceptionLoggedMessage, CreateObject())
+            : base(ExceptionMessage, ExceptionLoggedMessage, CreatFoo())
         {
         }
 
-        private static Foo CreateObject()
+        private static Foo CreatFoo()
         {
             return new Foo
             {
