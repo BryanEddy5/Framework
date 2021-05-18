@@ -99,10 +99,12 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
         {
             // arrange
             var fakeFoo = FakeData.Create<Foo>();
-            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo);
+            var fakeMessageId = FakeData.Create<string>();
+            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo, fakeMessageId);
             var fakeSubscriptionMessage = new SubscriptionMessage<Foo>(
                 _subscriberClient.TestMessage.Data.ToByteArray(),
-                new Lazy<Foo>(() => fakeFoo));
+                new Lazy<Foo>(() => fakeFoo),
+                fakeMessageId);
             _subOrchestrationServiceMock.Setup(x => x.ExecuteAsync(fakeSubscriptionMessage, CancellationToken.None))
                 .Returns(Task.CompletedTask);
 
@@ -122,10 +124,12 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
         {
             // arrange
             var fakeFoo = FakeData.Create<Foo>();
-            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo);
+            var fakeMessageId = FakeData.Create<string>();
+            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo, fakeMessageId);
             var fakeSubscriptionMessage = new SubscriptionMessage<Foo>(
                 _subscriberClient.TestMessage.Data.ToByteArray(),
-                new Lazy<Foo>(() => fakeFoo));
+                new Lazy<Foo>(() => fakeFoo),
+                fakeMessageId);
             _subOrchestrationServiceMock.Setup(m => m.ExecuteAsync(fakeSubscriptionMessage, CancellationToken.None))
                 .Throws<Exception>();
 
@@ -145,10 +149,12 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
         {
             // arrange
             var fakeFoo = FakeData.Create<Foo>();
-            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo);
+            var fakeMessageId = FakeData.Create<string>();
+            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo, fakeMessageId);
             var fakeSubscriptionMessage = new SubscriptionMessage<Foo>(
                 _subscriberClient.TestMessage.Data.ToByteArray(),
-                new Lazy<Foo>(() => fakeFoo));
+                new Lazy<Foo>(() => fakeFoo),
+                fakeMessageId);
             _subOrchestrationServiceMock.Setup(m => m.ExecuteAsync(fakeSubscriptionMessage, CancellationToken.None))
                 .ThrowsAsync(new NackException("test"));
 
@@ -168,10 +174,12 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
         {
             // arrange
             var fakeFoo = FakeData.Create<Foo>();
-            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo);
+            var fakeMessageId = FakeData.Create<string>();
+            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo, fakeMessageId);
             var fakeSubscriptionMessage = new SubscriptionMessage<Foo>(
                 _subscriberClient.TestMessage.Data.ToByteArray(),
-                new Lazy<Foo>(() => fakeFoo));
+                new Lazy<Foo>(() => fakeFoo),
+                fakeMessageId);
             _subOrchestrationServiceMock.Setup(m => m.ExecuteAsync(fakeSubscriptionMessage, CancellationToken.None))
                 .ThrowsAsync(new AckException("test"));
 
@@ -192,7 +200,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
         {
             // arrange
             var fakeFoo = FakeData.Create<Foo>();
-            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo);
+            var fakeMessageId = FakeData.Create<string>();
+            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo, fakeMessageId);
             var fooSubscriptionHandler = new FooSubscriptionHandler();
 
             _pubSubHostedService = new PubSubHostedService(
@@ -215,13 +224,17 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
             return new PubsubMessage { Data = ByteString.CopyFrom(bytes) };
         }
 
-        private PubsubMessage BuildPubsubMessage(Foo foo)
+        private PubsubMessage BuildPubsubMessage(Foo foo, string messageId)
         {
             var json = JsonConvert.SerializeObject(
                 foo,
                 StandardSerializerConfiguration.Settings);
             var bytes = Encoding.UTF8.GetBytes(json);
-            return new PubsubMessage { Data = ByteString.CopyFrom(bytes) };
+            return new PubsubMessage
+            {
+                Data = ByteString.CopyFrom(bytes),
+                MessageId = messageId
+            };
         }
     }
 }
