@@ -106,7 +106,11 @@ namespace HumanaEdge.Webcore.Framework.Web
                     options.Filters.Add(new ConsumesAttribute("application/json"));
                 });
 
-            services.AddControllers(options => options.AddFilters(ConfigureFilters()))
+            services.AddControllers(
+                options =>
+                {
+                    options.AddFilters(ConfigureFilters());
+                })
                 .AddNewtonsoftJson(
                     options =>
                     {

@@ -5,6 +5,11 @@
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\example\src\WebApi\WebApi.csproj" />
     <ProjectReference Include="..\..\..\src\framework\Framework.Web\Framework.Web.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(MicrosoftExtensionsVersion)" />
   </ItemGroup>
 </Project>
