@@ -93,7 +93,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub
                                 StandardSerializerConfiguration.Settings)!);
                         var subscriptionMessage = new SubscriptionMessage<TMessage>(
                             message.Data.ToByteArray(),
-                            deserializedMessage !);
+                            deserializedMessage !,
+                            message.MessageId);
                         await _subOrchestrationService.ExecuteAsync(
                             subscriptionMessage,
                             cancel);
