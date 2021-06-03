@@ -21,7 +21,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
         public DebugProblemDetail(
             string title,
             string requestId,
-            HttpStatusCode status,
+            int status,
             string message,
             Exception exception)
             : base(title, requestId, status, message)
