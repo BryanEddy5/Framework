@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.Common;
 using HumanaEdge.Webcore.Core.Common.Exceptions;
 using HumanaEdge.Webcore.Core.Web;
+using HumanaEdge.Webcore.Core.Web.Contracts;
+using HumanaEdge.Webcore.Core.Web.Exceptions;
 using HumanaEdge.Webcore.Framework.Web.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -88,10 +90,11 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
         /// </summary>
         /// <param name="exception">The exception that has been caught.</param>
         /// <param name="httpContext"><see cref="T:Microsoft.AspNetCore.Http.HttpContext" />HttpContext delegate.</param>
-        private ProblemDetail GenerateProblemDetailResponse(Exception exception, HttpContext httpContext)
+        private BaseErrorResponse GenerateProblemDetailResponse(Exception exception, HttpContext httpContext)
         {
             var message = exception.Message;
             var statusCode = HttpStatusCode.InternalServerError;
+            var traceId = Activity.Current?.Id;
 
             if (exception is AggregateException aggregateException)
             {
@@ -105,17 +108,21 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
                 message = httpException.Message;
                 statusCode = httpException.StatusCode;
                 _logger.LogInformation(exception, httpException.LoggedMessage, httpException.Args);
+
+                if (exception is BadRequestException badRequestException)
+                {
+                    return badRequestException.BadRequestResponse;
+                }
             }
             else
             {
                 _logger.LogInformation(exception, "An exception was thrown");
             }
 
-            var traceId = Activity.Current?.Id;
             var response = new ProblemDetail(
                 DefaultErrorMessage,
                 httpContext.TraceIdentifier ?? Guid.NewGuid().ToString(),
-                statusCode,
+                (int)statusCode,
                 message,
                 traceId !);
             if (_options.CurrentValue.ShowExceptionDetails)

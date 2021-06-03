@@ -7,6 +7,8 @@ using AutoFixture;
 using FluentAssertions;
 using HumanaEdge.Webcore.Core.Common.Exceptions;
 using HumanaEdge.Webcore.Core.Testing;
+using HumanaEdge.Webcore.Core.Web.Contracts;
+using HumanaEdge.Webcore.Core.Web.Exceptions;
 using HumanaEdge.Webcore.Framework.Web.Exceptions;
 using HumanaEdge.Webcore.Framework.Web.Options;
 using HumanaEdge.Webcore.Framework.Web.Tests.Stubs.Exceptions;
@@ -200,6 +202,32 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests
         }
 
         /// <summary>
+        /// Verifies an http status code <see cref="HttpStatusCode.BadRequest"/> is returned when
+        /// <see cref="BadRequestException"/> containing a <see cref="BadRequestResponse"/> is thrown.
+        /// </summary>
+        /// <returns>A Task.</returns>
+        [Fact]
+        public async Task InvokeAsync_ThrowsBadRequestException()
+        {
+            // arrange
+            var httpContext = CreateHttpContext();
+            var fakeBadRequest = FakeData.Create<BadRequestResponse>();
+            SetupForOptions(false, new BadRequestException(fakeBadRequest), false);
+            Moq.VerifyNoOtherCalls();
+
+            // act
+            await _systemUnderTest.InvokeAsync(httpContext);
+            var actual = await ResponseBodyToString(httpContext);
+
+            // assert
+            Assert.True(httpContext.Response.Body.Length > 0);
+            actual["errors"].ToString().Should().NotBeNullOrEmpty();
+            actual["title"].ToString().Should().Be(fakeBadRequest.Title);
+            actual["type"].ToString().Should().Be(fakeBadRequest.Type);
+            actual["status"].ToString().Should().Be(fakeBadRequest.Status.ToString());
+        }
+
+        /// <summary>
         /// Builds the context for testing.
         /// </summary>
         /// <returns>HttpContext.</returns>
@@ -229,7 +257,8 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests
         /// </summary>
         /// <param name="showExceptionDetails">A flag to determine if the exception stack trace should be shown.</param>
         /// <param name="exception">A configurable exception to be thrown.</param>
-        private void SetupForOptions(bool showExceptionDetails, Exception exception)
+        /// <param name="setupOptions">Setup options mock. </param>
+        private void SetupForOptions(bool showExceptionDetails, Exception exception, bool setupOptions = true)
         {
             _mockLogger = Moq.Create<ILogger<ExceptionHandlingMiddleware>>(MockBehavior.Loose);
             _mockOptions = Moq.Create<IOptionsMonitor<ExceptionHandlingOptions>>();
@@ -241,7 +270,10 @@ namespace HumanaEdge.Webcore.Framework.Web.Tests
             var fakeOptions = FakeData.Build<ExceptionHandlingOptions>()
                 .With(x => x.ShowExceptionDetails, showExceptionDetails)
                 .Create();
-            _mockOptions.Setup(x => x.CurrentValue).Returns(fakeOptions);
+            if (setupOptions)
+            {
+                _mockOptions.Setup(x => x.CurrentValue).Returns(fakeOptions);
+            }
         }
     }
 }
