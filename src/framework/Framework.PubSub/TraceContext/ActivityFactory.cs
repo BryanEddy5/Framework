@@ -49,7 +49,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.TraceContext
 
             LogContext.PushProperty(TracingKeys.MessageId, message.MessageId);
             LogContext.PushProperty(TracingKeys.TraceId, activity.RootId);
-            LogContext.PushProperty(TracingKeys.ParentId, activity.ParentId);
+            LogContext.PushProperty(TracingKeys.ParentId, activity.ParentSpanId);
             LogContext.PushProperty(TracingKeys.SpanId, activity.SpanId);
             LogContext.PushProperty(TracingKeys.RequestId, message.MessageId);
 
