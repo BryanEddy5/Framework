@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.Common.Serialization;
-using Microsoft.Extensions.Logging;
+using HumanaEdge.Webcore.Core.Rest.Resiliency;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Polly;
@@ -25,24 +23,27 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// <param name="restRequestMiddleware">Optional. Transformations to be applied to the outgoing http request.</param>
         /// <param name="restRequestMiddlewareAsync">Optional. Asynchronous transformations to be applied to the outgoing http request.</param>
         /// <param name="timeout">Optional. The duration of which the request will timeout.</param>
-        /// <param name="resiliencePolicy">Optional. Configured strategy for resiliency. Defaults to NoOp if omitted.</param>
+        /// <param name="resiliencePolicies">Optional. Configured strategy for resiliency. Defaults to NoOp if omitted.</param>
         /// <param name="jsonSerializerSettings">Settings for JSON formatting.</param>
+        /// <param name="bearerTokenFactory">A factory for generating a bearer token. </param>
         private RestClientOptions(
             Uri baseUri,
             Dictionary<string, StringValues> defaultHeaders,
             RestRequestTransformation[] restRequestMiddleware,
             RestRequestTransformationAsync[] restRequestMiddlewareAsync,
             TimeSpan timeout,
-            IAsyncPolicy<BaseRestResponse> resiliencePolicy,
-            JsonSerializerSettings jsonSerializerSettings)
+            IAsyncPolicy<BaseRestResponse>[] resiliencePolicies,
+            JsonSerializerSettings jsonSerializerSettings,
+            (Func<CancellationToken, Task<string>> TokenFactory, string TokenKey)? bearerTokenFactory)
         {
             BaseUri = baseUri;
             DefaultHeaders = defaultHeaders;
             RestRequestMiddleware = restRequestMiddleware;
             RestRequestMiddlewareAsync = restRequestMiddlewareAsync;
             Timeout = timeout;
-            ResiliencePolicy = resiliencePolicy;
+            ResiliencePolicies = resiliencePolicies;
             JsonSerializerSettings = jsonSerializerSettings;
+            BearerTokenFactory = bearerTokenFactory;
         }
 
         /// <summary>
@@ -75,7 +76,7 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// <summary>
         /// Optional. Configured strategy for resiliency. Defaults to NoOp if omitted.
         /// </summary>
-        public IAsyncPolicy<BaseRestResponse> ResiliencePolicy { get; }
+        public IAsyncPolicy<BaseRestResponse>[] ResiliencePolicies { get; }
 
         /// <summary>
         /// Optional. Transformations to be applied to the outgoing http request.
@@ -91,6 +92,11 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// Optional. The duration of which the request will timeout.
         /// </summary>
         public TimeSpan Timeout { get; }
+
+        /// <summary>
+        /// A factory for retrieving a bearer token.
+        /// </summary>
+        public (Func<CancellationToken, Task<string>> TokenFactory, string TokenKey)? BearerTokenFactory { get; }
 
         /// <summary>
         /// Settings for JSON formatting.
@@ -130,12 +136,17 @@ namespace HumanaEdge.Webcore.Core.Rest
             /// <summary>
             /// Optional. Configured strategy for resiliency. Defaults to NoOp if omitted.
             /// </summary>
-            private IAsyncPolicy<BaseRestResponse> _resiliencePolicy;
+            private List<IAsyncPolicy<BaseRestResponse>> _resiliencePolicy;
 
             /// <summary>
             /// Optional. The duration of which the request will timeout.
             /// </summary>
             private TimeSpan _timeout;
+
+            /// <summary>
+            /// A factory for retrieving a bearer token.
+            /// </summary>
+            private (Func<CancellationToken, Task<string>> TokenFactory, string TokenKey)? _tokenFactory;
 
             /// <summary>
             /// A builder pattern for fluently producing <see cref="RestClientOptions" />.
@@ -149,7 +160,9 @@ namespace HumanaEdge.Webcore.Core.Rest
                 _restRequestMiddlewareAsync = new List<RestRequestTransformationAsync>();
                 _timeout = TimeSpan.FromSeconds(5);
                 _jsonSettings = StandardSerializerConfiguration.Settings;
-                _resiliencePolicy = DefaultResiliencePolicy();
+                _resiliencePolicy =
+                    new List<IAsyncPolicy<BaseRestResponse>>(
+                        new[] { ResiliencyPolicies.RetryWithExponentialBackoff(6) });
             }
 
             /// <summary>
@@ -174,8 +187,9 @@ namespace HumanaEdge.Webcore.Core.Rest
                     _restRequestMiddleware.ToArray(),
                     _restRequestMiddlewareAsync.ToArray(),
                     _timeout,
-                    _resiliencePolicy,
-                    _jsonSettings);
+                    _resiliencePolicy.ToArray(),
+                    _jsonSettings,
+                    _tokenFactory);
             }
 
             /// <summary>
@@ -238,7 +252,7 @@ namespace HumanaEdge.Webcore.Core.Rest
             /// <returns>The builder instance, for fluent chaining.</returns>
             public Builder ConfigureResiliencePolicy(IAsyncPolicy<BaseRestResponse> resiliencePolicy)
             {
-                _resiliencePolicy = resiliencePolicy;
+                _resiliencePolicy.Add(resiliencePolicy);
                 return this;
             }
 
@@ -254,20 +268,16 @@ namespace HumanaEdge.Webcore.Core.Rest
             }
 
             /// <summary>
-            /// Creates the default resilience policy configuration.
+            /// Sets the bearer token based on a factory to generate it.
             /// </summary>
-            /// <returns> The resilience policy. </returns>
-            private IAsyncPolicy<BaseRestResponse> DefaultResiliencePolicy()
+            /// <param name="tokenFactory">The factory for creating a token.</param>
+            /// <typeparam name="TClient">The type of client.</typeparam>
+            /// <returns>The builder instance, for fluent chaining.</returns>
+            public Builder ConfigureBearerToken<TClient>(Func<CancellationToken, Task<string>> tokenFactory)
             {
-                var jitterer = new Random();
-                var maxAttempts = 6;
-                var backOffIntervals = Enumerable.Range(1, maxAttempts)
-                    .Select(
-                        t => TimeSpan.FromMilliseconds(Math.Pow(2, t)) + TimeSpan.FromMilliseconds(jitterer.Next(0, 100)))
-                    .ToArray();
-                return Policy<BaseRestResponse>.HandleResult(
-                        r => r.StatusCode == HttpStatusCode.BadGateway || r.StatusCode == HttpStatusCode.GatewayTimeout)
-                    .WaitAndRetryAsync(backOffIntervals);
+                _tokenFactory = (TokenFactory: tokenFactory, TokenKey: typeof(TClient).FullName !);
+                _resiliencePolicy.Add(ResiliencyPolicies.RefreshToken<TClient>(tokenFactory, typeof(TClient).FullName !));
+                return this;
             }
         }
     }

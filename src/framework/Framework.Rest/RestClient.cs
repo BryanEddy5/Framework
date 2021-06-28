@@ -6,9 +6,15 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.Rest;
+using HumanaEdge.Webcore.Core.Rest.AccessTokens;
+using HumanaEdge.Webcore.Core.Rest.Resiliency;
 using HumanaEdge.Webcore.Core.Telemetry;
 using HumanaEdge.Webcore.Core.Telemetry.Http;
+using HumanaEdge.Webcore.Framework.Rest.Resiliency;
+using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 using Polly;
+using Polly.Wrap;
 
 namespace HumanaEdge.Webcore.Framework.Rest
 {
@@ -18,6 +24,10 @@ namespace HumanaEdge.Webcore.Framework.Rest
         private readonly IDictionary<MediaType, IMediaTypeFormatter> _mediaTypeFormatters;
 
         private readonly RestClientOptions _options;
+
+        private readonly IPollyContextFactory _pollyContextFactory;
+
+        private readonly IAccessTokenCacheService _accessTokenCacheService;
 
         private readonly ITelemetryFactory _telemetryFactory;
 
@@ -32,17 +42,23 @@ namespace HumanaEdge.Webcore.Framework.Rest
         /// <param name="internalClientFactory">A factory for generating <see cref="IInternalClient" /> for sending the request.</param>
         /// <param name="options">Configuration settings for outbound requests for the instance of <see cref="IRestClient" />.</param>
         /// <param name="mediaTypeFormatters">A collection of media type formatters.</param>
+        /// <param name="pollyContextFactory">Generates Polly <see cref="Context"/> to be leveraged by consumers.</param>
+        /// <param name="accessTokenCacheService">A cache for tokens. </param>
         /// <param name="telemetryFactory">A factory associated with telemetry.</param>
         public RestClient(
             string clientName,
             IInternalClientFactory internalClientFactory,
             RestClientOptions options,
             IMediaTypeFormatter[] mediaTypeFormatters,
+            IPollyContextFactory pollyContextFactory,
+            IAccessTokenCacheService accessTokenCacheService,
             ITelemetryFactory telemetryFactory = null!)
         {
             _clientName = clientName;
             _internalClientFactory = internalClientFactory;
             _options = options;
+            _pollyContextFactory = pollyContextFactory;
+            _accessTokenCacheService = accessTokenCacheService;
             _mediaTypeFormatters = mediaTypeFormatters.SelectMany(
                     formatter => formatter.MediaTypes.Select(
                         mediaType =>
@@ -51,7 +67,8 @@ namespace HumanaEdge.Webcore.Framework.Rest
             _telemetryFactory = telemetryFactory;
         }
 
-        private IInternalClient InternalHttpClient => _internalClientFactory.CreateClient(_clientName, _options.BaseUri, _options.Timeout);
+        private IInternalClient InternalHttpClient =>
+            _internalClientFactory.CreateClient(_clientName, _options.BaseUri, _options.Timeout);
 
         /// <inheritdoc />
         public async Task<FileResponse> GetFileAsync(RestRequest fileRequest, CancellationToken cancellationToken)
@@ -199,31 +216,52 @@ namespace HumanaEdge.Webcore.Framework.Rest
             CancellationToken cancellationToken,
             Func<TRestRequest, HttpRequestMessage> restRequestConverter,
             Func<HttpResponseMessage, Task<TRestResponse>> restResponseConverter)
-                where TRestRequest : RestRequest
-                where TRestResponse : BaseRestResponse
+            where TRestRequest : RestRequest
+            where TRestResponse : BaseRestResponse
         {
             var transformedRestRequest = await TransformRequest(restRequest, cancellationToken);
-            return (TRestResponse)await _options.ResiliencePolicy.ExecuteAsync(
-                async ct =>
-                {
-                    var httpRequestMessage = restRequestConverter(transformedRestRequest);
-                    HttpResponseMessage httpResponse = null!;
-                    var stopWatch = new Stopwatch();
-                    stopWatch.Start();
-                    var startTime = DateTimeOffset.UtcNow;
-                    try
-                    {
-                        httpResponse = await InternalHttpClient.SendAsync(httpRequestMessage, ct);
-                    }
-                    finally
-                    {
-                        stopWatch.Stop();
-                        TrackTelemetry(httpRequestMessage, httpResponse, startTime, stopWatch.ElapsedMilliseconds);
-                    }
+            var contextData = _pollyContextFactory.Create()
+                .WithRestRequest(transformedRestRequest);
 
-                    return await restResponseConverter(httpResponse);
-                },
-                cancellationToken);
+            async Task<BaseRestResponse> Action(Context context, CancellationToken token) =>
+                await SendInternalAsync(token, restRequestConverter, restResponseConverter, transformedRestRequest);
+
+            if (_options.ResiliencePolicies.Length > 1)
+            {
+                var poly = Policy.WrapAsync(_options.ResiliencePolicies);
+                return (TRestResponse)await poly.ExecuteAsync(Action, contextData, cancellationToken);
+            }
+            else
+            {
+                return (TRestResponse)await _options.ResiliencePolicies.First()
+                    .ExecuteAsync(Action, contextData, cancellationToken);
+            }
+        }
+
+        private async Task<BaseRestResponse> SendInternalAsync<TRestRequest, TRestResponse>(
+            CancellationToken cancellationToken,
+            Func<TRestRequest, HttpRequestMessage> restRequestConverter,
+            Func<HttpResponseMessage, Task<TRestResponse>> restResponseConverter,
+            TRestRequest request)
+            where TRestRequest : RestRequest
+            where TRestResponse : BaseRestResponse
+        {
+            var httpRequestMessage = restRequestConverter(request);
+            HttpResponseMessage httpResponse = null!;
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            var startTime = DateTimeOffset.UtcNow;
+            try
+            {
+                httpResponse = await InternalHttpClient.SendAsync(httpRequestMessage, cancellationToken);
+            }
+            finally
+            {
+                stopWatch.Stop();
+                TrackTelemetry(httpRequestMessage, httpResponse, startTime, stopWatch.ElapsedMilliseconds);
+            }
+
+            return await restResponseConverter(httpResponse);
         }
 
         /// <summary>
@@ -251,7 +289,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
         private async Task<TRestRequest> TransformRequest<TRestRequest>(
             TRestRequest restRequest,
             CancellationToken cancellationToken)
-                where TRestRequest : RestRequest
+            where TRestRequest : RestRequest
         {
             var transformedRequest = restRequest;
 
@@ -273,6 +311,13 @@ namespace HumanaEdge.Webcore.Framework.Rest
             foreach (var asyncTransformation in _options.RestRequestMiddlewareAsync)
             {
                 transformedRequest = (TRestRequest)await asyncTransformation(restRequest, cancellationToken);
+            }
+
+            if (_options.BearerTokenFactory.HasValue)
+            {
+                var (factory, token) = _options.BearerTokenFactory.Value;
+                var bearerToken = await _accessTokenCacheService.GetAsync(factory, token, cancellationToken);
+                transformedRequest.Headers[HeaderNames.Authorization] = $"Bearer {bearerToken}";
             }
 
             return transformedRequest;

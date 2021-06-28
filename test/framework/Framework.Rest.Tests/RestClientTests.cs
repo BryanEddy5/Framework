@@ -9,14 +9,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
+using Castle.Core.Logging;
 using FluentAssertions;
 using HumanaEdge.Webcore.Core.Common.Serialization;
 using HumanaEdge.Webcore.Core.Rest;
+using HumanaEdge.Webcore.Core.Rest.AccessTokens;
 using HumanaEdge.Webcore.Core.Testing;
+using HumanaEdge.Webcore.Framework.Rest.Resiliency;
 using HumanaEdge.Webcore.Framework.Rest.Tests.Stubs;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Polly;
 using Xunit;
 
 namespace HumanaEdge.Webcore.Framework.Rest.Tests
@@ -29,6 +33,10 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         private readonly Mock<IInternalClient> _mockHttpClient;
 
         private readonly Mock<IMediaTypeFormatter> _mockMediaTypeFormatter;
+
+        private readonly Mock<IAccessTokenCacheService> _accessTokenCacheMock;
+
+        private readonly Mock<IPollyContextFactory> _pollyContextFactoryMock;
 
         private readonly RestClientOptions _options;
 
@@ -50,6 +58,9 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             _mockHttpClient = Moq.Create<IInternalClient>();
             _mockMediaTypeFormatter = Moq.Create<IMediaTypeFormatter>();
             _mockMediaTypeFormatter.Setup(f => f.MediaTypes).Returns(new[] { MediaType.Json });
+            _accessTokenCacheMock = Moq.Create<IAccessTokenCacheService>();
+            _pollyContextFactoryMock = Moq.Create<IPollyContextFactory>();
+            _pollyContextFactoryMock.Setup(x => x.Create()).Returns(new Context());
             _fakeClientName = FakeData.Create<string>();
 
             _options = new RestClientOptions.Builder("https://localhost:5000")
@@ -75,7 +86,9 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                 _fakeClientName,
                 _mockInternalClientFactory.Object,
                 _options,
-                new[] { _mockMediaTypeFormatter.Object });
+                new[] { _mockMediaTypeFormatter.Object },
+                _pollyContextFactoryMock.Object,
+                _accessTokenCacheMock.Object);
         }
 
         /// <summary>
@@ -340,6 +353,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
 
         private void SetupHttClientFactory() =>
             _mockInternalClientFactory.Setup(
-                x => x.CreateClient(_fakeClientName, _options.BaseUri, _options.Timeout)).Returns(_mockHttpClient.Object);
+                    x => x.CreateClient(_fakeClientName, _options.BaseUri, _options.Timeout))
+                .Returns(_mockHttpClient.Object);
     }
 }
