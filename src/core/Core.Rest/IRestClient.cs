@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace HumanaEdge.Webcore.Core.Rest
 {
     /// <summary>
-    /// The rest client sends RESTful http requests.
+    /// The rest client that sends RESTful http requests.
     /// </summary>
     public interface IRestClient
     {

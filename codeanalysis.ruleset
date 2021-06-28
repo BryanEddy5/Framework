@@ -5,7 +5,6 @@
     <Rule Id="IDE0039WithoutSuggestion" Action="None" /><!--Prefer local function over delegate and don't suggest it./>-->
     <Rule Id="IDE0048" Action="None" /><!--Parentheses should be added for clarity./>-->
     <Rule Id="IDE0048WithoutSuggestion" Action="None" /><!--Parentheses should be added for clarity and don't suggest it./>-->
-
   </Rules>
   <Rules AnalyzerId="Microsoft.VisualStudio.Threading.Analyzers" RuleNamespace="Microsoft.VisualStudio.Threading.Analyzers">
     <Rule Id="VSTHRD100" Action="Error" /><!--Async methods canot have a return type of void/>-->
@@ -28,9 +27,12 @@
     <Rule Id="SA1101" Action="None" /><!--A call to an instance member of the local class or a base class is not prefixed with 'this.', within a C# code file./>-->
     <Rule Id="SA1309" Action="None"/><!--A field name in C# begins with an underscore./>-->
   </Rules>
-    <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.CodeStyle" RuleNamespace="Microsoft.CodeQuality.Analyzers">
-      <Rule Id="IDE0039" Action="None"/><!--Prefer local function over delegate./>-->
-      <Rule Id="IDE0039WithoutSuggestion" Action="None" /><!--Prefer local function over delegate and don't suggest it./>-->
-      <Rule Id="IDE0055" Action="Error" /><!--Detect formatting errors that don't adhere to .editorconfig./>-->
-    </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.CodeStyle" RuleNamespace="Microsoft.CodeQuality.Analyzers">
+    <Rule Id="IDE0039" Action="None"/><!--Prefer local function over delegate./>-->
+    <Rule Id="IDE0039WithoutSuggestion" Action="None" /><!--Prefer local function over delegate and don't suggest it./>-->
+    <Rule Id="IDE0055" Action="Error" /><!--Detect formatting errors that don't adhere to .editorconfig./>-->
+  </Rules>
+  <Rules AnalyzerId="Microsoft.Design" RuleNamespace="Microsoft.CodeQuality.Analyzers">
+    <Rule Id="CA1001" Action="None" /><!--No need to implement IDisposable for things like SemaphoreSlim./>-->
+  </Rules>
 </RuleSet>

@@ -149,7 +149,7 @@ namespace HumanaEdge.Webcore.Core.Rest.Tests
                 .Build();
 
             // assert
-            restClientOptions.ResiliencePolicy.Should().Be(policy);
+            restClientOptions.ResiliencePolicies.Should().Contain(policy);
         }
 
         /// <summary>

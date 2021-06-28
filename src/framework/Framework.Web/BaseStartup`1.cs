@@ -124,6 +124,7 @@ namespace HumanaEdge.Webcore.Framework.Web
             services.AddTracing(Configuration, httpClientBuilder);
 
             services.AddRestClient();
+            services.AddMemoryCache();
             services.AddApplicationTelemetry();
             services.AddPubSub();
             var assembliesToScanForDi =
