@@ -10,6 +10,9 @@ namespace HumanaEdge.Webcore.Framework.Rest.AccessTokens
     /// <inheritdoc cref="IAccessTokenCacheService"/>
     internal sealed class AccessTokenCacheService : IAccessTokenCacheService
     {
+        /// <summary>
+        /// The throttling mechanism to manage incoming requests.
+        /// </summary>
         private static readonly SemaphoreSlim SemaphoreSlim = new SemaphoreSlim(1, 1);
 
         /// <summary>
@@ -17,6 +20,9 @@ namespace HumanaEdge.Webcore.Framework.Rest.AccessTokens
         /// </summary>
         private readonly ILogger<AccessTokenCacheService> _logger;
 
+        /// <summary>
+        /// The cache used to store tokens.
+        /// </summary>
         private readonly IMemoryCache _cache;
 
         /// <summary>
@@ -46,21 +52,22 @@ namespace HumanaEdge.Webcore.Framework.Rest.AccessTokens
             }
 
             await SemaphoreSlim.WaitAsync(cancellationToken);
+
             try
             {
                 if (forceRefresh)
                 {
                     _logger.LogInformation("Force refreshing token");
                     var accessToken = tokenFactory.Invoke(cancellationToken);
-                    return await _cache.Set(tokenKey, accessToken, TimeSpan.FromDays(1));
+                    return await _cache.Set(tokenKey, accessToken, TimeSpan.FromMinutes(210));
                 }
 
-                _logger.LogInformation("Get or Create Token");
+                _logger.LogInformation("Get or Create token");
                 return await _cache.GetOrCreateAsync(
                     tokenKey,
                     entry =>
                     {
-                        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1);
+                        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(210);
                         return tokenFactory.Invoke(cancellationToken);
                     });
             }
