@@ -1,7 +1,5 @@
 using HumanaEdge.Webcore.Core.Encryption;
-using HumanaEdge.Webcore.Core.PubSub;
 using HumanaEdge.Webcore.Example.WebApi.PubSub;
-using HumanaEdge.Webcore.Example.WebApi.PubSub.Publication;
 using HumanaEdge.Webcore.Example.WebApi.PubSub.Subscription;
 using HumanaEdge.Webcore.Example.WebApi.Secrets;
 using HumanaEdge.Webcore.Framework.Encryption.Extensions;
