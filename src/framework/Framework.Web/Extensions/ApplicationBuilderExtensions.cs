@@ -19,10 +19,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Extensions
         {
             app.UseHealthChecks(
                 "/health/ready",
-                new HealthCheckOptions
-                {
-                    Predicate = check => false // check.Tags.Contains("ready"),
-                });
+                new HealthCheckOptions { Predicate = (check) => check.Tags.Contains("ready") });
 
             app.UseHealthChecks(
                 "/health/live",
