@@ -11,15 +11,15 @@ namespace HumanaEdge.Webcore.Example.WebApi.PubSub.Subscription
     /// </summary>
     public class FooSubscriptionHandler : ISubOrchestrationService<FooContract>
     {
-        private readonly ISingletonService _singleton;
+        private readonly IScopedService _scopedService;
 
         /// <summary>
         /// Services can be injected using DI just like any other class.
         /// </summary>
-        /// <param name="singleton"><see cref="IHostedService"/>s are singletons and thus any services injected will also become singletons even if registered as scoped or transient.</param>
-        public FooSubscriptionHandler(ISingletonService singleton)
+        /// <param name="scopedService"><see cref="IHostedService"/>s are singletons and thus any services injected will also become singletons even if registered as scoped or transient.</param>
+        public FooSubscriptionHandler(IScopedService scopedService)
         {
-            _singleton = singleton;
+            _scopedService = scopedService;
         }
 
         /// <summary>
@@ -28,14 +28,14 @@ namespace HumanaEdge.Webcore.Example.WebApi.PubSub.Subscription
         /// <param name="message">The published message shape.</param>
         /// <param name="cancellationToken">A cancellation token that can be invoked if the Acknowledgement window is exceeded.</param>
         /// <returns>An awaitable task for asynchronous execution.</returns>
-        public Task ExecuteAsync(FooContract? message, CancellationToken cancellationToken)
+        public Task ExecuteAsync(FooContract message, CancellationToken cancellationToken)
         {
-            if (message?.Name == "Some exceptional condition")
+            if (message.Name == "Some exceptional condition")
             {
                 throw new UnrecoverableException();
             }
 
-            if (message?.Name == "Another exceptional condition")
+            if (message.Name == "Another exceptional condition")
             {
                 throw new RecoverableException();
             }

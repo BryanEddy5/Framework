@@ -35,6 +35,7 @@ namespace HumanaEdge.Webcore.Example.WebApi
             services.AddKmsEncryption(Configuration.GetSection(nameof(EncryptionServiceOptions))); // Register Encryption Service
             services.AddSecret<FooSecret, FooSecretsOptions>(Configuration.GetSection(nameof(FooSecretsOptions))); // Register Secrets Manager Service
             services.AddSubscriptionHostedService<FooContract, FooSubscriptionHandler>(Configuration.GetSection("FooSubscriptionOptions")); // Register Subscription Handler
+            services.AddSubscriptionHostedService<BarContract, BarSubscriptionHandler>(Configuration.GetSection("BarSubscriptionOptions")); // Register Subscription Handler
             services.AddPublisherClient<FooContract>(Configuration.GetSection("FooPublisherOptions")); // Register Publisher Client
             return services.AddHttpClient("client");  // Pass back a named http client to be used for tracing
         }

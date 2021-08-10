@@ -6,7 +6,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.TraceContext
     /// <summary>
     /// A factory pattern for creating a new <see cref="Activity"/> for W3C trace context.
     /// </summary>
-    public interface IActivityFactory
+    internal interface IActivityFactory
     {
         /// <summary>
         /// Creates a new activity for Pub/Sub subscriptions.
