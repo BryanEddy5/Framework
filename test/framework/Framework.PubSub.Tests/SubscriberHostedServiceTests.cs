@@ -8,63 +8,38 @@ using Google.Cloud.PubSub.V1;
 using Google.Protobuf;
 using HumanaEdge.Webcore.Core.Common.Serialization;
 using HumanaEdge.Webcore.Core.PubSub;
+using HumanaEdge.Webcore.Core.PubSub.Subscription;
 using HumanaEdge.Webcore.Core.Testing;
+using HumanaEdge.Webcore.Framework.PubSub.Subscription;
+using HumanaEdge.Webcore.Framework.PubSub.Subscription.Exceptions;
+using HumanaEdge.Webcore.Framework.PubSub.Subscription.Factory;
+using HumanaEdge.Webcore.Framework.PubSub.Subscription.Middleware.Builder;
 using HumanaEdge.Webcore.Framework.PubSub.Tests.Stubs;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Xunit;
+using JsonException = Newtonsoft.Json.JsonException;
 
 namespace HumanaEdge.Webcore.Framework.PubSub.Tests
 {
     /// <summary>
-    /// Tests for <see cref="BaseSubscriberHostedService{T}" />.
+    /// Tests for <see cref="SubscriberHostedService{TMessage}" />.
     /// </summary>
-    public class PubSubHostedServiceTests : BaseTests
+    public class SubscriberHostedServiceTests : BaseTests
     {
-        private readonly Mock<ISubOrchestrationService<Foo>> _subOrchestrationServiceMock;
+        private FakeSubscriberClient _subscriberClient;
 
-        private readonly FakeSubscriberClient _subscriberClient;
+        private Mock<ILogger<SubscriberHostedService<Foo>>> _logger;
 
-        private readonly Mock<ILogger<PubSubHostedService>> _logger;
+        private Mock<ISubscriberClientFactory> _subscriberClientFactory;
 
-        private readonly Mock<ISubscriberClientFactory> _subscriberClientFactory;
-
-        private readonly Mock<IOptionsMonitor<PubSubOptions>> _optionsMock;
+        private Mock<IMiddlewareBuilder<Foo>> _middlewareBuilderMock;
 
         /// <summary>
         /// SUT.
         /// </summary>
-        private PubSubHostedService _pubSubHostedService;
-
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        public PubSubHostedServiceTests()
-        {
-            _logger = Moq.Create<ILogger<PubSubHostedService>>(MockBehavior.Loose);
-
-            var config = FakeData.Create<PubSubOptions>();
-            _optionsMock = Moq.Create<IOptionsMonitor<PubSubOptions>>();
-            _optionsMock.Setup(p => p.Get(typeof(Foo).FullName)).Returns(config);
-
-            _subOrchestrationServiceMock = Moq.Create<ISubOrchestrationService<Foo>>();
-
-            _subscriberClient = new FakeSubscriberClient();
-            _subscriberClientFactory = Moq.Create<ISubscriberClientFactory>();
-            _subscriberClientFactory.Setup(
-                    s =>
-                        s.GetSubscriberClient(new SubscriptionName(config.ProjectId, config.Name), config))
-                .ReturnsAsync(_subscriberClient);
-
-            _pubSubHostedService = new PubSubHostedService(
-                _logger.Object,
-                _optionsMock.Object,
-                _subscriberClientFactory.Object,
-                _subOrchestrationServiceMock.Object);
-        }
+        private SubscriberHostedService<Foo> _pubSubHostedService;
 
         /// <summary>
         /// Testing that a path where serialization fails or null is passed returns an ack.
@@ -74,14 +49,13 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
         public async Task StartAsync_InvalidMessage_ReturnAck()
         {
             // arrange
+            Setup();
             _subscriberClient.TestMessage = BuildPubsubMessage("blahblahblah");
-            var fooSubscriptionHandler = new FooSubscriptionHandler();
 
-            _pubSubHostedService = new PubSubHostedService(
+            _pubSubHostedService = new SubscriberHostedService<Foo>(
                 _logger.Object,
-                _optionsMock.Object,
                 _subscriberClientFactory.Object,
-                fooSubscriptionHandler);
+                _middlewareBuilderMock.Object);
 
             // act
             await _pubSubHostedService.StartAsync(CancellationTokenSource.Token);
@@ -100,13 +74,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
             // arrange
             var fakeFoo = FakeData.Create<Foo>();
             var fakeMessageId = FakeData.Create<string>();
+            Setup();
             _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo, fakeMessageId);
-            var fakeSubscriptionMessage = new SubscriptionMessage<Foo>(
-                _subscriberClient.TestMessage.Data.ToByteArray(),
-                new Lazy<Foo>(() => fakeFoo),
-                fakeMessageId);
-            _subOrchestrationServiceMock.Setup(x => x.ExecuteAsync(fakeSubscriptionMessage, CancellationToken.None))
-                .Returns(Task.CompletedTask);
 
             // act
             await _pubSubHostedService.StartAsync(CancellationToken.None);
@@ -125,13 +94,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
             // arrange
             var fakeFoo = FakeData.Create<Foo>();
             var fakeMessageId = FakeData.Create<string>();
+            Setup(context => throw new Exception());
             _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo, fakeMessageId);
-            var fakeSubscriptionMessage = new SubscriptionMessage<Foo>(
-                _subscriberClient.TestMessage.Data.ToByteArray(),
-                new Lazy<Foo>(() => fakeFoo),
-                fakeMessageId);
-            _subOrchestrationServiceMock.Setup(m => m.ExecuteAsync(fakeSubscriptionMessage, CancellationToken.None))
-                .Throws<Exception>();
 
             // act
             await _pubSubHostedService.StartAsync(CancellationToken.None);
@@ -141,47 +105,17 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
         }
 
         /// <summary>
-        /// Validates the behavior of <see cref="BaseSubscriberHostedService{T}.StartAsync(CancellationToken)"/> when an exception is thrown with <see cref="Reply.Nack"/>.
+        /// Testing that a path where processing fails, and should be retried.
         /// </summary>
         /// <returns>A task.</returns>
         [Fact]
-        public async Task StartAsync_ValidMessage_ExceptionThrown_ReturnNack()
+        public async Task StartAsync_JsonParsingException_ReturnAck()
         {
             // arrange
             var fakeFoo = FakeData.Create<Foo>();
             var fakeMessageId = FakeData.Create<string>();
+            Setup(context => throw new JsonParsingException(new JsonException()));
             _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo, fakeMessageId);
-            var fakeSubscriptionMessage = new SubscriptionMessage<Foo>(
-                _subscriberClient.TestMessage.Data.ToByteArray(),
-                new Lazy<Foo>(() => fakeFoo),
-                fakeMessageId);
-            _subOrchestrationServiceMock.Setup(m => m.ExecuteAsync(fakeSubscriptionMessage, CancellationToken.None))
-                .ThrowsAsync(new NackException("test"));
-
-            // act
-            await _pubSubHostedService.StartAsync(CancellationToken.None);
-
-            // assert
-            _subscriberClient.TestReply.Should().Be(SubscriberClient.Reply.Nack);
-        }
-
-        /// <summary>
-        /// Validates the behavior of <see cref="BaseSubscriberHostedService{T}.StartAsync(CancellationToken)"/> when an exception is thrown with <see cref="Reply.Ack"/>.
-        /// </summary>
-        /// <returns>A task.</returns>
-        [Fact]
-        public async Task StartAsync_ValidMessage_ExceptionThrown_ReturnAck()
-        {
-            // arrange
-            var fakeFoo = FakeData.Create<Foo>();
-            var fakeMessageId = FakeData.Create<string>();
-            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo, fakeMessageId);
-            var fakeSubscriptionMessage = new SubscriptionMessage<Foo>(
-                _subscriberClient.TestMessage.Data.ToByteArray(),
-                new Lazy<Foo>(() => fakeFoo),
-                fakeMessageId);
-            _subOrchestrationServiceMock.Setup(m => m.ExecuteAsync(fakeSubscriptionMessage, CancellationToken.None))
-                .ThrowsAsync(new AckException("test"));
 
             // act
             await _pubSubHostedService.StartAsync(CancellationToken.None);
@@ -191,7 +125,47 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
         }
 
         /// <summary>
-        /// Validates the behavior of <see cref="BaseSubscriberHostedService{T}.StartAsync(CancellationToken)"/> is backwards compatible
+        /// Validates the behavior of <see cref="SubscriberHostedService{TMessage}.StartAsync(CancellationToken)"/> when an exception is thrown with <see cref="Reply.Nack"/>.
+        /// </summary>
+        /// <returns>A task.</returns>
+        [Fact]
+        public async Task StartAsync_ValidMessage_ExceptionThrown_ReturnNack()
+        {
+            // arrange
+            var fakeFoo = FakeData.Create<Foo>();
+            var fakeMessageId = FakeData.Create<string>();
+            Setup(context => throw new NackException("shit broke and that ain't cool"));
+            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo, fakeMessageId);
+
+            // act
+            await _pubSubHostedService.StartAsync(CancellationToken.None);
+
+            // assert
+            _subscriberClient.TestReply.Should().Be(SubscriberClient.Reply.Nack);
+        }
+
+        /// <summary>
+        /// Validates the behavior of <see cref="SubscriberHostedService{TMessage}.StartAsync(CancellationToken)"/> when an exception is thrown with <see cref="Reply.Ack"/>.
+        /// </summary>
+        /// <returns>A task.</returns>
+        [Fact]
+        public async Task StartAsync_ValidMessage_ExceptionThrown_ReturnAck()
+        {
+            // arrange
+            var fakeFoo = FakeData.Create<Foo>();
+            var fakeMessageId = FakeData.Create<string>();
+            Setup(context => throw new AckException("shit broke but that's okay"));
+            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo, fakeMessageId);
+
+            // act
+            await _pubSubHostedService.StartAsync(CancellationToken.None);
+
+            // assert
+            _subscriberClient.TestReply.Should().Be(SubscriberClient.Reply.Ack);
+        }
+
+        /// <summary>
+        /// Validates the behavior of <see cref="SubscriberHostedService{TMessage}.StartAsync(CancellationToken)"/> is backwards compatible
         /// with <see cref="ISubOrchestrationService{TMessage}.ExecuteAsync(TMessage, CancellationToken)"/>.
         /// </summary>
         /// <returns>A task.</returns>
@@ -201,20 +175,42 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
             // arrange
             var fakeFoo = FakeData.Create<Foo>();
             var fakeMessageId = FakeData.Create<string>();
+            Setup();
             _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo, fakeMessageId);
-            var fooSubscriptionHandler = new FooSubscriptionHandler();
 
-            _pubSubHostedService = new PubSubHostedService(
+            _pubSubHostedService = new SubscriberHostedService<Foo>(
                 _logger.Object,
-                _optionsMock.Object,
                 _subscriberClientFactory.Object,
-                fooSubscriptionHandler);
+                _middlewareBuilderMock.Object);
 
             // act
             await _pubSubHostedService.StartAsync(CancellationToken.None);
 
             // assert
             _subscriberClient.TestReply.Should().Be(SubscriberClient.Reply.Ack);
+        }
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        private void Setup(MessageDelegate messageDelegate = null)
+        {
+            messageDelegate ??= context => Task.CompletedTask;
+            _logger = Moq.Create<ILogger<SubscriberHostedService<Foo>>>(MockBehavior.Loose);
+            _middlewareBuilderMock = Moq.Create<IMiddlewareBuilder<Foo>>();
+            _middlewareBuilderMock.Setup(x => x.Build()).Returns(messageDelegate);
+
+            _subscriberClient = new FakeSubscriberClient();
+            _subscriberClientFactory = Moq.Create<ISubscriberClientFactory>();
+            _subscriberClientFactory.Setup(
+                    s =>
+                        s.Create(typeof(Foo).FullName))
+                .ReturnsAsync(_subscriberClient);
+
+            _pubSubHostedService = new SubscriberHostedService<Foo>(
+                _logger.Object,
+                _subscriberClientFactory.Object,
+                _middlewareBuilderMock.Object);
         }
 
         private PubsubMessage BuildPubsubMessage(string message)

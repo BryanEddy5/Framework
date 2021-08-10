@@ -107,7 +107,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
             {
                 message = httpException.Message;
                 statusCode = httpException.StatusCode;
-                _logger.LogInformation(exception, httpException.LoggedMessage, httpException.Args);
+                _logger.LogError(exception, httpException.LoggedMessage, httpException.Args);
 
                 if (exception is BadRequestException badRequestException)
                 {
@@ -116,7 +116,7 @@ namespace HumanaEdge.Webcore.Framework.Web.Exceptions
             }
             else
             {
-                _logger.LogInformation(exception, "An exception was thrown");
+                _logger.LogError(exception, "An exception was thrown");
             }
 
             var response = new ProblemDetail(

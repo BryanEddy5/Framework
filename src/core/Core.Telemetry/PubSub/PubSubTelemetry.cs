@@ -8,7 +8,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry.PubSub
     /// Telemetry tailored for subscriptions.
     /// </summary>
     [Equals(DoNotAddEqualityOperators = true)]
-    internal class PubSubTelemetry : Telemetry
+    public class PubSubTelemetry : Telemetry
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PubSubTelemetry"/> class.

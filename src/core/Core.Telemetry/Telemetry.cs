@@ -7,7 +7,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry
     /// Base class for metrics, defining the basic informative API and the internal API.
     /// </summary>
     [Equals(DoNotAddEqualityOperators = true)]
-    internal abstract class Telemetry
+    public abstract class Telemetry
     {
         /// <summary>
         /// Designated constructor.
