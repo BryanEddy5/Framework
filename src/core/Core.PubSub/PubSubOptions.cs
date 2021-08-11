@@ -38,5 +38,10 @@ namespace HumanaEdge.Webcore.Core.PubSub
         /// The maximum size of message payload that the application will process in bytes.
         /// </summary>
         public long? MaxMessageByteCount { get; set; }
+
+        /// <summary>
+        /// The maximum number of retries before the message will be acked.
+        /// </summary>
+        public int MaxRetries { get; set; } = 10;
     }
 }

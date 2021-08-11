@@ -61,8 +61,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription
                     try
                     {
                         activity = _activityFactory?.Create(message);
-                        var subscriptionContext = new SubscriptionContext(message.MessageId, cancel);
-                        subscriptionContext.Items[ContextKeys.SubscriptionContextKey] = message;
+                        var subscriptionContext =
+                            new SubscriptionContext(message.MessageId, cancel) { Items = { [ContextKeys.SubscriptionContextKey] = message } };
                         await _messageDelegate.Invoke(subscriptionContext);
 
                         return SubscriberClient.Reply.Ack;
