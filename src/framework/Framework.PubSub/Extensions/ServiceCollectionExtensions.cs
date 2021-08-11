@@ -141,10 +141,12 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
             this IServiceCollection services,
             Type[] subscriptionMiddlewares)
         {
+            services.AddMemoryCache();
             services.AddSingleton<IMiddlewareBuilder<TMessage>, MiddlewareBuilder<TMessage>>();
 
             services.AddSingleton<ISubscriptionMiddleware<TMessage>, RequestInfoMiddleware<TMessage>>();
             services.AddSingleton<ISubscriptionMiddleware<TMessage>, ExceptionHandlingMiddleware<TMessage>>();
+            services.AddSingleton<ISubscriptionMiddleware<TMessage>, MaxRetryMiddleware<TMessage>>();
             foreach (var middleware in subscriptionMiddlewares)
             {
                 var genericType = middleware.GetGenericArguments().FirstOrDefault();

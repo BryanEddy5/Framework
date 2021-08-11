@@ -67,8 +67,9 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
             // assert
             actual[0].Should().BeOfType<RequestInfoMiddleware<Foo>>();
             actual[1].Should().BeOfType<ExceptionHandlingMiddleware<Foo>>();
-            actual[2].Should().BeOfType<StubMiddleware<Foo>>();
-            actual[3].Should().BeOfType<SubscriptionOrchestrationInvoker<Foo>>();
+            actual[2].Should().BeOfType<MaxRetryMiddleware<Foo>>();
+            actual[3].Should().BeOfType<StubMiddleware<Foo>>();
+            actual.Last().Should().BeOfType<SubscriptionOrchestrationInvoker<Foo>>();
         }
 
         /// <summary>
