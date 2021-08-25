@@ -30,11 +30,6 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription.Middleware
             _options = options;
         }
 
-        /// <summary>
-        /// The cache expiration.
-        /// </summary>
-        internal static TimeSpan CacheExpiry => TimeSpan.FromHours(4);
-
         /// <inheritdoc />
         public async Task NextAsync(ISubscriptionContext subscriptionMessage, MessageDelegate messageDelegate)
         {
@@ -45,21 +40,22 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription.Middleware
         private void MaxRetryCheck(ISubscriptionContext subscriptionMessage)
         {
             var options = _options.Get(typeof(TMessage).FullName);
+            var cacheExpiry = TimeSpan.FromMinutes(options.Resiliency.RetryCacheExpirationInMinutes);
             var key = subscriptionMessage.MessageId + options.Name;
 
             if (!_memoryCache.TryGetValue<int>(key, out var entry))
             {
                 entry = 1;
-                _memoryCache.Set(key, entry, CacheExpiry);
+                _memoryCache.Set(key, entry, cacheExpiry);
             }
             else
             {
-                _memoryCache.Set(key, Interlocked.Increment(ref entry), CacheExpiry);
+                _memoryCache.Set(key, Interlocked.Increment(ref entry), cacheExpiry);
             }
 
-            if (entry > options.MaxRetries)
+            if (entry > options.Resiliency.MaxRetries)
             {
-                throw new MaxRetryExceededException(options.MaxRetries);
+                throw new MaxRetryExceededException(options.Resiliency.MaxRetries);
             }
         }
     }

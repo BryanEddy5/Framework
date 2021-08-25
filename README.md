@@ -96,17 +96,25 @@ Creates an instance of `IHostedService` that pulls from a Pub/Sub Subscription. 
 The client incorporates telemetry of type `Subscription` that indicates if the message was successfully `Ack`ed, the duration of the subscription handling, and the unique message id of the message that was processed.
 1. [Create an implementation of ISubOrchestrationService<TMessage>](example/src/WebApi/PubSub/Subscription/FooSubscriptionHandler.cs)
 1. [Create a class that matches the shape of the Topic Message](example/src/WebApi/PubSub/FooContract.cs)
-1. [Register the service with classes from previous steps](example/src/WebApi/Startup.cs#L38)
+1. [Register the service with classes from previous steps](example/src/WebApi/Startup.cs#37)
 1. [Add configuration settings to appsettings.json](example/src/WebApi/appsettings.json#L27)
 #### Configuration - PubSubOptions
 Limiting number of messages processed in parallel has proven to be a valuable configuration setting.  By limiting the number of messages being processed we can ensure other integrated services aren't overwhelmed.  This was highlighted in the case of `ah-prv-contracting` sending hundreds of concurrent requests to `Nexus`.  
 Example of configuration in `appsettings.json`
 ```
-  "FooSubscriptionOptions": {
+"FooSubscriptionOptions": {
     "ProjectId": "some-project-id",
     "Name": "the-subscription-name",
-    "MaxMessageCount": 1 // Limits the number of messages processed in parallel to 1
-  }
+    "MaxMessageCount": 1, // The number of parrallel messages that will be processed.
+    "Resiliency": {
+      "MaxRetries": 5 // The max number of retries before Acking a message.
+    },
+    "ExceptionStorage": {
+      "ApplicationName": "FooService", // Name of the application when publishing a file to the bucket. This will be a part of the file name.
+      "GcpBucket": "exception-bucket", // The bucket to publish the exceptions to
+      "GcpProject": "my-project" // The name of the project where the bucket is located.
+    }
+  },
 ```
 
 

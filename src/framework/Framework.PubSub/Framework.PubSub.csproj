@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(MicrosoftExtensionsVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
+    <PackageReference Include="Equals.Fody" Version="$(EqualsFodyVersion)" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Cloud.PubSub.V1" Version="$(GooglePubSub)" />
@@ -19,7 +20,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\core\Core.Common\Core.Common.csproj" />
     <ProjectReference Include="..\..\core\Core.PubSub\Core.PubSub.csproj" />
+    <ProjectReference Include="..\..\core\Core.Storage\Core.Storage.csproj" />
     <ProjectReference Include="..\..\core\Core.Telemetry\Core.Telemetry.csproj" />
     <ProjectReference Include="..\Framework.Logging\Framework.Logging.csproj" />
+    <ProjectReference Include="..\Framework.Storage\Framework.Storage.csproj" />
   </ItemGroup>
 </Project>

@@ -5,10 +5,12 @@ using HumanaEdge.Webcore.Core.PubSub.Exceptions;
 using HumanaEdge.Webcore.Core.PubSub.Subscription;
 using HumanaEdge.Webcore.Framework.PubSub.Publication;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription;
+using HumanaEdge.Webcore.Framework.PubSub.Subscription.ExceptionHandling;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription.Factory;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription.Middleware;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription.Middleware.Builder;
 using HumanaEdge.Webcore.Framework.PubSub.TraceContext;
+using HumanaEdge.Webcore.Framework.Storage.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -89,6 +91,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
             services.AddHostedService<SubscriberHostedService<TMessage>>();
             services.AddSingleton<ISubscriberClientFactory, SubscriberClientFactory>();
             services.AddSingleton<IActivityFactory, ActivityFactory>();
+            services.AddStorageClient();
+            services.AddSingleton<IExceptionStorageService, ExceptionStorageService>();
             services.AddMiddleware<TMessage>(subscriptionMiddlewares ?? Array.Empty<Type>());
         }
 
