@@ -1,14 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(LibTargetFramework);$(TargetFramework50)</TargetFrameworks>
-    <AssemblyName>$(SolutionNamespaceRoot).Core.PubSub</AssemblyName>
+    <AssemblyName>$(SolutionNamespaceRoot).Framework.Storage</AssemblyName>
     <RootNamespace>$(AssemblyName)</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core.Common\Core.Common.csproj" />
-    <ProjectReference Include="..\Core.Storage\Core.Storage.csproj" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="$(GoogleCloudStorageVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Equals.Fody" Version="4.0.1" />
+    <ProjectReference Include="..\..\core\Core.Storage\Core.Storage.csproj" />
   </ItemGroup>
 </Project>

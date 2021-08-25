@@ -1,8 +1,11 @@
+using HumanaEdge.Webcore.Core.Storage;
+
 namespace HumanaEdge.Webcore.Core.PubSub
 {
     /// <summary>
     /// A config object that holds the required info to connect to a PubSub resource.
     /// </summary>
+    [Equals(DoNotAddEqualityOperators = true)]
     public class PubSubOptions
     {
         /// <summary>
@@ -40,8 +43,42 @@ namespace HumanaEdge.Webcore.Core.PubSub
         public long? MaxMessageByteCount { get; set; }
 
         /// <summary>
-        /// The maximum number of retries before the message will be acked.
+        /// The resiliency configuration options for retrying a message.
         /// </summary>
-        public int MaxRetries { get; set; } = 10;
+        public ResiliencyOptions Resiliency { get; set; } = new ResiliencyOptions();
+
+        /// <summary>
+        /// The configuration settings for publishing to an exception storage bucket.
+        /// </summary>
+        public ExceptionStorageOptions ExceptionStorage { get; set; } = new ExceptionStorageOptions();
+
+        /// <summary>
+        /// The resiliency configuration options for retrying a message.
+        /// </summary>
+        [Equals(DoNotAddEqualityOperators = true)]
+        public class ResiliencyOptions
+        {
+            /// <summary>
+            /// The maximum number of retries before the message will be acked.
+            /// </summary>
+            public int MaxRetries { get; set; } = 10;
+
+            /// <summary>
+            /// The cache expiration for the retry cache key.
+            /// </summary>
+            public int RetryCacheExpirationInMinutes { get; set; } = 1440;
+        }
+
+        /// <summary>
+        /// he configuration settings for publishing to an exception storage bucket.
+        /// </summary>
+        [Equals(DoNotAddEqualityOperators = true)]
+        public class ExceptionStorageOptions : CloudStorageOptions
+        {
+            /// <summary>
+            /// The name of the service/api that is subscribing to the topic.
+            /// </summary>
+            public string? ApplicationName { get; set; }
+        }
     }
 }

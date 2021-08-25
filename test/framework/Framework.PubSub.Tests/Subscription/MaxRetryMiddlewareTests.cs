@@ -43,7 +43,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests.Subscription
         {
             _memoryCacheMock = Moq.Create<IMemoryCache>();
             _optionsMock = Moq.Create<IOptionsMonitor<PubSubOptions>>();
-            _options = FakeData.Build<PubSubOptions>().With(x => x.MaxRetries, 10).Create();
+            _options = FakeData.Create<PubSubOptions>();
+            _options.Resiliency.MaxRetries = 10;
             _optionsMock.Setup(x => x.Get(typeof(string).FullName)).Returns(_options);
             _maxRetryMiddleware = new MaxRetryMiddleware<string>(_memoryCacheMock.Object, _optionsMock.Object);
             _subscriptionMessage = FakeData.Create<SubscriptionContext>();
@@ -69,7 +70,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests.Subscription
             // assert
             cacheEntrySub.Value.Should().Be(entry);
             cacheEntrySub.Key.Should().Be(_key);
-            cacheEntrySub.AbsoluteExpirationRelativeToNow.Should().Be(MaxRetryMiddleware<string>.CacheExpiry);
+            cacheEntrySub.AbsoluteExpirationRelativeToNow.Should().Be(TimeSpan.FromMinutes(_options.Resiliency.RetryCacheExpirationInMinutes));
         }
 
         /// <summary>
@@ -92,7 +93,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests.Subscription
             // assert
             cacheEntrySub.Value.Should().Be(expectedEntry);
             cacheEntrySub.Key.Should().Be(_key);
-            cacheEntrySub.AbsoluteExpirationRelativeToNow.Should().Be(MaxRetryMiddleware<string>.CacheExpiry);
+            cacheEntrySub.AbsoluteExpirationRelativeToNow.Should().Be(TimeSpan.FromMinutes(_options.Resiliency.RetryCacheExpirationInMinutes));
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests.Subscription
         public async Task MaxRetry_Exception()
         {
             // arrange
-            object entry = _options.MaxRetries;
+            object entry = _options.Resiliency.MaxRetries;
             object expected = (int)entry + 1;
             var cacheEntrySub = new CacheEntryStub(_key);
             _memoryCacheMock.Setup(x => x.TryGetValue(_key, out entry)).Returns(true);
@@ -117,7 +118,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests.Subscription
             await actual.Should().ThrowExactlyAsync<MaxRetryExceededException>();
             cacheEntrySub.Value.Should().Be(expected);
             cacheEntrySub.Key.Should().Be(_key);
-            cacheEntrySub.AbsoluteExpirationRelativeToNow.Should().Be(MaxRetryMiddleware<string>.CacheExpiry);
+            cacheEntrySub.AbsoluteExpirationRelativeToNow.Should().Be(TimeSpan.FromMinutes(_options.Resiliency.RetryCacheExpirationInMinutes));
             try
             {
                 await actual.Invoke();

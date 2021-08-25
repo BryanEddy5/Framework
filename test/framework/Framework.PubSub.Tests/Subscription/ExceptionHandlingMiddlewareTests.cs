@@ -1,10 +1,13 @@
 using System;
 using System.Threading.Tasks;
 using AutoFixture;
+using Google.Cloud.PubSub.V1;
 using HumanaEdge.Webcore.Core.PubSub;
 using HumanaEdge.Webcore.Core.PubSub.Subscription;
+using HumanaEdge.Webcore.Core.Storage;
 using HumanaEdge.Webcore.Core.Testing;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription.Context;
+using HumanaEdge.Webcore.Framework.PubSub.Subscription.ExceptionHandling;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription.Exceptions;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription.Middleware;
 using Microsoft.Extensions.Logging;
@@ -29,13 +32,25 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests.Subscription
         /// </summary>
         private Mock<ILogger<ExceptionHandlingMiddleware<string>>> _loggerMock;
 
+        private Mock<IExceptionStorageService> _storageClientMock;
+
+        private SubscriptionContext _fakeContext;
+
+        private PubsubMessage _fakePubSubMessage;
+
         /// <summary>
         /// Common test setup.
         /// </summary>
         public ExceptionHandlingMiddlewareTests()
         {
+            _fakeContext = FakeData.Create<SubscriptionContext>();
+            _fakePubSubMessage = FakeData.Create<PubsubMessage>();
+            _fakeContext.Items[ContextKeys.SubscriptionContextKey] = _fakePubSubMessage;
             _loggerMock = Moq.Create<ILogger<ExceptionHandlingMiddleware<string>>>(MockBehavior.Loose);
-            _exceptionHandlingMiddleware = new ExceptionHandlingMiddleware<string>(_loggerMock.Object);
+            _storageClientMock = Moq.Create<IExceptionStorageService>();
+            _exceptionHandlingMiddleware = new ExceptionHandlingMiddleware<string>(
+                _loggerMock.Object,
+                _storageClientMock.Object);
         }
 
         /// <summary>
@@ -46,12 +61,18 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests.Subscription
         public async Task RethrowsException()
         {
             // arrange
-            var fakeContext = FakeData.Create<SubscriptionContext>();
-            MessageDelegate next = str => throw new ArgumentException("This should never run");
+            var exception = new ArgumentException("This should never run");
+            MessageDelegate next = str => throw exception;
+            _storageClientMock.Setup(
+                    x => x.LoadException<string>(
+                        _fakePubSubMessage.Data.ToStringUtf8(),
+                        exception,
+                        _fakeContext.RequestCancelledToken))
+                .Returns(Task.CompletedTask);
 
             // assert
             await Assert.ThrowsAsync<ArgumentException>(
-                () => _exceptionHandlingMiddleware.NextAsync(fakeContext, next));
+                () => _exceptionHandlingMiddleware.NextAsync(_fakeContext, next));
         }
 
         /// <summary>
@@ -62,12 +83,18 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests.Subscription
         public async Task ThrowsPubSubException()
         {
             // arrange
-            var fakeContext = FakeData.Create<SubscriptionContext>();
-            MessageDelegate next = str => throw new PubSubException("This should never run");
+            var exception = new PubSubException("This should never run");
+            MessageDelegate next = str => throw exception;
+            _storageClientMock.Setup(
+                    x => x.LoadException<string>(
+                        _fakePubSubMessage.Data.ToStringUtf8(),
+                        exception,
+                        _fakeContext.RequestCancelledToken))
+                .Returns(Task.CompletedTask);
 
             // assert
             await Assert.ThrowsAsync<PubSubException>(
-                () => _exceptionHandlingMiddleware.NextAsync(fakeContext, next));
+                () => _exceptionHandlingMiddleware.NextAsync(_fakeContext, next));
         }
 
         /// <summary>
@@ -78,12 +105,18 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests.Subscription
         public async Task SerializationExceptionThrown()
         {
             // arrange
-            var fakeContext = FakeData.Create<SubscriptionContext>();
-            MessageDelegate next = str => throw new JsonException();
+            var exception = new JsonException();
+            MessageDelegate next = str => throw exception;
+            _storageClientMock.Setup(
+                    x => x.LoadException<string>(
+                        _fakePubSubMessage.Data.ToStringUtf8(),
+                        exception,
+                        _fakeContext.RequestCancelledToken))
+                .Returns(Task.CompletedTask);
 
             // assert
             await Assert.ThrowsAsync<JsonParsingException>(
-                () => _exceptionHandlingMiddleware.NextAsync(fakeContext, next));
+                () => _exceptionHandlingMiddleware.NextAsync(_fakeContext, next));
         }
 
         /// <summary>
