@@ -1,6 +1,10 @@
 ﻿# This is a simple example illustrating how to build and test .NET Core project
 # with GitLab Continuous Integration / Continuous Delivery.
 
+# Enable code scanning
+include:
+  - template: SAST.gitlab-ci.yml   # Code Quality: creates a SAST job in your CI/CD pipeline and scans your project’s source code for possible vulnerabilities.
+
 # ### Specify the Docker image
 image: mcr.microsoft.com/dotnet/sdk:5.0
 
@@ -8,6 +12,7 @@ variables:
   CONFIGURATION: Release
   NUGET_PACKAGE_FOLDER: .nuget
   ARTIFACTORY_SOURCE: https://humanaedge.jfrog.io/humanaedge/api/nuget/v3/nuget-local
+  SAST_ANALYZER_IMAGE_TAG: latest
 
 stages:
   - build
@@ -44,8 +49,6 @@ test:
     reports:
       junit: ${TEST_RESULTS_DIR}/*test-result.xml
       cobertura: $TEST_RESULTS_DIR/coverage.cobertura.xml
-
-
 
 ####################
 # PACK
