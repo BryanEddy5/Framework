@@ -50,6 +50,10 @@ test:
       junit: ${TEST_RESULTS_DIR}/*test-result.xml
       cobertura: $TEST_RESULTS_DIR/coverage.cobertura.xml
 
+security-code-scan-sast:
+  rules:
+  - if: '$CI_COMMIT_BRANCH == "CI_DEFAULT_BRANCH"'
+
 ####################
 # PACK
 ####################

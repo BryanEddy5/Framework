@@ -14,14 +14,25 @@ The version of the SDK in use requires you to be using VS2019. VS2017 is not com
 
 ## Features
 ### Dependency Injection using attributes
+The `DiComponent` attribute allows developers to easily register services for dependency injection by decorating the class with `DiComponent`. The default service registration lifetime is `Transient` per Microsoft's recommendation as the default service lifetime.
+
+Developers can figure configure the service lifetime by setting `LifetimeScope` property on the attribute.
 #### Registering a service
 [DiComponent Example](example/src/WebApi/DependencyInjection/TransientComponent.cs)
 ```
 [DiComponent]
 FooService : IFooService
 ```
+#### Registering a service using a non-default lifetime
+```
+[DiComponent(LifetimeScope = LifetimeScopeEnum.Singleton)]
+FooService : IFooService
+```
 
-#### Registering Options Pattern 
+### Captive Dependency Issue
+Developers should be aware of the lifetime of their developed services as well as any services injected into it. A service should never depend on a service that has a shorter lifetime than its own. See (Microsoft's documentation)[https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection-guidelines#captive-dependency] for additional detail.
+
+#### Registering Options Pattern
 To aid in the registration of POCO's in utilizing the Options Pattern (injectd `IOptionsMonitor<T>` or `IOptionsSnapshot<T>`) an attribute has been created that is used to decorate the Options POCO.
 [DiOptions Example](test/framework/Framework.DependencyInjection.Tests/Stubs/FooClientOptions.cs)
 ```
@@ -42,16 +53,35 @@ Put values in appsettings.json to be injected into `FooOptions`
 The Secrets Manager library retrieves stored secrets from GCP Secrets Manager and cache's in memory the secret once it is retrieved.  Since secrets are versioned in GCP there is no need for the cache to be refreshed for if the secret is updated in GCP so is the version.  The `appsettings.json` file will need to be updated with the new version and thus a new value will be pulled into the cache as the cache key is a composite key of the values for retrieving the key from Secrets Manager.
 Steps: Register secrets manager with the **secret** shape and **configuration** settings that point to the location and version of the secret.
 1. [Create a class that matches the Secret shape and inherit from `ISecret`](example/src/WebApi/Secrets/FooSecret.cs)
-1. [Create instance of configuration options](example/src/WebApi/Secrets/FooSecretsOptions.cs)
 1. [Register the service](example/src/WebApi/Startup.cs#L37)
 1. [Add configuration settings to appsettings.json](example/src/WebApi/appsettings.json#L16)
 1. [Inject ISecretsService<TSecret>](example/src/WebApi/Secrets/UseSecretService.cs#L20)
 
 Note that since each individual secret needs it's own configuration settings (ProjectId, SecretId, and Secret Version) it is necessary to register each secret individually if you would like to retrieve multiple secrets for a particular service.
+### Add the appsettings configuration for each secret.
+```
+  "FooSecretsOptions": {
+    "ProjectId": "some-project-id",
+    "SecretId": "some-secret-id",
+    "SecretVersionId": "1"
+  },
+  "BarSecretsOptions": {
+    "ProjectId": "a-different-project-id",
+    "SecretId": "some-other-secret-id",
+    "SecretVersionId": "2"
+  },
+
+```
+
+### Register the services with the correct extension of the `SecretsOptions`
+```
+services.AddSecret<FooSecret>(Configuration.GetSection(nameof(FooSecretsOptions)));
+services.AddSecret<BarSecret>(Configuration.GetSection(nameof(BarSecretsOptions)));
+```
 
 ## Application Bootstrapping
-In an effort to consolidate code and remain DRY, much of the application bootstrapping has been moved to a `BaseStartup<TStartup>` class.  This allows for changes to be made in a single place and abstract away details that are not of interest to each individual service.  There are some virtual methods that can be overriden to allow for customization of each microservice. 
-There are two components to the bootstrapping process. 
+In an effort to consolidate code and remain DRY, much of the application bootstrapping has been moved to a `BaseStartup<TStartup>` class.  This allows for changes to be made in a single place and abstract away details that are not of interest to each individual service.  There are some virtual methods that can be overriden to allow for customization of each microservice.
+There are two components to the bootstrapping process.
 
 1.[Inheriting from `BaseStartup<TStartup>` for the `Startup` class](example/src/WebApi/Startup.cs#L18) .
 
@@ -67,7 +97,7 @@ Examples:
 - Request telemetry
 - Swagger (OpenApi) documentation and `/index.html` GUI.
 
-[ConfigureAppServices](example/src/WebApi/Startup.cs#L34) allows for each Microservice can also customize the services 
+[ConfigureAppServices](example/src/WebApi/Startup.cs#L34) allows for each Microservice can also customize the services
 
 2.[Utilizing `UseCustomHostBuilder<TStartup>` in `Program` class](example/src/WebApi/Program.cs#L28)
 
@@ -81,7 +111,7 @@ Offers simple symmetric encryption and decryption in utf-8 base64 url encoded st
 
 ## MessageAppException
 `MessageAppException` allows for communicating a message and http status code back to the consumer. These exceptions are caught by hte Exception Handling middleware that will inspect the exception and set the response equal to the message and assigned http status code.
-As use case for this scenario would be a resource not found (404). Upon retrieving a resource from an external source (database, RESTful service, etc) a status code of 404 can be attached with a message of `The resource of Foo is not found`.  This removes the need to implement the `result inspection` anti pattern of communicating back to consuming services that a resource has not been found. 
+As use case for this scenario would be a resource not found (404). Upon retrieving a resource from an external source (database, RESTful service, etc) a status code of 404 can be attached with a message of `The resource of Foo is not found`.  This removes the need to implement the `result inspection` anti pattern of communicating back to consuming services that a resource has not been found.
 Exceptions are our first class citizen for communicating errors to consumers.
 
 Developers should extend `MessageAppException` and override the http status code in order to set it in the response.
@@ -124,7 +154,7 @@ The default behavior for an exception thrown is to retry it which will be perfor
 1. Create a class that extends PubSubException and to be thrown.
     - [Recoverable exception](example/src/WebApi/PubSub/Subscription/RecoverableException.cs)
     - [Unrecoverable exception](example/src/WebApi/PubSub/Subscription/UnrecoverableException.cs)
-1. Throw the custom exception. 
+1. Throw the custom exception.
 
 ## Pub/Sub Publisher
 A `IPublisherClient<TMessage>` is used to publish messages of shape `TMessage` to a topic in a designated project.  The project settings are configured via the `appsettings.json`
@@ -141,9 +171,9 @@ There are currently four types of telemetry.
 1. `Subscription` - Incoming pulled subscription messages
 1. `Request` - Incoming http requests
 1. `Depdendency` - Outgoing http requests
-Each of these telemetry types can be easily queried in GCP by running the following:
-jsonPayload.metricEvent.TelemetryType = {TelemetryType}
-Example:
+   Each of these telemetry types can be easily queried in GCP by running the following:
+   jsonPayload.metricEvent.TelemetryType = {TelemetryType}
+   Example:
 ```
 jsonPayload.metricEvent.TelemetryType = "Dependency"
 ```
@@ -171,45 +201,10 @@ It is highly advisable to have Telemetry incorporated for each integration point
 ## Library Service Configuration
 You'll notice a consistent pattern for configuring Webcore libraries that utilize GCP Resources.  Each GCP Resource (Subscription, Published Topic, Encryption, Secrets Manager, etc) all require information about the provisioned resource (typically a ProjectId and other detailed Resource information) in order to properly utilize the resource.  This pattern consists of creating a new concrete class that extends Core.* Options class thus allowing for multiple instances of the configuration options, meaning that more than 1 of the same type of resource (and subsequent Webcore service) can exist.
 An example would be configuring `ISecrestsService<TMessage>`
-### Create multiple classes that extends `SecretsOptions`
-```
-    /// <inheritdoc />
-    public class FooSecretsOptions : SecretsOptions
-    {
-    }
-
-    /// <inheritdoc />
-    public class BarSecretsOptions : SecretsOptions
-    {
-    }
-
-```
-
-### Add the appsettings configuration for each secret.
-```
-  "FooSecretsOptions": {
-    "ProjectId": "some-project-id",
-    "SecretId": "some-secret-id",
-    "SecretVersionId": "1"
-  },
-  "BarSecretsOptions": {
-    "ProjectId": "a-different-project-id",
-    "SecretId": "some-other-secret-id",
-    "SecretVersionId": "2"
-  },
-
-```
-
-### Register the services with the correct extension of the `SecretsOptions`
-```
-services.AddSecret<FooSecret, FooSecretsOptions>(Configuration.GetSection(nameof(FooSecretsOptions)));
-services.AddSecret<BarSecret, BarSecretsOptions>(Configuration.GetSection(nameof(BarSecretsOptions)));
-```
-
 This pattern is powerful for it reduces boilerplate code for each Options POCO and utilizes the Options Pattern for easily configuring environment specific settings, as the resources configuration setting typically change from environment-to-environment (Dev to SIT to UAT to Production).
 
 ## Secrets and Local Configuration Overrides
-Secrets should, without exception, never be stored in `appsettings.json` or `_enj.son`.  Storing secrets in those files and commiting them to the repo exposes sensitive information. 
+Secrets should, without exception, never be stored in `appsettings.json` or `_enj.son`.  Storing secrets in those files and commiting them to the repo exposes sensitive information.
 A centralized location has been created that allows for a developer to override configuration settings and store secrets for local development in `appsettings.overrides.json`.
 The launch settings for each service needs an `APP_ROOT` environment variable defined with the location of a directory for that microservice
 Steps to configure overrides:
@@ -397,7 +392,7 @@ It is highly recommended that any developer read and familiarize themselves with
 ### Trace Identifiers
 There are four trace identifiers within .Net Core that are used for tracing requests.
 1. TraceId - is globally unique for a request.  When an http request or message topic is created a unique identifier is generated that will permeate through each log allowing us to track the request as it crosses microservice boundaries.
-1. RequestId - is a unique identifier inside of a single service.  
+1. RequestId - is a unique identifier inside of a single service.
 1. SpanId - Is similar to a `RequestId` (that it is unique to the request within the application) but adheres strictly to the W3C standard for length and uniqueness requirements.
 1. ParentId - Is a concatenation of the `TraceId-Spanid` with a 2 digit flag known as sampling (this isn't an important detail as far as we are concerned).  Each time the request travels through a new application, that application will add it's `SpandId` to the parent when it is sent to a new service.
 
@@ -434,16 +429,27 @@ Secrets are maintained by developers in Gitlab's CI/CD variables each with an un
 During the continuous deployment process secrets are loaded from Gitlab to GSM prior to the application being deployed ensuring they are loaded once the application (K8 Workload) starts the bootstrapping process.
 
 ### Accessing in Code
-Accessing secrets in code is done by the same method as accessing any other configuration value by utilizing the (Options Pattern)[https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0#use-ioptionssnapshot-to-read-updated-data]. 
+Accessing secrets in code is done by the same method as accessing any other configuration value by utilizing the (Options Pattern)[https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0#use-ioptionssnapshot-to-read-updated-data].
 
 ### Using secrets locally
 Each .Net Solution (repository) has (launchSettings.json)[example/src/WebApi/Properties/launchSettings.json] file that contains configuration settings for running locally.
 Under the `environmentVariables` section a location to locally stored secrets is defined for `APP_ROOT` which will load a file named `config/appsettings.overrides.json`. Developers should store their secrets in this location. Storing secrets outside of the repository is a best practice for it prevents the possibility of the secrets accidentally being committed to source control.
-Storing secrets in this manner allows for the developer to store local secrets for each Solution they work in. 
+Storing secrets in this manner allows for the developer to store local secrets for each Solution they work in.
 
 #### **Be sure to update the folder name when creating a new project**.
-Example: 
+Example:
 - Api Template path = "APP_ROOT": "/Users/%USER%/dev/approots/api-template"
 - New Solution = "APP_ROOT": "/Users/%USER%/dev/approots/new-solution-name"
 
 The overrides file then should be in `/Users/%USER%/dev/approots/new-solution-name/config/appsettings.overrides.json`
+
+## Distributed Caching - Redis
+Webcore utilizes [StackExchange.Redis](https://stackexchange.github.io/StackExchange.Redis/) as a redis client for caching. This is hidden behind the `IDistributedCache` interface.
+The wrapper for service registration will set the implementation of `IDistributedCache` to `MemoryDistributedCache` when the .Net Core environment is set to `Development` to allow for developers
+to quickly setup their local development environment by using in memory caching when the application is run locally.
+Here are the steps outlined to leverage this library.
+1. [Create the appsettings configuration](example/src/WebApi/appsettings.json#L56)
+2. [Register the service with the Configuration Section Key](example/src/WebApi/Startup.cs#41)
+3. [Inject IDistributedCache](example/src/Domain/CatFactsService.cs)
+
+There are also some custom extension methods in `DistributedCacheExtensions.cs` that will handle serializing and deserializing the cache payload as well as combine the cache hit/miss retrieval into a single method `GetOrCreateAsync`. 

@@ -13,7 +13,7 @@ using HumanaEdge.Webcore.Example.Models.Immutable;
 namespace HumanaEdge.Webcore.Example.Integration.CatFacts.Services
 {
     /// <inheritdoc />
-    [DependencyInjectedComponent]
+    [DiComponent]
     internal sealed class RandomCatFactService : IRandomCatFactService
     {
         /// <summary>

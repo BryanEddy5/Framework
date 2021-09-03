@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(TargetFramework31);$(TargetFramework50)</TargetFrameworks>
+    <AssemblyName>$(SolutionNamespaceRoot).Core.Caching.Tests</AssemblyName>
+    <RootNamespace>$(AssemblyName)</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\core\Core.Caching\Core.Caching.csproj" />
+    <ProjectReference Include="..\..\..\src\framework\Framework.Caching\Framework.Caching.csproj" />
+  </ItemGroup>
+</Project>

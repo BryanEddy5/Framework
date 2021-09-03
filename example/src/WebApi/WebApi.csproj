@@ -9,8 +9,10 @@
     <ProjectReference Include="../../../src/framework/Framework.Encryption/Framework.Encryption.csproj" />
     <ProjectReference Include="../../../src/framework/Framework.SecretsManager/Framework.SecretsManager.csproj" />
     <ProjectReference Include="../../../src/framework/Framework.Web/Framework.Web.csproj" />
+    <ProjectReference Include="../../../src/framework/Framework.Caching/Framework.Caching.csproj" />
     <ProjectReference Include="../../../src/core/Core.Logging/Core.Logging.csproj" />
     <ProjectReference Include="../Integration.CatFacts/Integration.CatFacts.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Storage.V1" Version="$(GoogleCloudStorageVersion)" />

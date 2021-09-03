@@ -17,11 +17,13 @@
     <MicrosoftExtensionsVersion>3.1.6</MicrosoftExtensionsVersion>
     <MicrosoftExtensionsDependencyModelVersion>2.0.4</MicrosoftExtensionsDependencyModelVersion>
     <SystemComponentModelAnnotations>4.7.0</SystemComponentModelAnnotations>
+    <StackExchangeRedisVersion>3.1.6</StackExchangeRedisVersion>
   </PropertyGroup>
   <PropertyGroup Label="Microsoft library versions net5.0" Condition="'$(TargetFramework)' == '$(TargetFramework50)'">
     <MicrosoftExtensionsVersion>5.0.0</MicrosoftExtensionsVersion>
     <MicrosoftExtensionsDependencyModelVersion>5.0.0</MicrosoftExtensionsDependencyModelVersion>
     <SystemComponentModelAnnotations>5.0.0</SystemComponentModelAnnotations>
+    <StackExchangeRedisVersion>5.0.1</StackExchangeRedisVersion>
   </PropertyGroup>
   <PropertyGroup Label="Microsoft library versions common">
     <AspNetCoreHostingVersion>2.2.7</AspNetCoreHostingVersion>

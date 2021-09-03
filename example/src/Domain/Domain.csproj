@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(TargetFramework50);$(LibTargetFramework)</TargetFrameworks>
+    <AssemblyName>$(SolutionNamespaceRoot).Example.Domain</AssemblyName>
+    <RootNamespace>$(AssemblyName)</RootNamespace>
+  </PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Integration.CatFacts\Integration.CatFacts.csproj" />
+      <ProjectReference Include="..\Models.Immutable\Models.Immutable.csproj" />
+      <ProjectReference Include="..\..\..\src\core\Core.Caching\Core.Caching.csproj" />
+    </ItemGroup>
+</Project>
