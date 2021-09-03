@@ -1,3 +1,4 @@
+using HumanaEdge.Webcore.Core.Caching.Extensions;
 using HumanaEdge.Webcore.Core.Encryption;
 using HumanaEdge.Webcore.Example.WebApi.PubSub;
 using HumanaEdge.Webcore.Example.WebApi.PubSub.Subscription;
@@ -33,10 +34,11 @@ namespace HumanaEdge.Webcore.Example.WebApi
         protected override IHttpClientBuilder ConfigureAppServices(IServiceCollection services)
         {
             services.AddKmsEncryption(Configuration.GetSection(nameof(EncryptionServiceOptions))); // Register Encryption Service
-            services.AddSecret<FooSecret, FooSecretsOptions>(Configuration.GetSection(nameof(FooSecretsOptions))); // Register Secrets Manager Service
+            services.AddSecret<FooSecret>(Configuration.GetSection("FooSecretsOptions")); // Register Secrets Manager Service
             services.AddSubscriptionHostedService<FooContract, FooSubscriptionHandler>(Configuration.GetSection("FooSubscriptionOptions")); // Register Subscription Handler
             services.AddSubscriptionHostedService<BarContract, BarSubscriptionHandler>(Configuration.GetSection("BarSubscriptionOptions")); // Register Subscription Handler
             services.AddPublisherClient<FooContract>(Configuration.GetSection("FooPublisherOptions")); // Register Publisher Client
+            services.AddDistributedCache(Configuration.GetSection("CacheOptions"));
             return services.AddHttpClient("client");  // Pass back a named http client to be used for tracing
         }
     }
