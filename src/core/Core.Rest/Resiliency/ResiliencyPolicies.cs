@@ -28,7 +28,7 @@ namespace HumanaEdge.Webcore.Core.Rest.Resiliency
                          TimeSpan.FromMilliseconds(jitterer.Next(0, 100)))
                 .ToArray();
             return Policy<BaseRestResponse>.HandleResult(
-                    r => r.StatusCode == HttpStatusCode.BadGateway || r.StatusCode == HttpStatusCode.GatewayTimeout)
+                    r => (int)r.StatusCode >= 500)
                 .WaitAndRetryAsync(backOffIntervals);
         }
 
