@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
+using HumanaEdge.Webcore.Core.Common.Alerting;
+using HumanaEdge.Webcore.Core.Common.Exceptions;
+using HumanaEdge.Webcore.Core.Rest.Alerting;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 
@@ -52,6 +54,12 @@ namespace HumanaEdge.Webcore.Core.Rest
             _queryParams.Count > 0
                 ? QueryHelpers.AddQueryString(_relativePath, _queryParams)
                 : _relativePath;
+
+        /// <summary>
+        /// The alert condition to execute that determines whether or not the telemetry associated with this
+        /// rest request should be an alert or not.
+        /// </summary>
+        public AlertCondition? AlertCondition { get; private set; }
 
         /// <summary>
         /// Add query string parameters to create a query string for the request.
@@ -135,6 +143,22 @@ namespace HumanaEdge.Webcore.Core.Rest
                 Headers.Add(key, new StringValues(value));
             }
 
+            return this;
+        }
+
+        /// <summary>
+        /// Configures the alert condition for this request.
+        /// </summary>
+        /// <param name="alertCondition">The alert condition.</param>
+        /// <returns><see cref="RestRequest" /> for fluent chaining.</returns>
+        /// <remarks>
+        /// If you want to throw a custom exception, be sure to assign <see cref="AlertCondition"/>'s Exception
+        /// property with the exception you want thrown. This will become the inner exception of the custom
+        /// <see cref="AlertConditionMetException"/> if it gets thrown.
+        /// </remarks>
+        public RestRequest ConfigureAlertCondition(AlertCondition alertCondition)
+        {
+            AlertCondition = alertCondition;
             return this;
         }
     }

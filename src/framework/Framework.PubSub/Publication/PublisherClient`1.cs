@@ -7,7 +7,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Google.Cloud.PubSub.V1;
 using Grpc.Core;
+using HumanaEdge.Webcore.Core.Common.Alerting;
 using HumanaEdge.Webcore.Core.PubSub;
+using HumanaEdge.Webcore.Core.PubSub.Alerting;
 using HumanaEdge.Webcore.Core.PubSub.Exceptions;
 using HumanaEdge.Webcore.Core.Telemetry;
 using HumanaEdge.Webcore.Core.Telemetry.PubSub;
@@ -29,6 +31,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Publication
 
         private readonly TopicName _topicName;
 
+        private readonly IPubsubAlertingService _pubsubAlerting;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PublisherClient" /> class.
         /// </summary>
@@ -36,12 +40,14 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Publication
         /// <param name="logger">The app logger.</param>
         /// <param name="publisherClientFactory">Factory pattern for creating the client.</param>
         /// <param name="publishRequestConverter">A service for generating the request.</param>
+        /// <param name="pubsubAlerting">A service for managing alerts.</param>
         /// <param name="telemetryFactory">Produces telemetry data for alerting and monitoring.</param>
         public PublisherClient(
             IOptionsMonitor<PublisherOptions> options,
             ILogger<PublisherClient<TMessage>> logger,
             IPublisherClientFactory publisherClientFactory,
             IPublishRequestConverter publishRequestConverter,
+            IPubsubAlertingService pubsubAlerting,
             ITelemetryFactory telemetryFactory)
         {
             var config = options.Get(typeof(TMessage).FullName);
@@ -49,8 +55,15 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Publication
             _logger = logger;
             _publisherClientFactory = publisherClientFactory;
             _publishRequestConverter = publishRequestConverter;
+            _pubsubAlerting = pubsubAlerting;
             _telemetryFactory = telemetryFactory;
+            ClientAlertCondition = CommonPubsubAlertConditions.Standard();
         }
+
+        /// <summary>
+        /// The <see cref="AlertCondition"/> for this publisher client.
+        /// </summary>
+        public AlertCondition ClientAlertCondition { get; }
 
         /// <inheritdoc />
         public async Task<IReadOnlyList<string>> PublishAsync(
@@ -67,13 +80,14 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Publication
                     var stopWatch = new Stopwatch();
                     string? messageId = null;
                     var success = false;
+                    bool isAlert;
                     try
                     {
                         stopWatch.Start();
-                        var response = await publisher.PublishAsync(
+                        var publishResponse = await publisher.PublishAsync(
                             request,
                             cancellationToken);
-                        messageId = response.MessageIds.FirstOrDefault();
+                        messageId = publishResponse.MessageIds.FirstOrDefault();
                         if (messageId != null)
                         {
                             messageIds.Add(messageId);
@@ -81,7 +95,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Publication
 
                         success = true;
 
-                        _logger.LogInformation("Published to {Topic} {@PublishResponse}", _topicName, response);
+                        _logger.LogInformation("Published to {Topic} {@PublishResponse}", _topicName, publishResponse);
                     }
                     catch (RpcException rpcException)
                     {
@@ -91,11 +105,18 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Publication
                     {
                         stopWatch.Stop();
                         var duration = stopWatch.ElapsedMilliseconds;
+                        isAlert = _pubsubAlerting.IsPubsubAlert(ClientAlertCondition, success);
                         _telemetryFactory.TrackPublicationTelemetry(
                             DateTimeOffset.UtcNow,
                             messageId !,
                             duration,
-                            success);
+                            success,
+                            alert: isAlert);
+                    }
+
+                    if (isAlert)
+                    {
+                        _pubsubAlerting.ThrowIfAlertedAndNeedingException(ClientAlertCondition);
                     }
                 });
             await Task.WhenAll(publishResponse);

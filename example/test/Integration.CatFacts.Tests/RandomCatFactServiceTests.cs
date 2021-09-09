@@ -1,7 +1,6 @@
 using System;
 using System.Net;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -15,7 +14,7 @@ using HumanaEdge.Webcore.Example.Integration.CatFacts.Services;
 using Moq;
 using Xunit;
 
-namespace HumanaEdge.Webcore.Integration.CatFacts.Tests
+namespace HumanaEdge.Webcore.Example.Integration.CatFacts.Tests
 {
     /// <summary>
     /// Unit tests for <see cref="RandomCatFactService" />.
@@ -59,7 +58,10 @@ namespace HumanaEdge.Webcore.Integration.CatFacts.Tests
                 true,
                 new TestRestResponseDeserializer(x => fakeCatFactsResponse, fakeResponseBytes),
                 HttpStatusCode.OK);
-            _mockClient.Setup(x => x.SendAsync(fakeRequest, CancellationTokenSource.Token))
+            _mockClient
+                .Setup(x => x.SendAsync(
+                    fakeRequest,
+                    CancellationTokenSource.Token))
                 .ReturnsAsync(fakeResponse);
             var expected = fakeCatFactsResponse.ToCatFact();
 
@@ -89,7 +91,8 @@ namespace HumanaEdge.Webcore.Integration.CatFacts.Tests
                 false,
                 new TestRestResponseDeserializer(x => fakeCatFactsResponse, fakeResponseBytes),
                 HttpStatusCode.NotFound);
-            _mockClient.Setup(x => x.SendAsync(fakeRequest, CancellationTokenSource.Token))
+            _mockClient
+                .Setup(x => x.SendAsync(fakeRequest, CancellationTokenSource.Token))
                 .ReturnsAsync(fakeResponse);
 
             // act assert

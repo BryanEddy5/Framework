@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace HumanaEdge.Webcore.Core.Telemetry.Http
 {
     /// <summary>
-    /// Http Telemetry for the duration of an Http request..
+    /// Http Telemetry for the duration of an Http request.
     /// </summary>
     [Equals(DoNotAddEqualityOperators = true)]
     internal abstract class HttpTelemetry : Telemetry
@@ -21,6 +21,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Http
         /// <param name="uri">The Uri of the request.</param>
         /// <param name="success">Indicator if the request was successful.</param>
         /// <param name="configuration">Configuration data for the observer.</param>
+        /// <param name="alert">Whether or not this telemetry contains an alert.</param>
         internal HttpTelemetry(
             string name,
             TelemetryType type,
@@ -30,8 +31,9 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Http
             string httpMethod,
             string uri,
             bool success,
-            TelemetryConfiguration? configuration)
-            : base(name, type, startTime, configuration)
+            TelemetryConfiguration? configuration,
+            bool alert)
+            : base(name, type, startTime, configuration, alert)
         {
             Duration = duration;
             ResultCode = resultCode;
@@ -69,20 +71,21 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Http
         internal override TelemetryEvent ToTelemetryEvent()
         {
             // shallow copy to a new dictionary to ensure this method is idempotent.
-            var tags = new Dictionary<string, object>(Tags);
-            tags.Add(nameof(Duration), Duration);
-            tags.Add(nameof(Success), Success);
-            tags.Add(nameof(HttpMethod), HttpMethod);
-            tags.Add(nameof(ResultCode), ResultCode);
-            tags.Add(nameof(Uri), Uri);
+            var tags = new Dictionary<string, object>(Tags)
+            {
+                { nameof(Duration), Duration },
+                { nameof(Success), Success },
+                { nameof(HttpMethod), HttpMethod },
+                { nameof(ResultCode), ResultCode },
+                { nameof(Uri), Uri },
+            };
 
-            var telemetry = new TelemetryEvent(
+            return new TelemetryEvent(
                 Name,
                 Type,
                 Timestamp,
-                tags);
-
-            return telemetry;
+                tags,
+                Alert);
         }
     }
 }

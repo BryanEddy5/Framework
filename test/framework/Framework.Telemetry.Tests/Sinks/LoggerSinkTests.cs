@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutoFixture;
 using HumanaEdge.Webcore.Core.Telemetry;
 using HumanaEdge.Webcore.Core.Testing;
 using HumanaEdge.Webcore.Framework.Telemetry.Sinks;
@@ -40,7 +41,8 @@ namespace HumanaEdge.Webcore.Framework.Telemetry.Tests.Sinks
                 "test",
                 TelemetryType.Custom,
                 DateTimeOffset.UtcNow,
-                new Dictionary<string, object>());
+                new Dictionary<string, object>(),
+                FakeData.Create<bool>());
 
             // act
             _sink.Emit(fakeTelemetryEvent);

@@ -38,6 +38,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests.Http
             var fakeDuration = FakeData.Create<double>();
             var fakeSuccess = FakeData.Create<bool>();
             var fakeTelemetryConfiguration = FakeData.Create<TelemetryConfiguration>();
+            var fakeAlert = FakeData.Create<bool>();
 
             var expectedDependencyTelemetry = new PubSubTelemetry(
                 "SubscriptionTelemetry",
@@ -46,7 +47,8 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests.Http
                 fakeMessageId,
                 fakeDuration,
                 fakeSuccess,
-                fakeTelemetryConfiguration);
+                fakeTelemetryConfiguration,
+                fakeAlert);
 
             var expectedTelemetryEvent = expectedDependencyTelemetry.ToTelemetryEvent();
 
@@ -58,7 +60,8 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests.Http
                 fakeMessageId,
                 fakeDuration,
                 fakeSuccess,
-                fakeTelemetryConfiguration);
+                fakeTelemetryConfiguration,
+                fakeAlert);
         }
 
         /// <summary>
@@ -73,6 +76,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests.Http
             var fakeDuration = FakeData.Create<double>();
             var fakeSuccess = FakeData.Create<bool>();
             var fakeTelemetryConfiguration = FakeData.Create<TelemetryConfiguration>();
+            var fakeAlert = FakeData.Create<bool>();
 
             var expectedDependencyTelemetry = new PubSubTelemetry(
                 "PublicationTelemetry",
@@ -81,7 +85,8 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests.Http
                 fakeMessageId,
                 fakeDuration,
                 fakeSuccess,
-                fakeTelemetryConfiguration);
+                fakeTelemetryConfiguration,
+                fakeAlert);
 
             var expectedTelemetryEvent = expectedDependencyTelemetry.ToTelemetryEvent();
 
@@ -93,7 +98,8 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests.Http
                 fakeMessageId,
                 fakeDuration,
                 fakeSuccess,
-                fakeTelemetryConfiguration);
+                fakeTelemetryConfiguration,
+                fakeAlert);
         }
     }
 }

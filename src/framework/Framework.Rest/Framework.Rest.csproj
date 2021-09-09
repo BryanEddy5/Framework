@@ -10,6 +10,7 @@
       <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="$(MicrosoftExtensionsVersion)" />
     </ItemGroup>
     <ItemGroup>
+      <ProjectReference Include="..\..\core\Core.DependencyInjection\Core.DependencyInjection.csproj" />
       <ProjectReference Include="..\..\core\Core.Rest\Core.Rest.csproj" />
       <ProjectReference Include="..\..\core\Core.Telemetry\Core.Telemetry.csproj" />
       <ProjectReference Include="..\..\core\Core.Web\Core.Web.csproj" />

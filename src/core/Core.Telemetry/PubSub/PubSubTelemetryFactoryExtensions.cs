@@ -16,13 +16,15 @@ namespace HumanaEdge.Webcore.Core.Telemetry.PubSub
         /// <param name="duration">The duration of the request.</param>
         /// <param name="success">Indicator if the request was successful.</param>
         /// <param name="configuration">Configuration data for the observer.</param>
+        /// <param name="alert">Whether or not this telemetry contains an alert.</param>
         public static void TrackSubscriptionTelemetry(
             this ITelemetryFactory factory,
             DateTimeOffset startTime,
             string messageId,
             double duration,
             bool success = false,
-            TelemetryConfiguration? configuration = null)
+            TelemetryConfiguration? configuration = null,
+            bool alert = false)
         {
             var telemetryEvent = new PubSubTelemetry(
                 "SubscriptionTelemetry",
@@ -31,7 +33,8 @@ namespace HumanaEdge.Webcore.Core.Telemetry.PubSub
                 messageId,
                 duration,
                 success,
-                configuration).ToTelemetryEvent();
+                configuration,
+                alert).ToTelemetryEvent();
             factory.Track(telemetryEvent);
         }
 
@@ -44,13 +47,15 @@ namespace HumanaEdge.Webcore.Core.Telemetry.PubSub
         /// <param name="duration">The duration of the request.</param>
         /// <param name="success">Indicator if the request was successful.</param>
         /// <param name="configuration">Configuration data for the observer.</param>
+        /// <param name="alert">Whether or not this telemetry contains an alert.</param>
         public static void TrackPublicationTelemetry(
             this ITelemetryFactory factory,
             DateTimeOffset startTime,
             string messageId,
             double duration,
             bool success = false,
-            TelemetryConfiguration? configuration = null)
+            TelemetryConfiguration? configuration = null,
+            bool alert = false)
         {
             var telemetryEvent = new PubSubTelemetry(
                 "PublicationTelemetry",
@@ -59,7 +64,8 @@ namespace HumanaEdge.Webcore.Core.Telemetry.PubSub
                 messageId,
                 duration,
                 success,
-                configuration).ToTelemetryEvent();
+                configuration,
+                alert).ToTelemetryEvent();
             factory.Track(telemetryEvent);
         }
     }

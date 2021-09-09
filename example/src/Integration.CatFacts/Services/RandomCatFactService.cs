@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.DependencyInjection;
 using HumanaEdge.Webcore.Core.Rest;
+using HumanaEdge.Webcore.Core.Rest.Alerting;
 using HumanaEdge.Webcore.Example.Integration.CatFacts.Client;
 using HumanaEdge.Webcore.Example.Integration.CatFacts.Client.Contracts;
 using HumanaEdge.Webcore.Example.Integration.CatFacts.Converter;
@@ -38,7 +39,9 @@ namespace HumanaEdge.Webcore.Example.Integration.CatFacts.Services
         /// <inheritdoc />
         public async Task<CatFact?> GetAsync(CancellationToken cancellationToken)
         {
-            var request = new RestRequest(RelativePath, HttpMethod.Get);
+            var request = new RestRequest(
+                RelativePath,
+                HttpMethod.Get);
 
             var response = await _catFactsClient.SendAsync(request, cancellationToken);
 
@@ -63,6 +66,7 @@ namespace HumanaEdge.Webcore.Example.Integration.CatFacts.Services
                 HttpMethod.Post,
                 randomCatFactRequest,
                 MediaType.Json);
+            request.ConfigureAlertCondition(CommonRestAlertConditions.Minimum());
 
             var response = await _catFactsClient.SendAsync(request, cancellationToken);
 

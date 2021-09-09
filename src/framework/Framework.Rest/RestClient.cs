@@ -7,14 +7,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.Rest;
 using HumanaEdge.Webcore.Core.Rest.AccessTokens;
+using HumanaEdge.Webcore.Core.Rest.Alerting;
 using HumanaEdge.Webcore.Core.Rest.Resiliency;
 using HumanaEdge.Webcore.Core.Telemetry;
 using HumanaEdge.Webcore.Core.Telemetry.Http;
 using HumanaEdge.Webcore.Framework.Rest.Resiliency;
-using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using Polly;
-using Polly.Wrap;
 
 namespace HumanaEdge.Webcore.Framework.Rest
 {
@@ -35,6 +34,8 @@ namespace HumanaEdge.Webcore.Framework.Rest
 
         private readonly IInternalClientFactory _internalClientFactory;
 
+        private readonly IHttpAlertingService _httpAlerting;
+
         /// <summary>
         /// Designated ctor.
         /// </summary>
@@ -44,6 +45,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
         /// <param name="mediaTypeFormatters">A collection of media type formatters.</param>
         /// <param name="pollyContextFactory">Generates Polly <see cref="Context"/> to be leveraged by consumers.</param>
         /// <param name="accessTokenCacheService">A cache for tokens. </param>
+        /// <param name="httpAlerting">A service for managing alerts.</param>
         /// <param name="telemetryFactory">A factory associated with telemetry.</param>
         public RestClient(
             string clientName,
@@ -52,6 +54,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
             IMediaTypeFormatter[] mediaTypeFormatters,
             IPollyContextFactory pollyContextFactory,
             IAccessTokenCacheService accessTokenCacheService,
+            IHttpAlertingService httpAlerting,
             ITelemetryFactory telemetryFactory = null!)
         {
             _clientName = clientName;
@@ -59,6 +62,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
             _options = options;
             _pollyContextFactory = pollyContextFactory;
             _accessTokenCacheService = accessTokenCacheService;
+            _httpAlerting = httpAlerting;
             _mediaTypeFormatters = mediaTypeFormatters.SelectMany(
                     formatter => formatter.MediaTypes.Select(
                         mediaType =>
@@ -176,13 +180,13 @@ namespace HumanaEdge.Webcore.Framework.Rest
                 ? await httpResponseMessage.Content.ReadAsByteArrayAsync()
                 : Array.Empty<byte>();
 
-            var contentType = httpResponseMessage.Content?.Headers?.ContentType;
+            var contentType = httpResponseMessage.Content?.Headers.ContentType;
             var deserializer = new RestResponseDeserializer(_mediaTypeFormatters, contentType, responseBytes, _options);
             return new RestResponse(
                 httpResponseMessage.IsSuccessStatusCode,
                 deserializer,
                 httpResponseMessage.StatusCode,
-                httpResponseMessage.Headers?.Location);
+                httpResponseMessage.Headers.Location);
         }
 
         private async Task<FileResponse> ConvertToStreamResponse(HttpResponseMessage httpResponseMessage)
@@ -193,8 +197,8 @@ namespace HumanaEdge.Webcore.Framework.Rest
                 httpResponseMessage.IsSuccessStatusCode,
                 responseStream,
                 httpResponseMessage.StatusCode,
-                httpResponseMessage.Content?.Headers?.ContentType?.MediaType,
-                httpResponseMessage.Content?.Headers?.ContentDisposition?.FileName);
+                httpResponseMessage.Content.Headers.ContentType?.MediaType,
+                httpResponseMessage.Content.Headers.ContentDisposition?.FileName);
         }
 
         /// <summary>
@@ -203,11 +207,6 @@ namespace HumanaEdge.Webcore.Framework.Rest
         /// <typeparam name="TRestRequest">The type of the rest request.</typeparam>
         /// <typeparam name="TRestResponse">The type of the rest response.</typeparam>
         /// <param name="restRequest">The rest request object.</param>
-        /// A function which converts the
-        /// <typeparamref name="TRestRequest" />
-        /// into an
-        /// <see cref="HttpRequestMessage" />
-        /// .
         /// <param name="cancellationToken">The cancellation token for the request.</param>
         /// <param name="restRequestConverter">Applies middleware transformation of the request.</param>
         /// <param name="restResponseConverter">Applies middleware transformation of the response.</param>
@@ -238,16 +237,29 @@ namespace HumanaEdge.Webcore.Framework.Rest
             }
         }
 
+        /// <summary>
+        /// The encapsulation of the action of sending the http request message.
+        /// This is an action that represents the act of sending the message and getting a response.
+        /// If this should fail, the resilience will be engaged in the other SendInternalAsync method.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token for the request.</param>
+        /// <param name="restRequestConverter">Applies middleware transformation of the request.</param>
+        /// <param name="restResponseConverter">Applies middleware transformation of the response.</param>
+        /// <param name="restRequest">The rest request object.</param>
+        /// <typeparam name="TRestRequest">The type of the rest request.</typeparam>
+        /// <typeparam name="TRestResponse">The type of the rest response.</typeparam>
+        /// <returns>The received response from the endpoint.</returns>
         private async Task<BaseRestResponse> SendInternalAsync<TRestRequest, TRestResponse>(
             CancellationToken cancellationToken,
             Func<TRestRequest, HttpRequestMessage> restRequestConverter,
             Func<HttpResponseMessage, Task<TRestResponse>> restResponseConverter,
-            TRestRequest request)
+            TRestRequest restRequest)
             where TRestRequest : RestRequest
             where TRestResponse : BaseRestResponse
         {
-            var httpRequestMessage = restRequestConverter(request);
+            var httpRequestMessage = restRequestConverter(restRequest);
             HttpResponseMessage httpResponse = null!;
+            bool isAlert;
             var stopWatch = new Stopwatch();
             stopWatch.Start();
             var startTime = DateTimeOffset.UtcNow;
@@ -258,7 +270,24 @@ namespace HumanaEdge.Webcore.Framework.Rest
             finally
             {
                 stopWatch.Stop();
-                TrackTelemetry(httpRequestMessage, httpResponse, startTime, stopWatch.ElapsedMilliseconds);
+                var convertedResponse = await restResponseConverter(httpResponse);
+                isAlert = _httpAlerting.IsHttpAlert(
+                    convertedResponse,
+                    restRequest.AlertCondition!,
+                    _options.AlertCondition!);
+                TrackTelemetry(
+                    httpRequestMessage,
+                    httpResponse,
+                    startTime,
+                    stopWatch.ElapsedMilliseconds,
+                    isAlert);
+            }
+
+            if (isAlert)
+            {
+                _httpAlerting.ThrowIfAlertedAndNeedingException(
+                    restRequest.AlertCondition,
+                    _options.AlertCondition);
             }
 
             return await restResponseConverter(httpResponse);
@@ -271,21 +300,33 @@ namespace HumanaEdge.Webcore.Framework.Rest
         /// <param name="response">The <see cref="HttpResponseMessage" /> used for this telemetry.</param>
         /// <param name="startTime">The start time of the dependency.</param>
         /// <param name="duration">The total duration of this request.</param>
+        /// <param name="isAlert">Whether or not the telemetry contains an alert.</param>
         private void TrackTelemetry(
             HttpRequestMessage request,
             HttpResponseMessage? response,
             DateTimeOffset startTime,
-            double duration)
+            double duration,
+            bool isAlert)
         {
-            _telemetryFactory?.TrackDependencyHttpTelemetry(
+            _telemetryFactory.TrackDependencyHttpTelemetry(
                 startTime,
                 duration,
                 ((int?)response?.StatusCode)?.ToString()!,
-                request?.Method.ToString()!,
-                request?.RequestUri?.ToString()!,
-                response != null && response.IsSuccessStatusCode);
+                request.Method.ToString(),
+                request.RequestUri?.ToString()!,
+                isAlert,
+                success: response != null && response.IsSuccessStatusCode);
         }
 
+        /// <summary>
+        /// The execution of the transformation(s) against the incoming request.
+        /// These run before the actual request is sent.
+        /// If there is a bearer token factory available, then it will execute that first.
+        /// </summary>
+        /// <param name="restRequest">The incoming <see cref="RestRequest"/>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <typeparam name="TRestRequest">The type of rest request this is.</typeparam>
+        /// <returns>The transformed <see cref="RestRequest"/>.</returns>
         private async Task<TRestRequest> TransformRequest<TRestRequest>(
             TRestRequest restRequest,
             CancellationToken cancellationToken)

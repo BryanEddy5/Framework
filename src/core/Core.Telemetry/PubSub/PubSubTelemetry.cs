@@ -20,6 +20,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry.PubSub
         /// <param name="duration">The duration of the request.</param>
         /// <param name="success">Indicator if the request was successful.</param>
         /// <param name="configuration">Configuration data for the observer.</param>
+        /// <param name="alert">Whether or not this telemetry contains an alert.</param>
         public PubSubTelemetry(
             string name,
             TelemetryType telemetryType,
@@ -27,8 +28,9 @@ namespace HumanaEdge.Webcore.Core.Telemetry.PubSub
             string messageId,
             double duration,
             bool success,
-            TelemetryConfiguration? configuration)
-            : base(name, telemetryType, startTime, configuration)
+            TelemetryConfiguration? configuration,
+            bool alert)
+            : base(name, telemetryType, startTime, configuration, alert)
         {
             Success = success;
             MessageId = messageId;
@@ -54,18 +56,20 @@ namespace HumanaEdge.Webcore.Core.Telemetry.PubSub
         internal override TelemetryEvent ToTelemetryEvent()
         {
             // shallow copy to a new dictionary to ensure this method is idempotent.
-            var tags = new Dictionary<string, object>(Tags);
-            tags.Add(nameof(Duration), Duration);
-            tags.Add(nameof(Success), Success);
-            tags.Add(nameof(MessageId), MessageId);
+            var tags = new Dictionary<string, object>(Tags)
+            {
+                { nameof(Duration), Duration },
+                { nameof(Success), Success },
+                { nameof(MessageId), MessageId },
+                { nameof(Alert), Alert }
+            };
 
-            var telemetry = new TelemetryEvent(
+            return new TelemetryEvent(
                 Name,
                 Type,
                 Timestamp,
-                tags);
-
-            return telemetry;
+                tags,
+                Alert);
         }
     }
 }

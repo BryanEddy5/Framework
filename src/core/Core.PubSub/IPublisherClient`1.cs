@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using HumanaEdge.Webcore.Core.Common.Alerting;
+using HumanaEdge.Webcore.Core.PubSub.Alerting;
 
 namespace HumanaEdge.Webcore.Core.PubSub
 {
@@ -10,6 +12,11 @@ namespace HumanaEdge.Webcore.Core.PubSub
     /// <typeparam name="TMessage">The published message shape.</typeparam>
     public interface IPublisherClient<in TMessage>
     {
+        /// <summary>
+        /// The <see cref="AlertCondition"/> for this client.
+        /// </summary>
+        AlertCondition ClientAlertCondition { get; }
+
         /// <summary>
         /// Publishes multiple messages to a topic.
         /// </summary>

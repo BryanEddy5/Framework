@@ -12,8 +12,9 @@ namespace HumanaEdge.Webcore.Core.Telemetry
         /// </summary>
         /// <param name="name">Name of the observer metric.</param>
         /// <param name="configuration">Custom metrics defined for the class.</param>
-        internal CustomTelemetry(string name, TelemetryConfiguration configuration)
-            : base(name, TelemetryType.Custom, DateTimeOffset.UtcNow, configuration)
+        /// <param name="alert">Whether or not this telemetry contains an alert.</param>
+        internal CustomTelemetry(string name, TelemetryConfiguration configuration, bool alert)
+            : base(name, TelemetryType.Custom, DateTimeOffset.UtcNow, configuration, alert)
         {
             // nop
         }

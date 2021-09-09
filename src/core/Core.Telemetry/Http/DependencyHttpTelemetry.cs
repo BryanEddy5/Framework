@@ -17,6 +17,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Http
         /// <param name="dependencyUri">The Dependency Uir of the request.</param>
         /// <param name="success">Indicator if the request was successful.</param>
         /// <param name="configuration">Configuration data for the observer.</param>
+        /// <param name="alert">Whether or not this telemetry contains an alert.</param>
         internal DependencyHttpTelemetry(
             DateTimeOffset startTime,
             double duration,
@@ -24,7 +25,8 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Http
             string dependencyHttpMethod,
             string dependencyUri,
             bool success,
-            TelemetryConfiguration? configuration)
+            TelemetryConfiguration? configuration,
+            bool alert)
             : base(
                 "HttpDependencyTelemetry",
                 TelemetryType.Dependency,
@@ -34,7 +36,8 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Http
                 dependencyHttpMethod,
                 dependencyUri,
                 success,
-                configuration)
+                configuration,
+                alert)
         {
             // nop
         }

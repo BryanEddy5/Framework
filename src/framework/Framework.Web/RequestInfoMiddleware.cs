@@ -58,10 +58,17 @@ namespace HumanaEdge.Webcore.Framework.Web
         }
 
         /// <summary>
+        /// Determines whether or not the request telemetry should be flagged with an alert.
+        /// </summary>
+        /// <param name="statusCode">The http status code from the response.</param>
+        /// <returns>True if the telemetry should be flagged as an alert, false otherwise.</returns>
+        private bool IsAlert(int statusCode) => statusCode >= 500;
+
+        /// <summary>
         /// Method to decipher if the request was successful by interpreting the status code.
         /// </summary>
         /// <param name="statusCode">An http status code.</param>
-        /// <returns>boolean flag of success.</returns>
+        /// <returns>True if the code is between 200-299, false otherwise.</returns>
         private bool IsSuccessfulRequest(int statusCode) => statusCode >= 200 && statusCode <= 299;
 
         /// <summary>
@@ -77,7 +84,8 @@ namespace HumanaEdge.Webcore.Framework.Web
                 responseCode: context.Response.StatusCode.ToString(),
                 httpMethod: context.Request.Method,
                 uri: context.Request.GetDisplayUrl(),
-                success: IsSuccessfulRequest(context.Response.StatusCode));
+                success: IsSuccessfulRequest(context.Response.StatusCode),
+                alert: IsAlert(context.Response.StatusCode));
         }
     }
 }

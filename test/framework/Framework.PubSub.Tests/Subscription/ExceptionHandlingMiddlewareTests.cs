@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoFixture;
 using Google.Cloud.PubSub.V1;
 using HumanaEdge.Webcore.Core.PubSub;
+using HumanaEdge.Webcore.Core.PubSub.Exceptions;
 using HumanaEdge.Webcore.Core.PubSub.Subscription;
 using HumanaEdge.Webcore.Core.Storage;
 using HumanaEdge.Webcore.Core.Testing;

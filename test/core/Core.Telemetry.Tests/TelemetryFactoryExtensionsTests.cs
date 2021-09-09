@@ -33,10 +33,12 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests
             // arrange
             var fakeName = FakeData.Create<string>();
             var fakeTelemetryConfiguration = FakeData.Create<TelemetryConfiguration>();
+            var fakeAlert = FakeData.Create<bool>();
 
             var expectedCustomTelemetry = new CustomTelemetry(
                 fakeName,
-                fakeTelemetryConfiguration);
+                fakeTelemetryConfiguration,
+                fakeAlert);
 
             var expectedTelemetryEvent = expectedCustomTelemetry.ToTelemetryEvent();
 
@@ -52,7 +54,8 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests
             // act
             _mockTelemetryFactory.Object.TrackCustomTelemetry(
                 fakeName,
-                fakeTelemetryConfiguration);
+                fakeTelemetryConfiguration,
+                fakeAlert);
         }
     }
 }

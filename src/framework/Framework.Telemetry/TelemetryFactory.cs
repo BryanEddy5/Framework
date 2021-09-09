@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using HumanaEdge.Webcore.Core.Common.Extensions;
 using HumanaEdge.Webcore.Core.Telemetry;
 
 namespace HumanaEdge.Webcore.Framework.Telemetry
@@ -21,16 +21,15 @@ namespace HumanaEdge.Webcore.Framework.Telemetry
         /// <param name="sinks">Sink for data to be transmitted to for the metrics.</param>
         public TelemetryFactory(IEnumerable<ITelemetrySink> sinks)
         {
-            _sinks = sinks.ToArray() ?? throw new ArgumentNullException(nameof(sinks));
+            _sinks = sinks.ToArray();
         }
 
         /// <inheritdoc />
         public void Track(TelemetryEvent telemetryEvent)
         {
-            foreach (var sink in _sinks)
-            {
-                sink.Emit(telemetryEvent);
-            }
+            _sinks
+                .Where(sink => sink.Predicate(telemetryEvent))
+                .ForEach(sink => sink.Emit(telemetryEvent));
         }
     }
 }

@@ -46,6 +46,13 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription.Middleware
         }
 
         /// <summary>
+        /// Determines whether or not the request telemetry should be flagged with an alert.
+        /// </summary>
+        /// <param name="success">Whether or not the publication was identified as a success.</param>
+        /// <returns>True if the telemetry should be flagged as an alert, false otherwise.</returns>
+        private static bool IsAlert(bool success) => !success;
+
+        /// <summary>
         /// Short-hand method for tracking telemetry in this Middleware.
         /// </summary>
         /// <param name="success">Designates if the request was successful.</param>
@@ -57,7 +64,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription.Middleware
                 DateTimeOffset.UtcNow,
                 message.MessageId,
                 duration,
-                success);
+                success,
+                alert: IsAlert(success));
         }
     }
 }

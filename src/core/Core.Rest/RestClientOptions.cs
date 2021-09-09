@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using HumanaEdge.Webcore.Core.Common.Alerting;
 using HumanaEdge.Webcore.Core.Common.Serialization;
+using HumanaEdge.Webcore.Core.Rest.Alerting;
 using HumanaEdge.Webcore.Core.Rest.Resiliency;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
@@ -26,6 +28,7 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// <param name="resiliencePolicies">Optional. Configured strategy for resiliency. Defaults to NoOp if omitted.</param>
         /// <param name="jsonSerializerSettings">Settings for JSON formatting.</param>
         /// <param name="bearerTokenFactory">A factory for generating a bearer token. </param>
+        /// <param name="alertCondition">The default alert condition for this rest client.</param>
         private RestClientOptions(
             Uri baseUri,
             Dictionary<string, StringValues> defaultHeaders,
@@ -34,7 +37,8 @@ namespace HumanaEdge.Webcore.Core.Rest
             TimeSpan timeout,
             IAsyncPolicy<BaseRestResponse>[] resiliencePolicies,
             JsonSerializerSettings jsonSerializerSettings,
-            (Func<CancellationToken, Task<string>> TokenFactory, string TokenKey)? bearerTokenFactory)
+            (Func<CancellationToken, Task<string>> TokenFactory, string TokenKey)? bearerTokenFactory,
+            AlertCondition? alertCondition)
         {
             BaseUri = baseUri;
             DefaultHeaders = defaultHeaders;
@@ -44,6 +48,7 @@ namespace HumanaEdge.Webcore.Core.Rest
             ResiliencePolicies = resiliencePolicies;
             JsonSerializerSettings = jsonSerializerSettings;
             BearerTokenFactory = bearerTokenFactory;
+            AlertCondition = alertCondition;
         }
 
         /// <summary>
@@ -104,6 +109,12 @@ namespace HumanaEdge.Webcore.Core.Rest
         public JsonSerializerSettings JsonSerializerSettings { get; }
 
         /// <summary>
+        /// The alert condition to execute that determines whether or not the telemetry associated with this
+        /// rest request should be an alert or not.
+        /// </summary>
+        public AlertCondition? AlertCondition { get; }
+
+        /// <summary>
         /// A builder pattern for generating <see cref="RestClientOptions" />.
         /// </summary>
         public sealed class Builder
@@ -149,6 +160,11 @@ namespace HumanaEdge.Webcore.Core.Rest
             private (Func<CancellationToken, Task<string>> TokenFactory, string TokenKey)? _tokenFactory;
 
             /// <summary>
+            /// The alert condition associated with the rest client itself.
+            /// </summary>
+            private AlertCondition? _alertCondition;
+
+            /// <summary>
             /// A builder pattern for fluently producing <see cref="RestClientOptions" />.
             /// </summary>
             /// <param name="baseUri">The base Uri of the request.</param>
@@ -163,6 +179,7 @@ namespace HumanaEdge.Webcore.Core.Rest
                 _resiliencePolicy =
                     new List<IAsyncPolicy<BaseRestResponse>>(
                         new[] { ResiliencyPolicies.RetryWithExponentialBackoff(6) });
+                _alertCondition = CommonRestAlertConditions.Standard();
             }
 
             /// <summary>
@@ -189,7 +206,8 @@ namespace HumanaEdge.Webcore.Core.Rest
                     _timeout,
                     _resiliencePolicy.ToArray(),
                     _jsonSettings,
-                    _tokenFactory);
+                    _tokenFactory,
+                    _alertCondition);
             }
 
             /// <summary>
@@ -277,6 +295,18 @@ namespace HumanaEdge.Webcore.Core.Rest
             {
                 _tokenFactory = (TokenFactory: tokenFactory, TokenKey: typeof(TClient).FullName !);
                 _resiliencePolicy.Add(ResiliencyPolicies.RefreshToken<TClient>(tokenFactory, typeof(TClient).FullName !));
+                return this;
+            }
+
+            /// <summary>
+            /// Sets the default alert condition for this rest client.<br/>
+            /// The default is <see cref="CommonRestAlertConditions.Minimum"/>.
+            /// </summary>
+            /// <param name="alertCondition">The alert condition to leverage for this client by default.</param>
+            /// <returns>The builder instance, for fluent chaining.</returns>
+            public Builder ConfigureAlertCondition(AlertCondition alertCondition)
+            {
+                _alertCondition = alertCondition;
                 return this;
             }
         }

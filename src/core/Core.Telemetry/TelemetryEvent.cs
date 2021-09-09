@@ -16,16 +16,19 @@ namespace HumanaEdge.Webcore.Core.Telemetry
         /// <param name="telemetryType">The indicator of the metric type.</param>
         /// <param name="timestamp">The time at which the metric was captured.</param>
         /// <param name="tags">Names of the tags (name-value pairs) that apply to this metric.</param>
+        /// <param name="alert">Whether or not this telemetry has an alert.</param>
         public TelemetryEvent(
             string name,
             TelemetryType telemetryType,
             DateTimeOffset timestamp,
-            IReadOnlyDictionary<string, object> tags)
+            IReadOnlyDictionary<string, object> tags,
+            bool alert)
         {
             Name = name;
             TelemetryType = telemetryType;
             Timestamp = timestamp;
             Tags = tags;
+            Alert = alert;
         }
 
         /// <summary>
@@ -47,5 +50,10 @@ namespace HumanaEdge.Webcore.Core.Telemetry
         /// The time at which the event was captured.
         /// </summary>
         public DateTimeOffset Timestamp { get; }
+
+        /// <summary>
+        /// Whether or not this telemetry has an alert.
+        /// </summary>
+        public bool Alert { get; }
     }
 }
