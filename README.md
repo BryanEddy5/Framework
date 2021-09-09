@@ -453,3 +453,36 @@ Here are the steps outlined to leverage this library.
 3. [Inject IDistributedCache](example/src/Domain/CatFactsService.cs)
 
 There are also some custom extension methods in `DistributedCacheExtensions.cs` that will handle serializing and deserializing the cache payload as well as combine the cache hit/miss retrieval into a single method `GetOrCreateAsync`. 
+
+## Packing Webcore and restoring it locally
+In order to perform development locally for Webcore libraries it is necessary to build, pack, and restore the libraries from your local machine. To simplify this process perform the following steps.
+
+### Pack
+Add the following function to your `.bashrc` or `.zshrc` file
+
+```
+function pack() {
+ dotnet pack /p:Channel=alpha /p:BuildTimestamp=$(date -u '+%Y%m%d%H%M%S') -c Release -o /Users/$USER/.nuget/humanaedge
+}
+```
+Nuget uses semantic versioning and thus when adding a build timestamp will make this local build the "latest" version available.
+
+### Restore
+Under the packageSource element in the NuGet.Config file located [here](https://docs.microsoft.com/en-us/nuget/consume-packages/configuring-nuget-behavior#config-file-locations-and-uses).
+```
+<packageSources>
+    <add key="local-humana-edge" value="/Users/{enter-your-username}/.nuget/humanaedge" />
+</packageSources>
+```
+Now when you restore your application that consumes Webcore locally it will utilize this local location to restore packages from.
+
+### Steps
+- Navigate to the root of Webcore's source code locally and run the above function of `pack`
+    - `cd source/repos/webcore`
+    - `pack`
+- Now that the packages have been created and stored locally we must restore them. Navigate to the root of the consuming API.
+    - `cd source/repos/ah-crm-document-upload`
+    - `dotnet restore`
+- Now that we have ran this in the background we need to refresh our IDE to pick up the changes
+    - Right click on the solution in your IDE and unload the packages
+    - Then reload the packages
