@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Google.Cloud.PubSub.V1;
 using HumanaEdge.Webcore.Core.PubSub;
+using HumanaEdge.Webcore.Core.PubSub.Exceptions;
 using HumanaEdge.Webcore.Core.PubSub.Subscription;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription.Context;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription.Factory;

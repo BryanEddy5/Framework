@@ -1,6 +1,8 @@
 ﻿using HumanaEdge.Webcore.Core.Rest;
 using HumanaEdge.Webcore.Core.Rest.AccessTokens;
+using HumanaEdge.Webcore.Core.Rest.Alerting;
 using HumanaEdge.Webcore.Framework.Rest.AccessTokens;
+using HumanaEdge.Webcore.Framework.Rest.Alerting;
 using HumanaEdge.Webcore.Framework.Rest.Resiliency;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -21,6 +23,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Extensions
         {
             services.AddHttpClient();
             services.AddSingleton<IInternalClientFactory, InternalClientFactory>();
+            services.AddTransient<IHttpAlertingService, HttpAlertingService>();
             services.AddSingleton<IRestClientFactory, RestClientFactory>();
             services.AddSingleton<IAccessTokenCacheService, AccessTokenCacheService>();
             services.AddSingleton<IPollyContextFactory, PollyContextFactory>();

@@ -44,15 +44,42 @@ namespace HumanaEdge.Webcore.Framework.Telemetry.Tests
         }
 
         /// <summary>
-        /// Verifies that the factory dispatches each event to all available sinks.
+        /// Verifies that the factory dispatches each event to all sinks.
         /// </summary>
         [Fact]
-        public void TrackTest()
+        public void Emit_ToAllSinks_WhenPredicateTrue()
         {
             // arrange
             var fakeEvent = FakeData.Create<TelemetryEvent>();
 
+            _sink1
+                .Setup(sink => sink.Predicate(fakeEvent))
+                .Returns(true);
             _sink1.Setup(s => s.Emit(fakeEvent));
+            _sink2
+                .Setup(sink => sink.Predicate(fakeEvent))
+                .Returns(true);
+            _sink2.Setup(s => s.Emit(fakeEvent));
+
+            // act
+            _factory.Track(fakeEvent);
+        }
+
+        /// <summary>
+        /// Verifies that the factory dispatches each event to all applicable sinks.
+        /// </summary>
+        [Fact]
+        public void Emit_ToSomeSinks_WhenSomePredicatesTrue()
+        {
+            // arrange
+            var fakeEvent = FakeData.Create<TelemetryEvent>();
+
+            _sink1
+                .Setup(sink => sink.Predicate(fakeEvent))
+                .Returns(false);
+            _sink2
+                .Setup(sink => sink.Predicate(fakeEvent))
+                .Returns(true);
             _sink2.Setup(s => s.Emit(fakeEvent));
 
             // act

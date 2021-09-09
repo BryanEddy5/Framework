@@ -36,10 +36,10 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests.Http
             var fakeDuration = FakeData.Create<double>();
             var fakeHttpMethod = FakeData.Create<string>();
             var fakeUri = FakeData.Create<string>();
-            var fakeRequestId = FakeData.Create<string>();
             var fakeSuccess = FakeData.Create<bool>();
             var fakeTelemetryConfiguration = FakeData.Create<TelemetryConfiguration>();
             var fakeResultCode = FakeData.Create<string>();
+            var fakeAlert = FakeData.Create<bool>();
 
             var expectedDependencyTelemetry = new DependencyHttpTelemetry(
                 fakeStartTime,
@@ -48,7 +48,8 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests.Http
                 fakeHttpMethod,
                 fakeUri,
                 fakeSuccess,
-                fakeTelemetryConfiguration);
+                fakeTelemetryConfiguration,
+                fakeAlert);
 
             var expectedTelemetryEvent = expectedDependencyTelemetry.ToTelemetryEvent();
 
@@ -61,8 +62,9 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests.Http
                 fakeResultCode,
                 fakeHttpMethod,
                 fakeUri,
-                fakeSuccess,
-                fakeTelemetryConfiguration);
+                fakeAlert,
+                fakeTelemetryConfiguration,
+                fakeSuccess);
         }
 
         /// <summary>
@@ -76,10 +78,10 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests.Http
             var fakeDuration = FakeData.Create<double>();
             var fakeHttpMethod = FakeData.Create<string>();
             var fakeUri = FakeData.Create<string>();
-            var fakeRequestId = FakeData.Create<string>();
             var fakeSuccess = FakeData.Create<bool>();
             var fakeTelemetryConfiguration = FakeData.Create<TelemetryConfiguration>();
             var fakeResultCode = FakeData.Create<string>();
+            var fakeAlert = FakeData.Create<bool>();
 
             var expectedRequestHttpTelemetry = new RequestHttpTelemetry(
                 fakeStartTime,
@@ -88,7 +90,8 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests.Http
                 fakeHttpMethod,
                 fakeUri,
                 fakeSuccess,
-                fakeTelemetryConfiguration);
+                fakeTelemetryConfiguration,
+                fakeAlert);
 
             var expectedTelemetryEvent = expectedRequestHttpTelemetry.ToTelemetryEvent();
 
@@ -101,8 +104,9 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests.Http
                 fakeResultCode,
                 fakeHttpMethod,
                 fakeUri,
-                fakeSuccess,
-                fakeTelemetryConfiguration);
+                fakeAlert,
+                fakeTelemetryConfiguration,
+                fakeSuccess);
         }
     }
 }

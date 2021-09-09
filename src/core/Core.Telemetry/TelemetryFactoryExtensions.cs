@@ -11,14 +11,17 @@
         /// <param name="factory">The telemetry factory.</param>
         /// <param name="name">Name of the observer.</param>
         /// <param name="customTelemetry">Configuration data for the observer.</param>
+        /// <param name="alert">Whether or not this telemetry contains an alert.</param>
         public static void TrackCustomTelemetry(
             this ITelemetryFactory factory,
             string name,
-            TelemetryConfiguration customTelemetry)
+            TelemetryConfiguration customTelemetry,
+            bool alert)
         {
             var telemetryEvent = new CustomTelemetry(
                 name,
-                customTelemetry).ToTelemetryEvent();
+                customTelemetry,
+                alert).ToTelemetryEvent();
             factory.Track(telemetryEvent);
         }
     }
