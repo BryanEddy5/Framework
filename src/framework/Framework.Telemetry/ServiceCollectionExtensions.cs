@@ -19,6 +19,7 @@ namespace HumanaEdge.Webcore.Framework.Telemetry
         public static void AddApplicationTelemetry(this IServiceCollection services)
         {
             services.TryAddEnumerable(ServiceDescriptor.Singleton<ITelemetrySink, LoggerSink>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<ITelemetrySink, AlertSink>());
             services.AddSingleton<ITelemetryFactory, TelemetryFactory>();
         }
 
