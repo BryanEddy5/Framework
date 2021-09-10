@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.Common.Alerting;
-using HumanaEdge.Webcore.Core.PubSub.Alerting;
 
 namespace HumanaEdge.Webcore.Core.PubSub
 {

@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Google.Cloud.PubSub.V1;
-using Google.Protobuf.Collections;
 using Grpc.Core;
 using HumanaEdge.Webcore.Core.Common.Extensions;
 using HumanaEdge.Webcore.Core.PubSub;

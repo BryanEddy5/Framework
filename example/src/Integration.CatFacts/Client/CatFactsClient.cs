@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.DependencyInjection;
 using HumanaEdge.Webcore.Core.Rest;

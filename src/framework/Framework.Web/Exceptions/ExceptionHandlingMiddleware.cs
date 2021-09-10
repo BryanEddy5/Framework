@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using HumanaEdge.Webcore.Core.Common;
 using HumanaEdge.Webcore.Core.Common.Exceptions;
 using HumanaEdge.Webcore.Core.Web;
 using HumanaEdge.Webcore.Core.Web.Contracts;

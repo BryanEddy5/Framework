@@ -2,7 +2,6 @@
 using System.Net.Http;
 using HumanaEdge.Webcore.Core.Common.Alerting;
 using HumanaEdge.Webcore.Core.Common.Exceptions;
-using HumanaEdge.Webcore.Core.Rest.Alerting;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 

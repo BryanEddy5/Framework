@@ -1,5 +1,4 @@
 using System;
-using Google.Api;
 using HumanaEdge.Webcore.Core.SecretsManager.Contracts;
 using HumanaEdge.Webcore.Framework.SecretsManager.Clients;
 using Microsoft.Extensions.Configuration;

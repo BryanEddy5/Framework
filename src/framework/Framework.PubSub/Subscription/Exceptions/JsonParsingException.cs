@@ -1,6 +1,5 @@
 using System;
 using HumanaEdge.Webcore.Core.PubSub;
-using HumanaEdge.Webcore.Core.PubSub.Exceptions;
 
 namespace HumanaEdge.Webcore.Framework.PubSub.Subscription.Exceptions
 {

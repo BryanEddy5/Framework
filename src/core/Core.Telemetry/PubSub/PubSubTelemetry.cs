@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 
 namespace HumanaEdge.Webcore.Core.Telemetry.PubSub
 {
