@@ -14,10 +14,8 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Serilog;
 using Serilog.Events;
-using Serilog.Formatting.Compact.Reader;
 using Serilog.Formatting.Json;
 using Xunit;
-using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace HumanaEdge.Webcore.Framework.Logging.Tests

@@ -1,10 +1,6 @@
-using System.Collections.Generic;
-using AutoFixture;
 using HumanaEdge.Webcore.Core.Testing;
 using HumanaEdge.Webcore.Framework.Telemetry.Sinks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using Xunit;
 
 namespace HumanaEdge.Webcore.Framework.Telemetry.Tests.Extensions

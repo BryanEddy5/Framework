@@ -1,5 +1,4 @@
-﻿using System.Net;
-using HumanaEdge.Webcore.Core.Web.Contracts;
+﻿using HumanaEdge.Webcore.Core.Web.Contracts;
 
 namespace HumanaEdge.Webcore.Core.Web
 {

@@ -1,6 +1,5 @@
 ﻿using System;
 using HumanaEdge.Webcore.Core.Common.Exceptions;
-using HumanaEdge.Webcore.Example.WebApi.Models;
 
 namespace HumanaEdge.Webcore.Framework.Web.Tests.Stubs.Exceptions
 {

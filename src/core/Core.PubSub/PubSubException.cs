@@ -1,7 +1,7 @@
 using System;
 using HumanaEdge.Webcore.Core.Common.Exceptions;
 
-namespace HumanaEdge.Webcore.Core.PubSub.Exceptions
+namespace HumanaEdge.Webcore.Core.PubSub
 {
     /// <summary>
     /// A pub/sub specific exception that allows for Ack/Nack of the message.

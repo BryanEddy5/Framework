@@ -1,4 +1,3 @@
-using System.Net;
 using HumanaEdge.Webcore.Core.Common.Alerting;
 
 namespace HumanaEdge.Webcore.Core.Rest.Alerting

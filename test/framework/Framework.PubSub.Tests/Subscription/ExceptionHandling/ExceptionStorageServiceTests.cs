@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using AutoFixture;
-using FluentAssertions.Common;
 using HumanaEdge.Webcore.Core.PubSub;
 using HumanaEdge.Webcore.Core.Storage;
 using HumanaEdge.Webcore.Core.Testing;

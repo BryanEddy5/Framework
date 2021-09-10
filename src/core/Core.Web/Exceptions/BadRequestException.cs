@@ -1,4 +1,3 @@
-using System.Net;
 using HumanaEdge.Webcore.Core.Common.Exceptions;
 using HumanaEdge.Webcore.Core.Web.Contracts;
 

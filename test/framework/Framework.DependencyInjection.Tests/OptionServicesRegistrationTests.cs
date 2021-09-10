@@ -1,6 +1,5 @@
 using System.Linq;
 using AutoFixture;
-using AutoFixture.AutoMoq;
 using FluentAssertions;
 using HumanaEdge.Webcore.Core.Testing;
 using HumanaEdge.Webcore.Framework.DependencyInjection.Tests.Stubs;
