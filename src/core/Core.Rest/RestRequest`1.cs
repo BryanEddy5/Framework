@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace HumanaEdge.Webcore.Core.Rest
 {
@@ -33,5 +34,17 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// The request body of the rest request.
         /// </summary>
         public TBody RequestBody { get; }
+
+        /// <summary>
+        /// Add headers to the request.
+        /// </summary>
+        /// <param name="key">The header key.</param>
+        /// <param name="value">The mediaType of the request header.</param>
+        /// <returns><see cref="RestRequest" /> for fluent chaining.</returns>
+        public new RestRequest<TBody> UseHeader(string key, string value)
+        {
+            base.UseHeader(key, value);
+            return this;
+        }
     }
 }
