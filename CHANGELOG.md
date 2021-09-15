@@ -7,6 +7,7 @@ Additional information on the libraries is located in the README.md
 
 ## [1.3.0]
 ### Added
+- new configurable `Alert` functionality for our `Telemetry`.
 - new `RestClientOptions.Builder` option: `.ConfigureMiddlewareAsync()`<br/>
   for adding asynchronous operations that should happen with every outgoing request.
 - Structured logging for `MessageAppException` has been added.  Exceptions can now utilize structured logging for the message payload.
