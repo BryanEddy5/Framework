@@ -8,14 +8,14 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Alerting
     public sealed class PubsubAlertingService : IPubsubAlertingService
     {
         /// <inheritdoc />
-        public bool IsPubsubAlert(AlertCondition clientCondition, bool success)
+        public bool IsPubsubAlert(AlertCondition<bool> clientCondition, bool success)
         {
             return clientCondition.Condition.Invoke(success);
         }
 
         /// <param name="clientCondition"></param>
         /// <inheritdoc />
-        public void ThrowIfAlertedAndNeedingException(AlertCondition clientCondition)
+        public void ThrowIfAlertedAndNeedingException(AlertCondition<bool> clientCondition)
         {
             MessageAppException exception = null!;
             if (clientCondition.ThrowOnFailure is true)

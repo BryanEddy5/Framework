@@ -58,7 +58,7 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// The alert condition to execute that determines whether or not the telemetry associated with this
         /// rest request should be an alert or not.
         /// </summary>
-        public AlertCondition? AlertCondition { get; private set; }
+        public AlertCondition<BaseRestResponse>? AlertCondition { get; private set; }
 
         /// <summary>
         /// Add query string parameters to create a query string for the request.
@@ -155,7 +155,7 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// property with the exception you want thrown. This will become the inner exception of the custom
         /// <see cref="AlertConditionMetException"/> if it gets thrown.
         /// </remarks>
-        public RestRequest ConfigureAlertCondition(AlertCondition alertCondition)
+        public RestRequest ConfigureAlertCondition(AlertCondition<BaseRestResponse> alertCondition)
         {
             AlertCondition = alertCondition;
             return this;

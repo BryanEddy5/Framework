@@ -17,21 +17,21 @@ namespace HumanaEdge.Webcore.Core.Rest.Alerting
         /// <returns>True if the response met an alert condition, false otherwise.</returns>
         bool IsHttpAlert(
             BaseRestResponse restResponse,
-            AlertCondition? requestCondition,
-            AlertCondition? clientCondition);
+            AlertCondition<BaseRestResponse>? requestCondition,
+            AlertCondition<BaseRestResponse>? clientCondition);
 
         /// <summary>
-        /// Inspects the default and request <see cref="AlertCondition"/>s to see if they required
+        /// Inspects the default and request <see cref="AlertCondition{T}"/>s to see if they required
         /// throwing exceptions upon an alert condition being met. If so, throw accordingly.
         /// </summary>
-        /// <param name="requestCondition">The <see cref="AlertCondition"/> from the request.</param>
-        /// <param name="clientCondition">The <see cref="AlertCondition"/> from the client.</param>
+        /// <param name="requestCondition">The <see cref="AlertCondition{T}"/> from the request.</param>
+        /// <param name="clientCondition">The <see cref="AlertCondition{T}"/> from the client.</param>
         /// <exception cref="AlertConditionMetException">
-        /// Thrown when an <see cref="AlertCondition"/> is met, and it requires throwing.
+        /// Thrown when an <see cref="AlertCondition{T}"/> is met, and it requires throwing.
         /// All additionally assigned exceptions are thrown as inner exceptions to the base alert exception.
         /// </exception>
         void ThrowIfAlertedAndNeedingException(
-            AlertCondition? requestCondition,
-            AlertCondition? clientCondition);
+            AlertCondition<BaseRestResponse>? requestCondition,
+            AlertCondition<BaseRestResponse>? clientCondition);
     }
 }

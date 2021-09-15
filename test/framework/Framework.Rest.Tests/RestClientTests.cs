@@ -16,10 +16,12 @@ using HumanaEdge.Webcore.Core.Common.Serialization;
 using HumanaEdge.Webcore.Core.Rest;
 using HumanaEdge.Webcore.Core.Rest.AccessTokens;
 using HumanaEdge.Webcore.Core.Rest.Alerting;
+using HumanaEdge.Webcore.Core.Rest.Resiliency;
 using HumanaEdge.Webcore.Core.Telemetry;
 using HumanaEdge.Webcore.Core.Testing;
 using HumanaEdge.Webcore.Framework.Rest.Resiliency;
 using HumanaEdge.Webcore.Framework.Rest.Tests.Stubs;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Polly;
 using Xunit;
@@ -68,6 +70,12 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         /// </summary>
         private readonly Mock<IHttpAlertingService> _mockHttpAlerting;
 
+        private readonly Mock<IPollyContextFactory> _pollyContextFactoryMock;
+
+        private readonly Mock<ILoggerFactory> _loggerFactory;
+
+        private readonly Mock<ILogger<IRestClient>> _logger;
+
         /// <summary>
         /// Common test setup.
         /// </summary>
@@ -79,11 +87,15 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             _mockMediaTypeFormatter = Moq.Create<IMediaTypeFormatter>();
             _mockMediaTypeFormatter.Setup(f => f.MediaTypes).Returns(new[] { MediaType.Json });
             var accessTokenCacheMock = Moq.Create<IAccessTokenCacheService>();
-            var pollyContextFactoryMock = Moq.Create<IPollyContextFactory>();
-            pollyContextFactoryMock.Setup(x => x.Create()).Returns(new Context());
+            _pollyContextFactoryMock = Moq.Create<IPollyContextFactory>();
             _fakeClientName = FakeData.Create<string>();
             var mockTelemetryFactory = Moq.Create<ITelemetryFactory>(MockBehavior.Loose);
-
+            _loggerFactory = Moq.Create<ILoggerFactory>();
+            _logger = Moq.Create<ILogger<IRestClient>>(MockBehavior.Loose);
+            _pollyContextFactoryMock.Setup(x => x.Create())
+                .Returns(
+                    new Context()
+                        .WithLogger(_loggerFactory.Object));
             _options = new RestClientOptions.Builder("https://localhost:5000")
                 .ConfigureHeader("Foo", "Bar")
                 .ConfigureTimeout(TimeSpan.FromSeconds(7))
@@ -109,7 +121,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                 _mockInternalClientFactory.Object,
                 _options,
                 new[] { _mockMediaTypeFormatter.Object },
-                pollyContextFactoryMock.Object,
+                _pollyContextFactoryMock.Object,
                 accessTokenCacheMock.Object,
                 _mockHttpAlerting.Object,
                 mockTelemetryFactory.Object);
@@ -162,11 +174,12 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             var fakeRestRequest = new RestRequest("/hello/world", HttpMethod.Get)
                 .UseAcceptHeader(MediaType.Json)
                 .UseHeader("test", "testing")
-                .ConfigureAlertCondition(new AlertCondition
-                {
-                    Condition = _ => true,
-                    ThrowOnFailure = true
-                });
+                .ConfigureAlertCondition(
+                    new AlertCondition<BaseRestResponse>
+                    {
+                        Condition = _ => true,
+                        ThrowOnFailure = true
+                    });
             var fakeHttpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK);
             SetUpHttpClientMock(
                 fakeHttpResponseMessage,
@@ -180,15 +193,17 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             SetupHttClientFactory();
             var convertedResponse = await ConvertToRestResponse<RestResponse>(fakeHttpResponseMessage);
             _mockHttpAlerting
-                .Setup(alert => alert.IsHttpAlert(
-                    convertedResponse,
-                    fakeRestRequest.AlertCondition,
-                    CommonRestAlertConditions.None()))
+                .Setup(
+                    alert => alert.IsHttpAlert(
+                        convertedResponse,
+                        fakeRestRequest.AlertCondition,
+                        CommonRestAlertConditions.None()))
                 .Returns(true);
             _mockHttpAlerting
-                .Setup(alert => alert.ThrowIfAlertedAndNeedingException(
-                    fakeRestRequest.AlertCondition,
-                    CommonRestAlertConditions.None()))
+                .Setup(
+                    alert => alert.ThrowIfAlertedAndNeedingException(
+                        fakeRestRequest.AlertCondition,
+                        CommonRestAlertConditions.None()))
                 .Throws(new AlertConditionMetException(fakeRestRequest.AlertCondition!.Exception));
 
             // act
@@ -255,6 +270,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                     r.Content == fakeContent);
             SetupHttClientFactory();
             await SetupRestResponseAlertingNone(fakeHttpResponseMessage, fakeRequest);
+            _loggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(_logger.Object);
 
             // act
             var actual = await _restClient.SendAsync(fakeRequest, CancellationTokenSource.Token);
@@ -399,6 +415,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                         CancellationTokenSource.Token))
                 .ReturnsAsync(fakeHttpResponseMessage);
             await SetupRestResponseAlertingNone(fakeHttpResponseMessage, fakeRequest);
+            _loggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(_logger.Object);
 
             // act
             var actual = await _restClient.SendAsync(fakeRequest, CancellationTokenSource.Token);
@@ -497,10 +514,11 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         {
             var convertedResponse = await ConvertToStreamResponse(fakeHttpResponseMessage);
             _mockHttpAlerting
-                .Setup(alert => alert.IsHttpAlert(
-                    convertedResponse,
-                    fakeRestRequest.AlertCondition,
-                    CommonRestAlertConditions.None()))
+                .Setup(
+                    alert => alert.IsHttpAlert(
+                        convertedResponse,
+                        fakeRestRequest.AlertCondition,
+                        CommonRestAlertConditions.None()))
                 .Returns(false);
         }
 
@@ -516,10 +534,11 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         {
             var convertedResponse = await ConvertToRestResponse<RestResponse>(fakeHttpResponseMessage);
             _mockHttpAlerting
-                .Setup(alert => alert.IsHttpAlert(
-                    convertedResponse,
-                    fakeRestRequest.AlertCondition,
-                    CommonRestAlertConditions.None()))
+                .Setup(
+                    alert => alert.IsHttpAlert(
+                        convertedResponse,
+                        fakeRestRequest.AlertCondition,
+                        CommonRestAlertConditions.None()))
                 .Returns(false);
         }
 
@@ -550,9 +569,12 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         private async Task<RestResponse> ConvertToRestResponse<TResponse>(
             HttpResponseMessage httpResponseMessage,
             TResponse expectedResponse = null)
-                where TResponse : class
+            where TResponse : class
         {
-            var responseBytes = await httpResponseMessage.Content.ReadAsByteArrayAsync();
+            var responseBytes =
+                httpResponseMessage.Content != null
+                    ? await httpResponseMessage.Content.ReadAsByteArrayAsync()
+                    : Array.Empty<byte>();
             var deserializer = new TestRestResponseDeserializer(_ => expectedResponse, responseBytes);
             return new RestResponse(
                 httpResponseMessage.IsSuccessStatusCode,
