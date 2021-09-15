@@ -6,8 +6,9 @@ namespace HumanaEdge.Webcore.Core.Common.Alerting
     /// <summary>
     /// The structure of an alert condition.
     /// </summary>
+    /// <typeparam name="T">The alert input type.</typeparam>
     [Equals(DoNotAddEqualityOperators = true)]
-    public sealed class AlertCondition
+    public sealed class AlertCondition<T>
     {
         /// <summary>
         /// A func to determine whether or not to toggle the alert flag on telemetry.
@@ -18,7 +19,7 @@ namespace HumanaEdge.Webcore.Core.Common.Alerting
         /// In the context of building a PubSub alert condition, the object? input is only
         /// a boolean representing the success of the publishing.
         /// </remarks>
-        public Func<object?, bool> Condition { get; set; } = null!;
+        public Func<T, bool> Condition { get; set; } = null!;
 
         /// <summary>
         /// Whether or not this alert will trigger a throw if it is met.

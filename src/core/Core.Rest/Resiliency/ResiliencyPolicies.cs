@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using Polly;
@@ -28,8 +29,19 @@ namespace HumanaEdge.Webcore.Core.Rest.Resiliency
                          TimeSpan.FromMilliseconds(jitterer.Next(0, 100)))
                 .ToArray();
             return Policy<BaseRestResponse>.HandleResult(
-                    r => (int)r.StatusCode >= 500)
-                .WaitAndRetryAsync(backOffIntervals);
+                    r => (int)r.StatusCode >= (int)HttpStatusCode.InternalServerError)
+                .WaitAndRetryAsync(
+                    backOffIntervals,
+                    onRetry: (outcome, duration, retryNumber, context) =>
+                    {
+                        var logger = context.GetLogger<IRestClient>();
+
+                        logger.LogInformation(
+                            "Http response status code {StatusCode}, retry attempt number {RetryNumber}. Retrying in {Duration}",
+                            retryNumber,
+                            outcome.Result.StatusCode,
+                            duration);
+                    });
         }
 
         /// <summary>

@@ -38,7 +38,7 @@ namespace HumanaEdge.Webcore.Core.Rest
             IAsyncPolicy<BaseRestResponse>[] resiliencePolicies,
             JsonSerializerSettings jsonSerializerSettings,
             (Func<CancellationToken, Task<string>> TokenFactory, string TokenKey)? bearerTokenFactory,
-            AlertCondition? alertCondition)
+            AlertCondition<BaseRestResponse>? alertCondition)
         {
             BaseUri = baseUri;
             DefaultHeaders = defaultHeaders;
@@ -112,7 +112,7 @@ namespace HumanaEdge.Webcore.Core.Rest
         /// The alert condition to execute that determines whether or not the telemetry associated with this
         /// rest request should be an alert or not.
         /// </summary>
-        public AlertCondition? AlertCondition { get; }
+        public AlertCondition<BaseRestResponse>? AlertCondition { get; }
 
         /// <summary>
         /// A builder pattern for generating <see cref="RestClientOptions" />.
@@ -162,7 +162,7 @@ namespace HumanaEdge.Webcore.Core.Rest
             /// <summary>
             /// The alert condition associated with the rest client itself.
             /// </summary>
-            private AlertCondition? _alertCondition;
+            private AlertCondition<BaseRestResponse>? _alertCondition;
 
             /// <summary>
             /// A builder pattern for fluently producing <see cref="RestClientOptions" />.
@@ -304,7 +304,7 @@ namespace HumanaEdge.Webcore.Core.Rest
             /// </summary>
             /// <param name="alertCondition">The alert condition to leverage for this client by default.</param>
             /// <returns>The builder instance, for fluent chaining.</returns>
-            public Builder ConfigureAlertCondition(AlertCondition alertCondition)
+            public Builder ConfigureAlertCondition(AlertCondition<BaseRestResponse> alertCondition)
             {
                 _alertCondition = alertCondition;
                 return this;

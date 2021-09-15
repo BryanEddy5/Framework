@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
 using HumanaEdge.Webcore.Core.PubSub;
+using HumanaEdge.Webcore.Core.PubSub.Alerting;
 using HumanaEdge.Webcore.Core.PubSub.Exceptions;
 using HumanaEdge.Webcore.Core.PubSub.Subscription;
+using HumanaEdge.Webcore.Framework.PubSub.Alerting;
 using HumanaEdge.Webcore.Framework.PubSub.Publication;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription.ExceptionHandling;
@@ -124,6 +126,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
             where TMessage : class
         {
             services.AddOptions();
+            services.AddSingleton<IPubsubAlertingService, PubsubAlertingService>();
             services.Configure<PublisherOptions>(typeof(TMessage).FullName, configurationSection);
             services.AddSingleton<IPublisherClient<TMessage>, PublisherClient<TMessage>>();
             services.AddSingleton<IPublisherClientFactory, PublisherClientFactory>();

@@ -12,9 +12,9 @@ namespace HumanaEdge.Webcore.Core.PubSub
     public interface IPublisherClient<in TMessage>
     {
         /// <summary>
-        /// The <see cref="AlertCondition"/> for this client.
+        /// The <see cref="AlertCondition{boo}"/> for this client.
         /// </summary>
-        AlertCondition ClientAlertCondition { get; }
+        AlertCondition<bool> ClientAlertCondition { get; }
 
         /// <summary>
         /// Publishes multiple messages to a topic.

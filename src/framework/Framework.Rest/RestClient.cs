@@ -273,8 +273,8 @@ namespace HumanaEdge.Webcore.Framework.Rest
                 var convertedResponse = await restResponseConverter(httpResponse);
                 isAlert = _httpAlerting.IsHttpAlert(
                     convertedResponse,
-                    restRequest.AlertCondition!,
-                    _options.AlertCondition!);
+                    restRequest.AlertCondition,
+                    _options.AlertCondition);
                 TrackTelemetry(
                     httpRequestMessage,
                     httpResponse,

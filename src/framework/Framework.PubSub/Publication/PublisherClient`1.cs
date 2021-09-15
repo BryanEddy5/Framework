@@ -61,9 +61,9 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Publication
         }
 
         /// <summary>
-        /// The <see cref="AlertCondition"/> for this publisher client.
+        /// The <see cref="AlertCondition{T}"/> for this publisher client.
         /// </summary>
-        public AlertCondition ClientAlertCondition { get; }
+        public AlertCondition<bool> ClientAlertCondition { get; }
 
         /// <inheritdoc />
         public async Task<IReadOnlyList<string>> PublishAsync(

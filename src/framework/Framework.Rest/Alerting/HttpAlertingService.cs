@@ -10,9 +10,9 @@ namespace HumanaEdge.Webcore.Framework.Rest.Alerting
     {
         /// <inheritdoc />
         public bool IsHttpAlert(
-            BaseRestResponse? restResponse,
-            AlertCondition? requestCondition,
-            AlertCondition? clientCondition)
+            BaseRestResponse restResponse,
+            AlertCondition<BaseRestResponse>? requestCondition,
+            AlertCondition<BaseRestResponse>? clientCondition)
         {
             if (requestCondition != null)
             {
@@ -29,8 +29,8 @@ namespace HumanaEdge.Webcore.Framework.Rest.Alerting
 
         /// <inheritdoc />
         public void ThrowIfAlertedAndNeedingException(
-            AlertCondition? requestCondition,
-            AlertCondition? clientCondition)
+            AlertCondition<BaseRestResponse>? requestCondition,
+            AlertCondition<BaseRestResponse>? clientCondition)
         {
             MessageAppException exception = null!;
             if (requestCondition != null)
