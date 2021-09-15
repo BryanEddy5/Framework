@@ -190,9 +190,72 @@ Example Telemetry for `Dependency`
             "ResultCode":"403",
             "HttpMethod":"GET"
          },
-         "Name":"HttpDependencyTelemetry"
+         "Name":"HttpDependencyTelemetry",
+         "Alert":true
       },
 ```
+
+### Alerting
+In addition to the above basic data that is tracked passively just by leveraging our various libraries within webcore, an additional functionality of
+"Alerting" is available to developers as a hook into the telemetry that will allow you to define API-or-service-specific conditions that will flip the boolean of `"Alert"` (as seen above).
+For example, if the API you're building returns non-standard http status codes in their responses (such as humana core's various APIs), you can add a new `AlertCondition` into the service used to
+communicate with those abnormal APIs that inspects the payload and looks for some conditions that you want to check for. If the condition is met, then the `Alert` boolean will be toggled to `true`.
+
+For your convenience, there are a couple default `AlertCondition`s to get you started that can be found in `src/core/Core.Rest/Alerting/CommonRestAlertconditions`.
+The `RestClient` by default has the `CommonRestAlertconditions.Standard()` applied to it, so all APIs using the `RestClient` will have this checking performed.
+
+If you wish to construct your own condition, you're probably trying to set it up inside a service. Here's a quick example of what that might look like:
+```cs
+public async Task ExecuteAsync(CancellationToken cancellationToken)
+{
+  var request = new RestRequest(
+    RelativePath,
+    HttpMethod.Get)
+      .ConfigureAlertCondition(MyAlert()); // overrides the RestClient's AlertCondition behavior with this one.
+      
+  var response = await _client.SendAsync(request, cancellationToken);
+  return response.ConvertTo<SomeWeirdTypeWithNonStandardResponseCodes>(); // no more null conversion check here!
+}
+
+internal AlertCondition<BaseRestResponse?> MyAlert() // the type here must match or be a derivitive of the condition's parameter.
+{
+  bool MyCondition(BaseRestResponse? response) // the required signature of a "Condition".
+  {
+    if (response == null) // if the response we got was null, then its an alert!
+    {
+      return true;
+    }
+    
+    // cast to the type of response based on service- options include: RestResponse, FileResponse
+    var restResponse = response as RestResponse;
+    if (!restResponse.IsSuccessful || restResponse.ResponseBytes == 0)
+    {
+      return true;
+    }
+    
+    // maybe it was 200 successful, but the API being integrated with puts the real code in the body...
+    var convertedResponse = restResponse.ConvertTo<SomeWeirdTypeWithNonStandardResponseCodes>();
+    if (convertedResponse.ResponseCode == "105") // some "fictitious" bad response code.
+    {
+      return true;
+    }
+    
+    // if everything checks out, no alerts!
+    return false; 
+  }
+  
+  return new AlertCondition<BaseRestResponse?>
+  {
+    Condition = MyCondition
+    ThrowOnFailure = false // optional, but if you set it to true, it'll throw if an alert condition was met.
+    Exception = new FailureToIntegrateException() // also optional, this will become an inner exception to the "AlertConditionMetException".
+  }
+}
+```
+
+One may ask: "Why would I need to do this? It just looks like another way to perform the validation we already have been doing!", and though that isn't incorrect, this also
+opens up the possibility of being able to build simple GCP alerting conditions (the ones arriving via outlook to the distro list) based on solely the `if (Alert == true)` instead of the other
+various possible metrics we currently have alerting setup for, effectively placing the control into the hands of developers.
 
 One of the main premises to the Telemetry implementation is fitting each API with consistent diagnostic outputs to create monitoring and alerting around.  The telemetry is currently emitted to the GCP logs where log based metrics can be created to help monitor the overall health of our API's.  
 It is highly advisable to have Telemetry incorporated for each integration point within an application, to reiterate the point from earlier, to help understand when a failure reported by a microservice is internal (the API has faulted) vs external (some service I've integrated with is the culprit).  This will increase the efficiency of troubleshooting and deugging.
@@ -204,7 +267,7 @@ An example would be configuring `ISecrestsService<TMessage>`
 This pattern is powerful for it reduces boilerplate code for each Options POCO and utilizes the Options Pattern for easily configuring environment specific settings, as the resources configuration setting typically change from environment-to-environment (Dev to SIT to UAT to Production).
 
 ## Secrets and Local Configuration Overrides
-Secrets should, without exception, never be stored in `appsettings.json` or `_enj.son`.  Storing secrets in those files and commiting them to the repo exposes sensitive information.
+Secrets should, without exception, never be stored in `appsettings.json` or `_env.son`.  Storing secrets in those files and commiting them to the repo exposes sensitive information.
 A centralized location has been created that allows for a developer to override configuration settings and store secrets for local development in `appsettings.overrides.json`.
 The launch settings for each service needs an `APP_ROOT` environment variable defined with the location of a directory for that microservice
 Steps to configure overrides:
