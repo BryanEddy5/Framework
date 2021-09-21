@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(TargetFramework31);$(TargetFramework50)</TargetFrameworks>
+    <AssemblyName>$(SolutionNamespaceRoot).Framework.Soap.Tests</AssemblyName>
+    <RootNamespace>$(AssemblyName)</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\framework\Framework.Soap\Framework.Soap.csproj" />
+  </ItemGroup>
+</Project>

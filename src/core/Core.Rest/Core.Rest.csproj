@@ -14,5 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Core.Common\Core.Common.csproj" />
     <ProjectReference Include="..\Core.Telemetry\Core.Telemetry.csproj" />
+    <ProjectReference Include="..\Core.Web\Core.Web.csproj" />
   </ItemGroup>
 </Project>

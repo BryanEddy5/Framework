@@ -1,5 +1,6 @@
 using HumanaEdge.Webcore.Core.Rest.AccessTokens;
 using HumanaEdge.Webcore.Core.Rest.Resiliency;
+using HumanaEdge.Webcore.Core.Web.Resiliency;
 using Microsoft.Extensions.Logging;
 using Polly;
 

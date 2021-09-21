@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(TargetFramework50);$(TargetFramework31)</TargetFrameworks>
+    <AssemblyName>$(SolutionNamespaceRoot).Core.Soap</AssemblyName>
+    <RootNamespace>$(AssemblyName)</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Equals.Fody" Version="$(EqualsFodyVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageReference Include="System.ServiceModel.Duplex" Version="$(SystemServiceModelVersion)" />
+    <PackageReference Include="System.ServiceModel.Http" Version="$(SystemServiceModelVersion)" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="$(SystemServiceModelVersion)" />
+    <PackageReference Include="System.ServiceModel.Security" Version="$(SystemServiceModelVersion)" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Common\Core.Common.csproj" />
+    <ProjectReference Include="..\Core.Web\Core.Web.csproj" />
+  </ItemGroup>
+</Project>

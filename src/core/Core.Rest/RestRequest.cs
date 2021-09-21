@@ -8,7 +8,7 @@ using Microsoft.Extensions.Primitives;
 namespace HumanaEdge.Webcore.Core.Rest
 {
     /// <summary>
-    /// Request meta data for an http request.
+    /// Request metadata for a RESTful http request.
     /// </summary>
     [Equals(DoNotAddEqualityOperators = true)]
     public class RestRequest
