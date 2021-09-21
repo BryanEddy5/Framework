@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using HumanaEdge.Webcore.Core.Web.Resiliency;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
@@ -29,7 +30,7 @@ namespace HumanaEdge.Webcore.Core.Rest.Resiliency
                          TimeSpan.FromMilliseconds(jitterer.Next(0, 100)))
                 .ToArray();
             return Policy<BaseRestResponse>.HandleResult(
-                    r => (int)r.StatusCode >= (int)HttpStatusCode.InternalServerError)
+                    r => r.StatusCode >= HttpStatusCode.InternalServerError)
                 .WaitAndRetryAsync(
                     backOffIntervals,
                     onRetry: (outcome, duration, retryNumber, context) =>

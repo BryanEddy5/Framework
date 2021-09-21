@@ -12,7 +12,9 @@
     <ProjectReference Include="../../../src/framework/Framework.Caching/Framework.Caching.csproj" />
     <ProjectReference Include="../../../src/core/Core.Logging/Core.Logging.csproj" />
     <ProjectReference Include="../Integration.CatFacts/Integration.CatFacts.csproj" />
+    <ProjectReference Include="..\..\..\src\framework\Framework.Soap\Framework.Soap.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Integration.Calculator\Integration.Calculator.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Storage.V1" Version="$(GoogleCloudStorageVersion)" />

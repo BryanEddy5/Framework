@@ -7,6 +7,7 @@ Additional information on the libraries is located in the README.md
 
 ## [1.3.0]
 ### Added
+- new pair of `SOAP` projects for building `SOAP`-ey integrations.
 - new configurable `Alert` functionality for our `Telemetry`.
 - new `RestClientOptions.Builder` option: `.ConfigureMiddlewareAsync()`<br/>
   for adding asynchronous operations that should happen with every outgoing request.

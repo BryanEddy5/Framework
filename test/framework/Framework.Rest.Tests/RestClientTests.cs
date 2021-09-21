@@ -19,6 +19,7 @@ using HumanaEdge.Webcore.Core.Rest.Alerting;
 using HumanaEdge.Webcore.Core.Rest.Resiliency;
 using HumanaEdge.Webcore.Core.Telemetry;
 using HumanaEdge.Webcore.Core.Testing;
+using HumanaEdge.Webcore.Core.Web.Resiliency;
 using HumanaEdge.Webcore.Framework.Rest.Resiliency;
 using HumanaEdge.Webcore.Framework.Rest.Tests.Stubs;
 using Microsoft.Extensions.Logging;
@@ -93,9 +94,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             _loggerFactory = Moq.Create<ILoggerFactory>();
             _logger = Moq.Create<ILogger<IRestClient>>(MockBehavior.Loose);
             _pollyContextFactoryMock.Setup(x => x.Create())
-                .Returns(
-                    new Context()
-                        .WithLogger(_loggerFactory.Object));
+                .Returns(new Context().WithLogger(_loggerFactory.Object));
             _options = new RestClientOptions.Builder("https://localhost:5000")
                 .ConfigureHeader("Foo", "Bar")
                 .ConfigureTimeout(TimeSpan.FromSeconds(7))

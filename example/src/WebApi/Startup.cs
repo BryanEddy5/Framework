@@ -6,6 +6,7 @@ using HumanaEdge.Webcore.Example.WebApi.Secrets;
 using HumanaEdge.Webcore.Framework.Encryption.Extensions;
 using HumanaEdge.Webcore.Framework.PubSub.Extensions;
 using HumanaEdge.Webcore.Framework.SecretsManager.Extensions;
+using HumanaEdge.Webcore.Framework.Soap.Extensions;
 using HumanaEdge.Webcore.Framework.Web;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +34,7 @@ namespace HumanaEdge.Webcore.Example.WebApi
         /// <returns>An named http client.</returns>
         protected override IHttpClientBuilder ConfigureAppServices(IServiceCollection services)
         {
+            services.AddSoapClient();
             services.AddKmsEncryption(Configuration.GetSection(nameof(EncryptionServiceOptions))); // Register Encryption Service
             services.AddSecret<FooSecret>(Configuration.GetSection("FooSecretsOptions")); // Register Secrets Manager Service
             services.AddSubscriptionHostedService<FooContract, FooSubscriptionHandler>(Configuration.GetSection("FooSubscriptionOptions")); // Register Subscription Handler

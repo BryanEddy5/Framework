@@ -49,6 +49,76 @@ Put values in appsettings.json to be injected into `FooOptions`
 }
 ```
 
+## Working with SOAP-ey Integrations
+There comes a time in every developer's life where they may need to build an integration with a SOAP service.
+Fortunately for you, you can leverage the `Core.Soap` and `Framework.Soap` projects to ease the pain of having
+to work with such an old and abandoned protocol in this day and age. Unfortunately, due to this age, there is
+a bit of a manual process you'll need to walk through in order to scaffold your integration and build it out.
+However, once built, you should be able to leverage it in a similar fashion to our `IRestClient`. Follow the
+below steps to get started in building your own SOAP integration leveraging webcore.
+
+### Prerequisites
+Despite this SDK multi-targeting `netcoreapp3.1` and `netstandard2.1` and `net5`:
+- your integration must be `net5`.
+- you must ensure you have a NET Core 2.1 SDK installed on your local machine.
+
+#### 1) Installing `dotnet-svcutil`
+This is a command line procedure, so you just need to run:
+```
+dotnet tool install --global dotnet-svcutil
+```
+Which installs the necessary tool for the next step.
+
+#### 2) Scaffolding the `Reference.cs`
+The `Reference.cs` is the contract file of which your `ISoapClient` will leverage. You'll want to navigate via CLI
+into the integration project, create a `/Client` directory, and run the following command in order to generate it:
+```
+dotnet-svcutil WSDL_SVC_URL_HERE
+```
+An example of the `WSDL_SVC_URL_HERE` as found in `/example` is `http://www.dneonline.com/calculator.asmx?wsdl`.
+
+#### 3) I'm sorry StyleCop, but you aren't needed here.
+You'll see that suddenly, there is a `/ServiceReference` directory in your `/Client` folder. Inside there, the
+`Reference.cs` and some other json file will be in there. In order to build the project to even use this file, you'll
+want to add a `#pragma warning disable CS1591` line in there, because XML comments likely won't be there from the server.
+At this point, your project should be build-able.
+
+#### 4) Construct the SOAPey client.
+Though this procedure is similar, this is where the difference between a RESTful client and SOAPey client starts to stand out.
+Like you do with the `RestClient`, you'll need to spin up a new class and make it inherit from `BaseSoapClient^2` (from `Core.Soap`)
+and make the constructor pass the requested parameters into the `base` class. However, this is where we start to deviate from your
+average `RestClient` implementation...
+
+#### 5) Leverage your inner Channel!
+When it comes to `RESTful` requests, you typically just need a url and to know the parameters/body of the contract in order
+to send the request. That is often derived externally from requirements found in a story or otherwise. In the land of SOAP, we instead
+prebuild that ahead of time and serve it to consumers of our SOAPey service as a `wsdl`. Integrating with a `wsdl` url as we
+did in step 2 will produce effective a list of contracts and methods available for you to use in your service. As such, you'll need to
+pass in the respective interface that contains those methods _into your `BaseSoapClient^2`_, and build corresponding methods to
+leverage them. This may be a tad confusing, so I strongly recommend you peek at the example that is built out in the `/example` solution
+provided alongside webcore to see what that all means.
+
+#### 6) My SOAPey client has methods?
+That is correct! Unlike the `RestClient` we all know and love, our `BaseSoapClient^2` knows what to do under the covers with the
+Channel, so all you need to do is use it and build some methods that correspond with your individual methods on the Channel. These should
+also exist on your own interface, so that you can leverage them in your services and write unit tests for them! Again you should review
+the `Integration.Calculator` project for a visual representation of how that looks if it doesn't make sense.
+
+#### 7) Configure the configuration.
+Now that you're setup with your very own `SOAP` client, you should have no problem leveraging that client's additional methods described in
+steps 5 and 6 to build services, but don't forget that similar to the `RestClient`, there is a configuration builder that can aid you in
+building the configuration object with some hand-holding. For example, if your `wsdl` url is the sample one listed above, then the base is this:
+```
+http://www.dneonline.com/calculator.asmx
+```
+Additionally, you can set the timeout for your particular client to be non-standard if you need it- but it does have its own default.
+
+### Concluding SOAPey Notes
+At this point, you should have a working SOAP client that interfaces with your chosen `wsdl`! Though every `wsdl` is a little different, and some
+even come with multiple interfaces (which mean you should have multiple clients), but yours should be working as-expected.
+A working example of a basic public SOAP `wsdl` lives in the `/example` project within webcore, and shows all the various features that the
+this implementation of a `SOAP` client supports- it is strongly encouraged to review it for clarifying details.
+
 ## Secrets Manager
 The Secrets Manager library retrieves stored secrets from GCP Secrets Manager and cache's in memory the secret once it is retrieved.  Since secrets are versioned in GCP there is no need for the cache to be refreshed for if the secret is updated in GCP so is the version.  The `appsettings.json` file will need to be updated with the new version and thus a new value will be pulled into the cache as the cache key is a composite key of the values for retrieving the key from Secrets Manager.
 Steps: Register secrets manager with the **secret** shape and **configuration** settings that point to the location and version of the secret.
@@ -119,7 +189,6 @@ Example: [Resource Not Found](example/src/Integration.CatFacts/Exceptions/NotFou
 
 You can also include a separate message to be logged that supports structured logging to enrich the log context with additional information.
 Example: [Structured Exception Logging](example/src/WebApi/Controllers/ExceptionController.cs)
-
 
 ## Pub/Sub Subscriber
 Creates an instance of `IHostedService` that pulls from a Pub/Sub Subscription.  The published message will not be acked or nacked until the process handler has completed the request.  If an exception is not thrown and the process completes then the message will be acked.  The default behavior for an exception thrown is to nack the message to be retried.  This flow can be controlled utilizing `PubSubException` and overriding the `Reply` property to `Ack` instead of `Nack` if the exception is not recoverable (meaning that the exception will persist with future attempts.)  The suggest course of action for exceptions thrown is to `Nack` the message and incorporate a Dead Letter Queue (in the form of another GCP Topic and subscription) to push the message to aftre it has failed after so many attempts (10 being the current max attempts in GCP).
@@ -305,6 +374,7 @@ Steps to configure overrides:
 }
 
 ```
+
 ## PII Logging and Masking
 The HumanaEdge.Webcore.Framework.Logging package itself includes the Destructurama package which allows attributed based masking for PII-sensitive properties of any objects that are serialized via Serilog into Stackdriver. So, for example, one can safely log an Entity object for diagnostic purposes into Stackdriver because all the PII-sensitive properties will be masked appropriately. Here is a complete example (as of 2020-12-31) of supported masks that can be applied to properties.
 
