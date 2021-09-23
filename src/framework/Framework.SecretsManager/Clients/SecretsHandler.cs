@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using HumanaEdge.Webcore.Core.SecretsManager;
 using HumanaEdge.Webcore.Core.SecretsManager.Contracts;
 
 namespace HumanaEdge.Webcore.Framework.SecretsManager.Clients
@@ -18,15 +19,15 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Clients
         /// <summary>
         /// A client for retrieving the stored secret.
         /// </summary>
-        private readonly IInternalSecretsClient _internalSecretsClient;
+        private readonly ISecretsClient _secretsClient;
 
         /// <summary>
         /// Designated ctor.
         /// </summary>
-        /// <param name="internalSecretsClient">The client for retrieving secrets.</param>
-        public SecretsHandler(IInternalSecretsClient internalSecretsClient)
+        /// <param name="secretsClient">The client for retrieving secrets.</param>
+        public SecretsHandler(ISecretsClient secretsClient)
         {
-            _internalSecretsClient = internalSecretsClient;
+            _secretsClient = secretsClient;
         }
 
         /// <inheritdoc />
@@ -38,7 +39,7 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Clients
                 return (TSecret)secret;
             }
 
-            secret = await _internalSecretsClient.GetAsync<TSecret>(secretsKey, cancellationToken);
+            secret = await _secretsClient.GetAsync<TSecret>(secretsKey, cancellationToken);
             _cache.TryAdd(typeof(TSecret), secret);
 
             return (TSecret)secret;

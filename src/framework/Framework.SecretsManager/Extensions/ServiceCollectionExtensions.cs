@@ -13,6 +13,17 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Extensions
     public static class ServiceCollectionExtensions
     {
         /// <summary>
+        /// Registers <see cref="ISecretsClient"/> for dependency injection.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        /// <returns>The same service collection for fluent chaining.</returns>
+        public static IServiceCollection AddSecretsClient(
+            this IServiceCollection services)
+        {
+            return services.AddSingleton<ISecretsClient, SecretsClient>();
+        }
+
+        /// <summary>
         /// Adds a secrets service for retrieving a particular secret from Secrets Manager.
         /// </summary>
         /// <param name="services">The service collection.</param>
@@ -67,7 +78,7 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Extensions
         {
             services.AddSingleton<ISecretsService<TSecret>, SecretsService<TSecret>>();
             services.AddSingleton<ISecretsHandler, SecretsHandler>();
-            return services.AddSingleton<IInternalSecretsClient, InternalSecretsClient>();
+            return services.AddSingleton<ISecretsClient, SecretsClient>();
         }
     }
 }

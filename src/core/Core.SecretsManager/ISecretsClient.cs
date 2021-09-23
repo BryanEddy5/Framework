@@ -3,12 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.SecretsManager.Contracts;
 
-namespace HumanaEdge.Webcore.Framework.SecretsManager.Clients
+namespace HumanaEdge.Webcore.Core.SecretsManager
 {
     /// <summary>
     /// A client for accessing stored secrets.
     /// </summary>
-    internal interface IInternalSecretsClient
+    public interface ISecretsClient
     {
         /// <summary>
         /// Retrieves a secret based on the secret configuration options.
@@ -18,6 +18,14 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Clients
         /// <typeparam name="TSecret">The secret's object shape.</typeparam>
         /// <returns>The secret object.</returns>
         public Task<TSecret> GetAsync<TSecret>(SecretsKey secretsOptions, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Retrieves the byte content of a secret.
+        /// </summary>
+        /// <param name="secretsOptions">The secret request for retrieving a secret payload.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An array of bytes of the secret.</returns>
+        Task<byte[]> GetBytesAsync(SecretsOptions secretsOptions, CancellationToken cancellationToken);
 
         /// <summary>
         /// Retrieves a secret based on the secret configuration options.

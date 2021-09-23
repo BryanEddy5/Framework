@@ -32,12 +32,12 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Tests
             // act
             var secretsService = serviceProvider.GetRequiredService<ISecretsService<FakeSecret>>();
             var secretsHandler = serviceProvider.GetRequiredService<ISecretsHandler>();
-            var internalSecretsClient = serviceProvider.GetRequiredService<IInternalSecretsClient>();
+            var internalSecretsClient = serviceProvider.GetRequiredService<ISecretsClient>();
 
             // assert
             Assert.IsAssignableFrom<ISecretsService<FakeSecret>>(secretsService);
             Assert.IsAssignableFrom<ISecretsHandler>(secretsHandler);
-            Assert.IsAssignableFrom<IInternalSecretsClient>(internalSecretsClient);
+            Assert.IsAssignableFrom<ISecretsClient>(internalSecretsClient);
         }
     }
 }

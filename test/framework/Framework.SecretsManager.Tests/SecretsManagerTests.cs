@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
+using HumanaEdge.Webcore.Core.SecretsManager;
 using HumanaEdge.Webcore.Core.SecretsManager.Contracts;
 using HumanaEdge.Webcore.Core.Testing;
 using HumanaEdge.Webcore.Framework.SecretsManager.Clients;
@@ -18,14 +19,14 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Tests
     /// </summary>
     public class SecretsManagerTests : BaseTests, IDisposable
     {
-        private Mock<IInternalSecretsClient> _internalSecretsClientMock;
+        private Mock<ISecretsClient> _internalSecretsClientMock;
 
         /// <summary>
         /// Common test setup.
         /// </summary>
         public SecretsManagerTests()
         {
-            _internalSecretsClientMock = Moq.Create<IInternalSecretsClient>();
+            _internalSecretsClientMock = Moq.Create<ISecretsClient>();
         }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Tests
             var secretsHandler = new SecretsHandler(_internalSecretsClientMock.Object);
             var fakeSecretsKey = FakeData.Create<SecretsKey>();
             var expected = FakeData.Create<FakeSecret>();
-            Expression<Func<IInternalSecretsClient, Task<FakeSecret>>> expression = x =>
+            Expression<Func<ISecretsClient, Task<FakeSecret>>> expression = x =>
                 x.GetAsync<FakeSecret>(fakeSecretsKey, CancellationTokenSource.Token);
             _internalSecretsClientMock.Setup(expression).ReturnsAsync(expected);
 
