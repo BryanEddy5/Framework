@@ -29,6 +29,9 @@ namespace HumanaEdge.Webcore.Example.Domain
 
         private readonly ILogger<CatFactsService> _logger;
 
+        private readonly DistributedCacheEntryOptions _cacheOptions =
+            new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(10));
+
         /// <summary>
         /// ctor.
         /// </summary>
@@ -57,17 +60,16 @@ namespace HumanaEdge.Webcore.Example.Domain
                 return new CatFact("Cat's toes are called beans");
 #endif
             };
-
             if (forceRefresh)
             {
                 _logger.LogInformation("Force Refresh cache.");
                 var request = await catFactory.Invoke(cancellationToken);
-                await _cache.SetAsync(CatFactsKey, request!, cancellationToken);
+                await _cache.SetAsync(CatFactsKey, request!, cancellationToken, _cacheOptions);
                 return request;
             }
 
             _logger.LogInformation("Get or Create cache");
-            return await _cache.GetOrCreateAsync(CatFactsKey, catFactory, cancellationToken);
+            return await _cache.GetOrCreateAsync(CatFactsKey, catFactory, cancellationToken, _cacheOptions);
         }
     }
 }

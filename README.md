@@ -587,6 +587,7 @@ Here are the steps outlined to leverage this library.
 
 There are also some custom extension methods in `DistributedCacheExtensions.cs` that will handle serializing and deserializing the cache payload as well as combine the cache hit/miss retrieval into a single method `GetOrCreateAsync`. 
 
+###_Beware_ that if a cache invalidation policy is not set then the cache will never expire. A lack of setting an expiration means that we do not want the cache to ever expire.
 ## Packing Webcore and restoring it locally
 In order to perform development locally for Webcore libraries it is necessary to build, pack, and restore the libraries from your local machine. To simplify this process perform the following steps.
 
