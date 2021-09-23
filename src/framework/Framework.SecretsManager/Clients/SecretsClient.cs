@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Google.Cloud.SecretManager.V1;
 using HumanaEdge.Webcore.Core.Common.Serialization;
+using HumanaEdge.Webcore.Core.SecretsManager;
 using HumanaEdge.Webcore.Core.SecretsManager.Contracts;
 using HumanaEdge.Webcore.Core.SecretsManager.Converters;
 using Newtonsoft.Json;
@@ -12,7 +13,7 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Clients
 {
     /// <inheritdoc />
     [ExcludeFromCodeCoverage]
-    internal sealed class InternalSecretsClient : IInternalSecretsClient
+    internal sealed class SecretsClient : ISecretsClient
     {
         private static SecretManagerServiceClient? _client;
 
@@ -33,6 +34,14 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Clients
             var result = await GetSecret(secretsOptions.ToSecretsKey(), cancellationToken);
 
             return new MemoryStream(result.Payload.Data.ToByteArray());
+        }
+
+        /// <inheritdoc />
+        public async Task<byte[]> GetBytesAsync(SecretsOptions secretsOptions, CancellationToken cancellationToken)
+        {
+            var result = await GetSecret(secretsOptions.ToSecretsKey(), cancellationToken);
+
+            return result.Payload.Data.ToByteArray();
         }
 
         private async Task<AccessSecretVersionResponse> GetSecret(

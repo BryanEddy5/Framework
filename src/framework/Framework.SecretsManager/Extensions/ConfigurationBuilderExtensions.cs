@@ -47,7 +47,7 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Extensions
                     throw new ArgumentNullException($"The environment variable {SecretNameEnvironmentVariable} is null");
                 }
 
-                var stream = new InternalSecretsClient().GetAsync(
+                var stream = new SecretsClient().GetAsync(
                         new SecretsOptions
                         {
                             ProjectId = secretProject,
