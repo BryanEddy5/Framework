@@ -54,11 +54,9 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription.ExceptionHandling
                 var applicationName = exceptionStorage.ApplicationName;
                 if (bucket is null || project is null || applicationName is null)
                 {
-                    _logger.LogError(
-                        "The exception cannot be published because either the {BucketName}, {ProjectId}, or {ApplicationName} is null",
-                        bucket,
-                        project,
-                        applicationName);
+                    _logger.LogWarning(
+                        "The exception cannot be published because either the bucket name,  project Id, or application Name is null in the configuration {@Configuration}",
+                        exceptionStorage);
                     return;
                 }
 
