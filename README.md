@@ -216,6 +216,52 @@ Example of configuration in `appsettings.json`
   },
 ```
 
+#### Pub/Sub Subscriber Model State Validation
+Developers can now perform model state validation on their subscription message. To do so you must simply create a validator to validate your message type and then you are done. Use the Di Validactor decorator to register the validator.
+Messages that are not of a valid model state will be `Ack'd` so they are no longer retried. An error log entry will be generated with the errors of the model state validation. If configured, the publshed bucket message will also contain the model state validation errors.
+
+My Pub/Sub Subscription message.
+```
+namespace HumanaEdge.Webcore.Example.WebApi.PubSub
+{
+    /// <summary>
+    /// A subscription contract the mirrors the shape of the expected Published Topic Message in GCP.
+    /// </summary>
+    public class FooContract
+    {
+        /// <summary>
+        /// Some field in the contract.
+        /// </summary>
+        public string? Name { get; set; }
+    }
+}
+```
+
+My validator for the message.
+```
+using FluentValidation;
+using HumanaEdge.Webcore.Core.DependencyInjection.Validators;
+
+namespace HumanaEdge.Webcore.Example.WebApi.PubSub.Validators
+{
+    /// <summary>
+    /// Here's some Foo.
+    /// </summary>
+    [Validator(typeof(FooContract))]
+    public class FooContractValidator : AbstractValidator<FooContract>
+    {
+        /// <summary>
+        /// ctor.
+        /// </summary>
+        public FooContractValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+        }
+    }
+}
+
+```
+Now the exception `InvalidModelStateException` will be thrown and the aforementioned data will be captured.
 
 #### Pub/Sub Exception
 The subscription allows for implementations [PubSubException](src/core/Core.PubSub/PubSubException.cs) to be thrown with a [Reply](src/core/Core.PubSub/Reply.cs) either `Ack`ing (completing the transaction) or `Nack`ing (the message is to be retried) the message.
