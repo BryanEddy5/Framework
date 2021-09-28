@@ -46,6 +46,33 @@ namespace HumanaEdge.Webcore.Core.Rest.Resiliency
         }
 
         /// <summary>
+        /// Creates a resiliency policy with circuit breaker.
+        /// </summary>
+        /// <param name="durationOfBreakInTimeSpan">The number of seconds or minutes between breaks.</param>
+        /// <param name="eventsAllowedBeforeBreaking">The number of events allowed before breaking.</param>
+        /// <returns> The resilience policy. </returns>
+        public static IAsyncPolicy<BaseRestResponse> CircuitBreaker(
+            TimeSpan durationOfBreakInTimeSpan,
+            int eventsAllowedBeforeBreaking) => Policy<BaseRestResponse>.HandleResult(
+                r => r.StatusCode >= HttpStatusCode.InternalServerError)
+                .CircuitBreakerAsync(
+                    handledEventsAllowedBeforeBreaking: eventsAllowedBeforeBreaking,
+                    durationOfBreak: durationOfBreakInTimeSpan,
+                    onBreak: (result, state, duration, context) =>
+                    {
+                        var logger = context.GetLogger<IRestClient>();
+                        logger.LogInformation("Circuit breaker state is now {State}", state.ToString());
+                    },
+                    onReset: (context) =>
+                    {
+                        var logger = context.GetLogger<IRestClient>();
+                        logger.LogInformation("Circuit breaker has been reset and is in {State}.", "closed");
+                    },
+                    onHalfOpen: () =>
+                    {
+                    });
+
+        /// <summary>
         /// Creates a resiliency policy for refreshing a token on a 401 response.
         /// </summary>
         /// <param name="tokenFactory">A factory for creating the token.</param>

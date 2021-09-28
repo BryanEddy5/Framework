@@ -178,7 +178,11 @@ namespace HumanaEdge.Webcore.Core.Rest
                 _jsonSettings = StandardSerializerConfiguration.Settings;
                 _resiliencePolicy =
                     new List<IAsyncPolicy<BaseRestResponse>>(
-                        new[] { ResiliencyPolicies.RetryWithExponentialBackoff(6) });
+                        new[]
+                        {
+                            ResiliencyPolicies.CircuitBreaker(TimeSpan.FromSeconds(5), 4),
+                            ResiliencyPolicies.RetryWithExponentialBackoff(6)
+                        });
                 _alertCondition = CommonRestAlertConditions.Standard();
             }
 

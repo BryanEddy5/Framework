@@ -32,7 +32,7 @@ namespace HumanaEdge.Webcore.Core.Rest.Resiliency
         /// <returns>The original rest request.</returns>
         public static RestRequest GetRestRequest(this Context context)
         {
-            if (context.TryGetValue(RestRequestKey, out object restRequest))
+            if (context.TryGetValue(RestRequestKey, out var restRequest))
             {
                 return (restRequest as RestRequest)!;
             }
@@ -59,7 +59,7 @@ namespace HumanaEdge.Webcore.Core.Rest.Resiliency
         /// <returns>The access token cache.</returns>
         public static IAccessTokenCacheService GetAccessTokenCache(this Context context)
         {
-            if (context.TryGetValue(AccessTokenStorageKey, out object accessTokenCache))
+            if (context.TryGetValue(AccessTokenStorageKey, out var accessTokenCache))
             {
                 return (accessTokenCache as IAccessTokenCacheService)!;
             }
