@@ -15,6 +15,7 @@ Additional information on the libraries is located in the README.md
 - `BadRequestResponse` for deserializing 400 Bad requests.
 - GCP Pub/Sub Susbcribers - Maximum number of retries of a message for the subscription to prevent immediate and almost infinite number of retries that is the default behavior of GCP Subscriptions.
 - GCP Pub/Sub Subscribers - All exceptions are now published to a bucket via a middleware implementation.
+- GCP Pub/Sub Susbcribers - Can now perform model state validation on their `TMessage` (subscription message) .
 
 ### Changed
 - Upgraded all libraries to multi-target both .Net 5.0 and .Net 3.1 or .Net Standard 2.1.

@@ -60,7 +60,7 @@ namespace HumanaEdge.Webcore.Core.Rest.Alerting
                     return true;
                 }
 
-                if ((int)response.StatusCode > 400 && (int)response.StatusCode != 404)
+                if ((int)response.StatusCode >= 400 && (int)response.StatusCode != 404)
                 {
                     return true;
                 }
