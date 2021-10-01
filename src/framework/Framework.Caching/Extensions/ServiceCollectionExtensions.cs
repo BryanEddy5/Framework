@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography.X509Certificates;
 using HumanaEdge.Webcore.Core.Caching.Options;
 using HumanaEdge.Webcore.Framework.Caching.Services;
 using Microsoft.Extensions.Configuration;
@@ -43,14 +44,26 @@ namespace HumanaEdge.Webcore.Core.Caching.Extensions
                 return services.AddDistributedMemoryCache();
             }
 
+            var serviceProvider = services.BuildServiceProvider();
             var certificateValidator =
-                services.BuildServiceProvider().GetService<ICertificateValidationFactory>()!.Create();
+                serviceProvider.GetService<ICertificateValidationFactory>()!.Create();
 
             return services.AddStackExchangeRedisCache(
                 options =>
                 {
                     options.ConfigurationOptions = ConfigurationOptions.Parse(configurationSection["ConnectionString"]);
+                    options.ConfigurationOptions.Ssl = true;
                     options.ConfigurationOptions.CertificateValidation += certificateValidator;
+                    options.ConfigurationOptions.CertificateSelection += (
+                        sender,
+                        host,
+                        certificates,
+                        remoteCertificate,
+                        issuers) =>
+                    {
+                        var certificate = serviceProvider.GetService<ICertificateAuthorityService>()!.GetCertificate();
+                        return new X509Certificate2(certificate);
+                    };
                 });
         }
     }

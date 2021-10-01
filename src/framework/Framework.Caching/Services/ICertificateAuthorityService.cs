@@ -9,6 +9,6 @@ namespace HumanaEdge.Webcore.Framework.Caching.Services
         /// Retrieves the certificate authority.
         /// </summary>
         /// <returns>The base 64 encoded cert.</returns>
-        string GetCertificate();
+        byte[] GetCertificate();
     }
 }
