@@ -34,6 +34,7 @@ namespace HumanaEdge.Webcore.Framework.Logging.Tests
         public PiiLoggingTests(WebApplicationFactory<Startup> factory)
         {
             _factory = factory;
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
         }
 
         /// <summary>

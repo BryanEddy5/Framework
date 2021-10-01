@@ -32,7 +32,7 @@ namespace HumanaEdge.Webcore.Framework.Caching.Services
         /// Retrieves the certificate authority.
         /// </summary>
         /// <returns>The base 64 encoded cert.</returns>
-        public string GetCertificate()
+        public byte[] GetCertificate()
         {
             _client ??= SecretManagerServiceClient.Create();
 
@@ -41,7 +41,7 @@ namespace HumanaEdge.Webcore.Framework.Caching.Services
                         _options.CurrentValue.CertificateAuthority.ProjectId,
                         _options.CurrentValue.CertificateAuthority.SecretId,
                         SecretVersionId))
-                .Payload.Data.ToBase64();
+                .Payload.Data.ToByteArray();
         }
     }
 }
