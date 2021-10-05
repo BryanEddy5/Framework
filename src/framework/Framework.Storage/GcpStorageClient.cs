@@ -28,7 +28,7 @@ namespace HumanaEdge.Webcore.Framework.Storage
                 filename,
                 contentType,
                 stream,
-                new UploadObjectOptions { UserProject = options.GcpProject },
+                null,
                 cancellationToken);
         }
     }
