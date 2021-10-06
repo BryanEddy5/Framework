@@ -6,6 +6,7 @@ using HumanaEdge.Webcore.Framework.DependencyInjection.Extensions;
 using HumanaEdge.Webcore.Framework.Logging.Extensions;
 using HumanaEdge.Webcore.Framework.PubSub.Extensions;
 using HumanaEdge.Webcore.Framework.Rest.Extensions;
+using HumanaEdge.Webcore.Framework.Soap.Extensions;
 using HumanaEdge.Webcore.Framework.Swagger.Extensions;
 using HumanaEdge.Webcore.Framework.Telemetry;
 using HumanaEdge.Webcore.Framework.Web.Exceptions;
@@ -124,6 +125,7 @@ namespace HumanaEdge.Webcore.Framework.Web
             services.AddTracing(Configuration, httpClientBuilder);
 
             services.AddRestClient();
+            services.AddSoapClient();
             services.AddMemoryCache();
             services.AddApplicationTelemetry();
             services.AddPubSub();
