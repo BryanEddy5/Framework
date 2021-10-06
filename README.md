@@ -112,6 +112,14 @@ building the configuration object with some hand-holding. For example, if your `
 http://www.dneonline.com/calculator.asmx
 ```
 Additionally, you can set the timeout for your particular client to be non-standard if you need it- but it does have its own default.
+Lastly, you'll need to add this one-liner to your `Startup.cs` to add the required services to operate in SOAPey ways:
+```
+// ... other services collection additions...
+
+services.AddSoapClient();
+
+// ... more service collection additions...
+```
 
 ### Concluding SOAPey Notes
 At this point, you should have a working SOAP client that interfaces with your chosen `wsdl`! Though every `wsdl` is a little different, and some
