@@ -34,7 +34,6 @@ namespace HumanaEdge.Webcore.Example.WebApi
         /// <returns>An named http client.</returns>
         protected override IHttpClientBuilder ConfigureAppServices(IServiceCollection services)
         {
-            services.AddSoapClient();
             services.AddKmsEncryption(Configuration.GetSection(nameof(EncryptionServiceOptions))); // Register Encryption Service
             services.AddSecret<FooSecret>(Configuration.GetSection("FooSecretsOptions")); // Register Secrets Manager Service
             services.AddSubscriptionHostedService<FooContract, FooSubscriptionHandler>(Configuration.GetSection("FooSubscriptionOptions")); // Register Subscription Handler
