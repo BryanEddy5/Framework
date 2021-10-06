@@ -30,7 +30,7 @@ namespace HumanaEdge.Webcore.Example.Domain
         private readonly ILogger<CatFactsService> _logger;
 
         private readonly DistributedCacheEntryOptions _cacheOptions =
-            new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(10));
+            new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(20));
 
         /// <summary>
         /// ctor.
@@ -53,7 +53,7 @@ namespace HumanaEdge.Webcore.Example.Domain
         {
             Func<CancellationToken, Task<CatFact?>> catFactory = async (ct) =>
             {
-                await Task.Delay(TimeSpan.FromSeconds(10), ct);
+                await Task.Delay(TimeSpan.FromSeconds(3), ct);
 #if NET5_0_OR_GREATER
                 return new CatFact { Text = "Cat's toes are called beans" };
 #else

@@ -23,8 +23,9 @@
       "launchUrl": "",
       "applicationUrl": "https://localhost:6001;http://localhost:6000",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "test",
-        "APP_ROOT": "/Users/%USER%/dev/approots/webcore"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "APP_ROOT": "/Users/%USER%/dev/approots/webcore",
+        "USE_IN_MEMORY_CACHE": "true"
       }
     },
     "windows": {
@@ -33,8 +34,9 @@
       "launchUrl": "",
       "applicationUrl": "https://localhost:6001;http://localhost:6000",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "test",
-        "APP_ROOT": "%USERPROFILE%/dev/approots/webcore"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "APP_ROOT": "%USERPROFILE%/dev/approots/webcore",
+        "USE_IN_MEMORY_CACHE": "true"
       }
     }
   }
