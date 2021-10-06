@@ -1,22 +1,25 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.Logging;
 
 namespace HumanaEdge.Webcore.Framework.Caching.Services
 {
     /// <inheritdoc />
+    [ExcludeFromCodeCoverage]
     internal sealed class CertificateValidationFactory
         : ICertificateValidationFactory
     {
-        private readonly ICertificateAuthorityService _certificateAuthorityService;
+        private readonly ILogger<CertificateValidationFactory> _logger;
 
         /// <summary>
         /// ctor.
         /// </summary>
-        /// <param name="certificateAuthorityService">A service for getting the certificate.</param>
-        public CertificateValidationFactory(ICertificateAuthorityService certificateAuthorityService)
+        /// <param name="logger">App logger. </param>
+        public CertificateValidationFactory(ILogger<CertificateValidationFactory> logger)
         {
-            _certificateAuthorityService = certificateAuthorityService;
+            _logger = logger;
         }
 
         /// <inheritdoc/>
@@ -28,16 +31,20 @@ namespace HumanaEdge.Webcore.Framework.Caching.Services
                 chain,
                 sslPolicyErrors) =>
             {
-                if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
+                if ((sslPolicyErrors & SslPolicyErrors.RemoteCertificateChainErrors) ==
+                    SslPolicyErrors.RemoteCertificateChainErrors)
                 {
-                    var certificateAuthority = _certificateAuthorityService.GetCertificate();
-
-                    var redisCertificateAuthority = new X509Certificate2(certificateAuthority);
+                    var redisCertificateAuthority = (X509Certificate2)certificate!;
 
                     var caFound = chain != null &&
                                   chain.ChainElements
                                       .Cast<X509ChainElement>()
                                       .Any(x => x.Certificate.Thumbprint == redisCertificateAuthority.Thumbprint);
+                    if (!caFound)
+                    {
+                        _logger.LogError(
+                            "Certificate chain could not be verified. Double check that the certificate authority in the secret matches the redis instance");
+                    }
 
                     return caFound;
                 }

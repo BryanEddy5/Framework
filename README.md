@@ -624,7 +624,7 @@ The overrides file then should be in `/Users/%USER%/dev/approots/new-solution-na
 
 ## Distributed Caching - Redis
 Webcore utilizes [StackExchange.Redis](https://stackexchange.github.io/StackExchange.Redis/) as a redis client for caching. This is hidden behind the `IDistributedCache` interface.
-The wrapper for service registration will set the implementation of `IDistributedCache` to `MemoryDistributedCache` when the .Net Core environment is set to `Development` to allow for developers
+The wrapper for service registration will set the implementation of `IDistributedCache` to `MemoryDistributedCache` when the environment variable `USE_IN_MEMORY_CACHE` is set to `"true"` (or literally any value) to allow for developers
 to quickly setup their local development environment by using in memory caching when the application is run locally.
 Here are the steps outlined to leverage this library.
 1. [Create the appsettings configuration](example/src/WebApi/appsettings.json#L56)
@@ -666,3 +666,27 @@ Now when you restore your application that consumes Webcore locally it will util
 - Now that we have ran this in the background we need to refresh our IDE to pick up the changes
     - Right click on the solution in your IDE and unload the packages
     - Then reload the packages
+
+## Webcore & Components Versioning
+Webcore utilizes semver -[semantic versioning](https://semver.org/) for versioning the libraries contained within. Creating a change that breaks backwards compatibility should be avoided as much as possible. 
+A decision to implement a feature that breaks backwards compatibility should not be taken lightly as each service that utilizes webcore (read all) will now have to be remediated to leverage the next iteration. 
+Without tooling to auto-implement these changes, this could result in a massive amount of technical debt as each affected service will have to be updated.
+
+To increase the velocity of development, API's leveraging webcore reference the latest pre-release version utilizing `version.props`. This allows any new changes to be picked up by Webcore's consumers simply by running the pipeline. 
+Developers should avoid adding webcore versions (or any nuget package versions) with hardcoded values. All versions should be stored in `version.props` to ensure consistency with the versions of an package being used accross all projects in that code base.
+
+Webcore utilizes pre-release channels and a build timestamp for generating the pre-releases following the conventions of semver in [spec-item-9](https://semver.org/#spec-item-9) and [spec-item-10](https://semver.org/#spec-item-10). 
+Nuget utilizes semver for versioning and will identify the channels in the appropriate sequence (descending alphabetically) 
+The channel generated is determined by the branch. 
+Structure: `Major.Minor.Patch-Channel-BuildTimestamp` where `-Channel-BuildTimestamp` indicate a prerelease. Official release preclude the suffix.
+1. master - alpha (pre release and most unstable)
+2. release-* - rc (release candidate - a stable release candidate)
+3. production - no channel (the official release of a version)
+
+The use of build timestamp metadata is to follow the rule of having immutable releases. This allows us to iterate quickly with our libraries, adhere to semver best practices, and not have to update our consumers versioning. See additional documentation [here](https://docs.microsoft.com/en-us/nuget/create-packages/prerelease-packages).
+
+For Interop owned API's we leverage the pre-releases in our API's to allow for us to move quickly. Another reason for utilizing pre-releases in Interop owned API's allows for bugs to be found while exercising the latest changes within the API's. We should always test our code and identify edge cases 
+but exercising the code in real API's helps to further vet the Webcore libraries.
+
+For Non-Interop owned API's it is suggested to leverage the latest stable releases (either -rc or official releases) to avoid bugs introduced in the least stable branch. Thus Interop should have a release cadence of new official versions for outside consumers.
+This cadence can be after a major feature release or after a period of time once small features start to accumulate.

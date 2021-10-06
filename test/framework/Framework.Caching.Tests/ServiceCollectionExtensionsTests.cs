@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using HumanaEdge.Webcore.Core.Caching.Extensions;
 using HumanaEdge.Webcore.Core.Caching.Options;
 using HumanaEdge.Webcore.Core.Testing;
+using HumanaEdge.Webcore.Framework.Caching.Extensions;
 using HumanaEdge.Webcore.Framework.Caching.Services;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
@@ -25,10 +25,12 @@ namespace HumanaEdge.Webcore.Framework.Caching.Tests
         public void AddDistributedCacheDevelopmentTest()
         {
             // arrange
-            var root = Setup(ServiceCollectionExtensions.DevelopmentEnvironment);
+            var root = Setup("true");
 
             // act
-            var serviceProvider = new ServiceCollection().AddDistributedCache(root.GetSection(nameof(CacheOptions)))
+            var serviceProvider = new ServiceCollection()
+                .AddLogging()
+                .AddDistributedCache(root.GetSection(nameof(CacheOptions)))
                 .BuildServiceProvider();
             var distributedCache = serviceProvider.GetRequiredService<IDistributedCache>();
             var certificateAuthorityService = serviceProvider.GetRequiredService<ICertificateAuthorityService>();
@@ -46,9 +48,6 @@ namespace HumanaEdge.Webcore.Framework.Caching.Tests
         /// </summary>
         /// <param name="environment">The hosting environment.</param>
         [Theory]
-        [InlineData("Production")]
-        [InlineData("test")]
-        [InlineData("")]
         [InlineData(null)]
         public void AddDistributedCacheNotDevelopmentTest(string environment)
         {
@@ -56,7 +55,9 @@ namespace HumanaEdge.Webcore.Framework.Caching.Tests
             var root = Setup(environment);
 
             // act
-            var serviceProvider = new ServiceCollection().AddDistributedCache(root.GetSection(nameof(CacheOptions)))
+            var serviceProvider = new ServiceCollection()
+                .AddLogging()
+                .AddDistributedCache(root.GetSection(nameof(CacheOptions)))
                 .BuildServiceProvider();
             var distributedCache = serviceProvider.GetRequiredService<IDistributedCache>();
             var certificateAuthorityService = serviceProvider.GetRequiredService<ICertificateAuthorityService>();

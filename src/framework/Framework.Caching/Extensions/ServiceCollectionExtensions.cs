@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 
-namespace HumanaEdge.Webcore.Core.Caching.Extensions
+namespace HumanaEdge.Webcore.Framework.Caching.Extensions
 {
     /// <summary>
     /// Extension methods for registering the caching library.
@@ -16,12 +16,7 @@ namespace HumanaEdge.Webcore.Core.Caching.Extensions
         /// <summary>
         /// The configuration key for the current hosting environment.
         /// </summary>
-        internal const string EnvironmentKey = "ASPNETCORE_ENVIRONMENT";
-
-        /// <summary>
-        /// The identifier for the development hosting environment.
-        /// </summary>
-        internal const string DevelopmentEnvironment = "development";
+        internal const string EnvironmentKey = "USE_IN_MEMORY_CACHE";
 
         /// <summary>
         /// Registers the services for distributed caching.
@@ -38,8 +33,8 @@ namespace HumanaEdge.Webcore.Core.Caching.Extensions
             services.AddOptions<CacheOptions>()
                 .Bind(configurationSection)
                 .ValidateDataAnnotations();
-            var env = Environment.GetEnvironmentVariable(EnvironmentKey) ?? string.Empty;
-            if (env.Equals(DevelopmentEnvironment, StringComparison.OrdinalIgnoreCase))
+            var useInMemoryCache = Environment.GetEnvironmentVariable(EnvironmentKey);
+            if (useInMemoryCache != null)
             {
                 return services.AddDistributedMemoryCache();
             }
@@ -48,22 +43,28 @@ namespace HumanaEdge.Webcore.Core.Caching.Extensions
             var certificateValidator =
                 serviceProvider.GetService<ICertificateValidationFactory>()!.Create();
 
+            var configurationOptions = new ConfigurationOptions
+            {
+                EndPoints = { configurationSection["ConnectionString"] },
+                Ssl = true,
+            };
+            configurationOptions.CertificateValidation += certificateValidator;
+            configurationOptions.CertificateSelection += (
+                sender,
+                targetHost,
+                localCertificates,
+                remoteCertificate,
+                acceptableIssuers) =>
+            {
+                var certBytes = serviceProvider.GetService<ICertificateAuthorityService>()!.GetCertificate();
+                var cert = new X509Certificate2(certBytes, string.Empty);
+                return cert;
+            };
+
             return services.AddStackExchangeRedisCache(
                 options =>
                 {
-                    options.ConfigurationOptions = ConfigurationOptions.Parse(configurationSection["ConnectionString"]);
-                    options.ConfigurationOptions.Ssl = true;
-                    options.ConfigurationOptions.CertificateValidation += certificateValidator;
-                    options.ConfigurationOptions.CertificateSelection += (
-                        sender,
-                        host,
-                        certificates,
-                        remoteCertificate,
-                        issuers) =>
-                    {
-                        var certificate = serviceProvider.GetService<ICertificateAuthorityService>()!.GetCertificate();
-                        return new X509Certificate2(certificate);
-                    };
+                    options.ConfigurationOptions = configurationOptions;
                 });
         }
     }
