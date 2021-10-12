@@ -17,8 +17,8 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Http
         /// <param name="httpMethod">The HttpMethod used in the request.</param>
         /// <param name="uri">The Uri of the request.</param>
         /// <param name="alert">Whether or not this telemetry contains an alert.</param>
-        /// <param name="configuration">Configuration data for the observer.</param>
         /// <param name="success">Indicator if the request was successful.</param>
+        /// <param name="configuration">Configuration data for the observer.</param>
         public static void TrackDependencyHttpTelemetry(
             this ITelemetryFactory factory,
             DateTimeOffset startTime,
@@ -27,8 +27,8 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Http
             string httpMethod,
             string uri,
             bool alert,
-            TelemetryConfiguration? configuration = null,
-            bool success = false)
+            bool success,
+            TelemetryConfiguration? configuration = null)
         {
             var telemetryEvent = new DependencyHttpTelemetry(
                 startTime,
