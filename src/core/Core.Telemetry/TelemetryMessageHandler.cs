@@ -46,13 +46,15 @@ namespace HumanaEdge.Webcore.Core.Telemetry
             DateTimeOffset startTime,
             double duration)
         {
+            var isSuccess = response != null && response.IsSuccessStatusCode;
             _telemetryFactory.TrackDependencyHttpTelemetry(
                 startTime,
                 duration,
                 ((int?)response?.StatusCode)?.ToString()!,
                 request?.Method.ToString()!,
                 request?.RequestUri?.ToString()!,
-                response != null && response.IsSuccessStatusCode);
+                !isSuccess,
+                isSuccess);
         }
     }
 }

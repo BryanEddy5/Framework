@@ -6,7 +6,7 @@ using HumanaEdge.Webcore.Core.Rest.Alerting;
 namespace HumanaEdge.Webcore.Framework.Rest.Alerting
 {
     /// <inheritdoc />
-    public sealed class HttpAlertingService : IHttpAlertingService
+    internal sealed class HttpAlertingService : IHttpAlertingService
     {
         /// <inheritdoc />
         public bool IsHttpAlert(

@@ -63,8 +63,8 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests.Http
                 fakeHttpMethod,
                 fakeUri,
                 fakeAlert,
-                fakeTelemetryConfiguration,
-                fakeSuccess);
+                fakeSuccess,
+                fakeTelemetryConfiguration);
         }
 
         /// <summary>
