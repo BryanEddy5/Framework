@@ -259,22 +259,23 @@ namespace HumanaEdge.Webcore.Framework.Rest
         {
             var httpRequestMessage = restRequestConverter(restRequest);
             HttpResponseMessage httpResponse = null!;
-            bool isAlert;
+            TRestResponse convertedResponse;
+            var isAlert = true;
             var stopWatch = new Stopwatch();
             stopWatch.Start();
             var startTime = DateTimeOffset.UtcNow;
             try
             {
                 httpResponse = await InternalHttpClient.SendAsync(httpRequestMessage, cancellationToken);
-            }
-            finally
-            {
-                stopWatch.Stop();
-                var convertedResponse = await restResponseConverter(httpResponse);
+                convertedResponse = await restResponseConverter(httpResponse);
                 isAlert = _httpAlerting.IsHttpAlert(
                     convertedResponse,
                     restRequest.AlertCondition,
                     _options.AlertCondition);
+            }
+            finally
+            {
+                stopWatch.Stop();
                 TrackTelemetry(
                     httpRequestMessage,
                     httpResponse,
@@ -290,7 +291,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
                     _options.AlertCondition);
             }
 
-            return await restResponseConverter(httpResponse);
+            return convertedResponse;
         }
 
         /// <summary>
