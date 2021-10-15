@@ -148,7 +148,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                     r.RequestUri == new Uri("/hello/world", UriKind.Relative) &&
                     r.Headers.Any(h => h.Key == "Id") &&
                     r.Headers.Any(h => h.Key == "x-jeremy-is"));
-            SetupHttClientFactory();
+            SetupHttpClientFactory();
             await SetupRestResponseAlertingNone(fakeHttpResponseMessage, fakeRequest);
 
             // act
@@ -189,7 +189,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                     r.RequestUri == new Uri("/hello/world", UriKind.Relative) &&
                     r.Headers.Any(h => h.Key == "Id") &&
                     r.Headers.Any(h => h.Key == "x-jeremy-is"));
-            SetupHttClientFactory();
+            SetupHttpClientFactory();
             var convertedResponse = await ConvertToRestResponse<RestResponse>(fakeHttpResponseMessage);
             _mockHttpAlerting
                 .Setup(
@@ -235,7 +235,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                     r.RequestUri == new Uri("/hello/world", UriKind.Relative) &&
                     r.Headers.Any(h => h.Key == "Id") &&
                     r.Headers.Any(h => h.Key == "x-jeremy-is"));
-            SetupHttClientFactory();
+            SetupHttpClientFactory();
             await SetupRestResponseAlertingNone(fakeHttpResponseMessage, fakeRequest);
 
             // act
@@ -267,7 +267,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                     r.Method == fakeRequest.HttpMethod &&
                     r.RequestUri == new Uri("/foo/add", UriKind.Relative) &&
                     r.Content == fakeContent);
-            SetupHttClientFactory();
+            SetupHttpClientFactory();
             await SetupRestResponseAlertingNone(fakeHttpResponseMessage, fakeRequest);
             _loggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(_logger.Object);
 
@@ -309,7 +309,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             var expectedBytes = FakeData.Create<byte[]>();
             var expectedBytesStream = new MemoryStream(expectedBytes);
             var mockResponse = BuildMockResponseForFiles(expectedBytesStream);
-            SetupHttClientFactory();
+            SetupHttpClientFactory();
             SetUpHttpClientMock(
                 mockResponse,
                 r =>
@@ -343,7 +343,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             var fakeContent = mockContent.Object;
             _mockMediaTypeFormatter.Setup(x => x.TryFormat(MediaType.Json, _options, fakeFoo, out fakeContent))
                 .Returns(true);
-            SetupHttClientFactory();
+            SetupHttpClientFactory();
 
             var expectedBytes = FakeData.Create<byte[]>();
             var expectedBytesStream = new MemoryStream(expectedBytes);
@@ -402,7 +402,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var fakeHttpResponseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError);
             var expectedBytes = await content.ReadAsByteArrayAsync();
-            SetupHttClientFactory();
+            SetupHttpClientFactory();
 
             fakeHttpResponseMessage.Content = content;
             _mockHttpClient.Setup(
@@ -427,6 +427,34 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         }
 
         /// <summary>
+        /// Verifies the behavior of <see cref="RestClient.SendAsync(RestRequest,CancellationToken)" />.<br/>
+        /// Ensures if a timeout exception occurs, it is not masked behind other exceptions.
+        /// </summary>
+        /// <returns>A <see cref="Task" /> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task SendAsync_TimeoutExceptionPropogates()
+        {
+            // arrange
+            var fakeRequest = new RestRequest("/foo/gimme-timeouts", HttpMethod.Get);
+            SetupHttpClientFactory();
+
+            _mockHttpClient.Setup(
+                    x => x.SendAsync(
+                        It.Is<HttpRequestMessage>(
+                            r =>
+                                r.Method == fakeRequest.HttpMethod &&
+                                r.RequestUri == new Uri("/foo/gimme-timeouts", UriKind.Relative)),
+                        CancellationTokenSource.Token))
+                .ThrowsAsync(new TimeoutException());
+
+            // act
+            Func<Task<RestResponse>> act = () => _restClient.SendAsync(fakeRequest, CancellationTokenSource.Token);
+
+            // assert
+            await act.Should().ThrowAsync<TimeoutException>();
+        }
+
+        /// <summary>
         /// Verifies that no exception is thrown when the file name returns as null.
         /// </summary>
         /// <returns>An awaitable task.</returns>
@@ -438,7 +466,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             var expectedBytes = FakeData.Create<byte[]>();
             var expectedBytesStream = new MemoryStream(expectedBytes);
             var content = new StreamContent(expectedBytesStream);
-            SetupHttClientFactory();
+            SetupHttpClientFactory();
             var mockResponse = new HttpResponseMessage(HttpStatusCode.OK);
             mockResponse.Content = content;
             mockResponse.Content.Headers.ContentDisposition = null;
@@ -494,7 +522,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         /// <summary>
         /// Sets up the underlying http client factory to produce a specified <see cref="HttpClient"/>.
         /// </summary>
-        private void SetupHttClientFactory()
+        private void SetupHttpClientFactory()
         {
             _mockInternalClientFactory.Setup(
                     x => x.CreateClient(_fakeClientName, _options.BaseUri, _options.Timeout))
