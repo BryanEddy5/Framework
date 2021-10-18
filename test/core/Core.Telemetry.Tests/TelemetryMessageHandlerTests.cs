@@ -32,9 +32,14 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests
         /// <summary>
         /// Verifies the behavior <see cref="TelemetryMessageHandler.SendAsync"/>.
         /// </summary>
+        /// <param name="httpStatusCode">The returned status code.</param>
+        /// <param name="isSuccess">Indicates if the request should be successful. </param>
         /// <returns>An awaitable task.</returns>
-        [Fact]
-        public async Task SendAsync_Success()
+        [Theory]
+        [InlineData(HttpStatusCode.OK, true)]
+        [InlineData(HttpStatusCode.NotFound, false)]
+        [InlineData(HttpStatusCode.Created, true)]
+        public async Task SendAsync_Success(HttpStatusCode httpStatusCode, bool isSuccess)
         {
             // arrange
             var request = new HttpRequestMessage()
@@ -42,7 +47,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests
                 Content = new StringContent(string.Empty, Encoding.UTF8, "application/json"),
                 Method = HttpMethod.Get
             };
-            var expected = Setup(false, HttpStatusCode.InternalServerError);
+            var expected = Setup(isSuccess, false, httpStatusCode);
 
             _telemetryFactoryMock.Setup(
                 x => x.Track(
@@ -60,9 +65,13 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests
         /// <summary>
         /// Verifies the behavior <see cref="TelemetryMessageHandler.SendAsync"/> when the status code is not successful.
         /// </summary>
+        /// <param name="httpStatusCode">The returned status code.</param>
         /// <returns>An awaitable task.</returns>
-        [Fact]
-        public async Task SendAsync_Fail()
+        [Theory]
+        [InlineData(HttpStatusCode.InternalServerError)]
+        [InlineData(HttpStatusCode.Forbidden)]
+        [InlineData(HttpStatusCode.BadRequest)]
+        public async Task SendAsync_Fail(HttpStatusCode httpStatusCode)
         {
             // arrange
             var request = new HttpRequestMessage()
@@ -70,7 +79,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests
                 Content = new StringContent(string.Empty, Encoding.UTF8, "application/json"),
                 Method = HttpMethod.Get
             };
-            var expected = Setup(false, HttpStatusCode.InternalServerError);
+            var expected = Setup(false, true, httpStatusCode);
 
             _telemetryFactoryMock.Setup(
                 x => x.Track(
@@ -87,6 +96,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests
 
         private TelemetryEvent Setup(
             bool isSuccess,
+            bool isAlert,
             HttpStatusCode httpStatusCode)
         {
             _telemetryMessageHandler.InnerHandler = new TestHandler(
@@ -103,7 +113,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry.Tests
                 null,
                 isSuccess,
                 null,
-                !isSuccess).ToTelemetryEvent();
+                isAlert).ToTelemetryEvent();
         }
 
         private class TestHandler : HttpMessageHandler

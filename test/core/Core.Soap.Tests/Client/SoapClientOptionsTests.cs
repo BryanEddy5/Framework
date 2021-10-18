@@ -38,7 +38,7 @@ namespace HumanaEdge.Webcore.Core.Soap.Tests.Client
             builtOptions.BaseEndpoint.Should().Be(fakeBaseEndpoint);
             builtOptions.Headers.Count.Should().Be(0);
             builtOptions.Timeout.Should().Be(defaultTimeout);
-            builtOptions.ResiliencePolicies.Length.Should().Be(0);
+            builtOptions.ResiliencePolicies.Length.Should().Be(2);
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace HumanaEdge.Webcore.Core.Soap.Tests.Client
                 .Build();
 
             // assert
-            builtOptions.ResiliencePolicies.Should().BeEquivalentTo(expectedResiliencyPolicies);
+            builtOptions.ResiliencePolicies.Should().Contain(expectedResiliencyPolicies);
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace HumanaEdge.Webcore.Core.Soap.Tests.Client
                 .Build();
 
             // assert
-            builtOptions.ResiliencePolicies.Should().BeEquivalentTo(expectedResiliencyPolicies);
+            builtOptions.ResiliencePolicies.Should().Contain(expectedResiliencyPolicies);
         }
 
         /// <summary>
@@ -210,12 +210,11 @@ namespace HumanaEdge.Webcore.Core.Soap.Tests.Client
 
             // act
             var builtOptions = new SoapClientOptions.Builder(fakeBaseEndpoint)
-                .UseDefaultRetryPolicy<FooSoapClient, IBarSoapReference>()
                 .Build();
 
             // assert
-            builtOptions.ResiliencePolicies.Length.Should().Be(1);
-            builtOptions.ResiliencePolicies[0].PolicyKey.Should().StartWith("AsyncRetryPolicy");
+            builtOptions.ResiliencePolicies.Length.Should().Be(2);
+            builtOptions.ResiliencePolicies[1].PolicyKey.Should().StartWith("AsyncRetryPolicy");
         }
 
         /// <summary>
@@ -251,7 +250,7 @@ namespace HumanaEdge.Webcore.Core.Soap.Tests.Client
             builtOptions.BaseEndpoint.Should().Be(fakeBaseEndpoint);
             builtOptions.Headers.Should().BeEquivalentTo(expectedHeaders);
             builtOptions.Timeout.Should().Be(customTimeout);
-            builtOptions.ResiliencePolicies.Should().BeEquivalentTo(expectedResiliencyPolicies);
+            builtOptions.ResiliencePolicies.Should().Contain(expectedResiliencyPolicies);
         }
     }
 }

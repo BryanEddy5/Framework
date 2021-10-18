@@ -18,13 +18,8 @@ namespace HumanaEdge.Webcore.Core.Soap.Resilience
         /// Creates a resiliency policy with exponential backoff.
         /// </summary>
         /// <param name="maxRetryAttempts">The maximum number of retries.</param>
-        /// <typeparam name="TClient">The type of soap client.</typeparam>
-        /// <typeparam name="TChannel">The service contract associated with the soap client.</typeparam>
         /// <returns> The resilience policy. </returns>
-        public static IAsyncPolicy<HttpResponseMessage> RetryWithExponentialBackoff<TClient, TChannel>(
-            int maxRetryAttempts)
-                where TClient : BaseSoapClient<TClient, TChannel>
-                where TChannel : class
+        public static IAsyncPolicy<HttpResponseMessage> RetryWithExponentialBackoff(int maxRetryAttempts)
         {
             var jitterer = new Random();
             var backOffIntervals = Enumerable.Range(1, maxRetryAttempts)
@@ -38,7 +33,7 @@ namespace HumanaEdge.Webcore.Core.Soap.Resilience
                     backOffIntervals,
                     (outcome, duration, retryNumber, context) =>
                     {
-                        var logger = context.GetLogger<BaseSoapClient<TClient, TChannel>>();
+                        var logger = context.GetLogger("SoapClient");
                         logger.LogInformation(
                             "Http response status code {StatusCode}, retry#{RetryNumber}. Retrying in {Duration}",
                             retryNumber,
@@ -48,5 +43,32 @@ namespace HumanaEdge.Webcore.Core.Soap.Resilience
 
             return policy;
         }
+
+        /// <summary>
+        /// Creates a resiliency policy with circuit breaker.
+        /// </summary>
+        /// <param name="durationOfBreakInTimeSpan">The number of seconds or minutes between breaks.</param>
+        /// <param name="eventsAllowedBeforeBreaking">The number of events allowed before breaking.</param>
+        /// <returns> The resilience policy. </returns>
+        public static IAsyncPolicy<HttpResponseMessage> CircuitBreaker(
+            TimeSpan durationOfBreakInTimeSpan,
+            int eventsAllowedBeforeBreaking) => Policy<HttpResponseMessage>.HandleResult(
+                r => r.StatusCode >= HttpStatusCode.InternalServerError)
+            .CircuitBreakerAsync(
+                handledEventsAllowedBeforeBreaking: eventsAllowedBeforeBreaking,
+                durationOfBreak: durationOfBreakInTimeSpan,
+                onBreak: (result, state, duration, context) =>
+                {
+                    var logger = context.GetLogger("SoapClient");
+                    logger.LogInformation("Circuit breaker state is now {State}", state.ToString());
+                },
+                onReset: (context) =>
+                {
+                    var logger = context.GetLogger("SoapClient");
+                    logger.LogInformation("Circuit breaker has been reset and is in {State}.", "closed");
+                },
+                onHalfOpen: () =>
+                {
+                });
     }
 }
