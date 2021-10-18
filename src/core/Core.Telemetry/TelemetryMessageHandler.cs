@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,13 +48,15 @@ namespace HumanaEdge.Webcore.Core.Telemetry
             double duration)
         {
             var isSuccess = response != null && response.IsSuccessStatusCode;
+            var isAlert = response == null ||
+                          (response.StatusCode >= HttpStatusCode.BadRequest && response.StatusCode != HttpStatusCode.NotFound);
             _telemetryFactory.TrackDependencyHttpTelemetry(
                 startTime,
                 duration,
                 ((int?)response?.StatusCode)?.ToString()!,
                 request?.Method.ToString()!,
                 request?.RequestUri?.ToString()!,
-                !isSuccess,
+                isAlert,
                 isSuccess);
         }
     }

@@ -83,7 +83,11 @@ namespace HumanaEdge.Webcore.Core.Soap.Client
             public Builder(Uri baseEndpoint)
             {
                 _baseEndpoint = baseEndpoint;
-                _resiliencePolicies = new List<IAsyncPolicy<HttpResponseMessage>>();
+                _resiliencePolicies = new List<IAsyncPolicy<HttpResponseMessage>>
+                {
+                    ResiliencyPolicies.CircuitBreaker(TimeSpan.FromSeconds(5), 4),
+                    ResiliencyPolicies.RetryWithExponentialBackoff(6)
+                };
                 _defaultHeaders = new Dictionary<string, StringValues>();
                 _timeout = TimeSpan.FromSeconds(8);
             }
@@ -139,27 +143,6 @@ namespace HumanaEdge.Webcore.Core.Soap.Client
             public Builder ConfigureTimeout(TimeSpan timeout)
             {
                 _timeout = timeout;
-                return this;
-            }
-
-            /// <summary>
-            /// Leverages the default resilience policy based on the provided client/channel types.<br/>
-            ///
-            /// </summary>
-            /// <param name="maxRetryAttempts">Optional. The number of times to retry; defaults to 6.</param>
-            /// <typeparam name="TClient">The type of soap client.</typeparam>
-            /// <typeparam name="TChannel">The service contract associated with the soap client.</typeparam>
-            /// <returns>The builder instance, for fluent chaining.</returns>
-            /// <remarks>
-            /// Though you could use the <see cref="Builder.ConfigureResiliencePolicy"/> method as well,
-            /// this one reduces the opportunity to mistype.
-            /// </remarks>
-            public Builder UseDefaultRetryPolicy<TClient, TChannel>(int maxRetryAttempts = 6)
-                where TClient : BaseSoapClient<TClient, TChannel>
-                where TChannel : class
-            {
-                _resiliencePolicies.Add(
-                    ResiliencyPolicies.RetryWithExponentialBackoff<TClient, TChannel>(maxRetryAttempts));
                 return this;
             }
 

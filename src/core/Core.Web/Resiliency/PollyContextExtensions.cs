@@ -33,10 +33,27 @@ namespace HumanaEdge.Webcore.Core.Web.Resiliency
         /// <returns>A logger.</returns>
         public static ILogger<T> GetLogger<T>(this Context context)
         {
-            if (context.TryGetValue(LoggerKey, out object loggerFactory))
+            if (context.TryGetValue(LoggerKey, out var loggerFactory))
             {
                 var typeLoggerFactory = loggerFactory as ILoggerFactory;
                 return typeLoggerFactory.CreateLogger<T>();
+            }
+
+            return null!;
+        }
+
+        /// <summary>
+        /// Retrieves a logger factory allowing consumers to access a logger without injecting it.
+        /// </summary>
+        /// <param name="context">Context that carries with a single execution through a Policy.</param>
+        /// <param name="loggerCategory">The category name for logging.</param>
+        /// <returns>A logger.</returns>
+        public static ILogger GetLogger(this Context context, string loggerCategory)
+        {
+            if (context.TryGetValue(LoggerKey, out var loggerFactory))
+            {
+                var typeLoggerFactory = loggerFactory as ILoggerFactory;
+                return typeLoggerFactory!.CreateLogger(loggerCategory);
             }
 
             return null!;

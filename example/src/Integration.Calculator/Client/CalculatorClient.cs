@@ -39,7 +39,6 @@ namespace HumanaEdge.Webcore.Example.Integration.Calculator.Client
         {
             return new SoapClientOptions.Builder(options.BaseEndpoint)
                 .ConfigureTimeout(TimeSpan.FromMilliseconds(options.TimeoutMilliseconds))
-                .UseDefaultRetryPolicy<CalculatorClient, CalculatorSoap>()
                 .ConfigureHeader("x-jeremys-secret", "his-SOAP-is-just-bleach")
                 .Build();
         }

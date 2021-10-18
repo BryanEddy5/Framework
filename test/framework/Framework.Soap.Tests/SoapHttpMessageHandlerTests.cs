@@ -12,6 +12,7 @@ using HumanaEdge.Webcore.Core.Testing;
 using HumanaEdge.Webcore.Framework.Soap.Resiliency;
 using HumanaEdge.Webcore.Framework.Soap.Tests.Stubs;
 using Moq;
+using Polly;
 using Xunit;
 
 namespace HumanaEdge.Webcore.Framework.Soap.Tests
@@ -83,6 +84,7 @@ namespace HumanaEdge.Webcore.Framework.Soap.Tests
             // arrange
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, _soapClientOptions.BaseEndpoint);
             var fakeHttpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK);
+            _mockPollyContextFactory.Setup(x => x.Create()).Returns(new Context());
             _mockHttpHandler.Setup(
                     c => c.SendAsync(
                         It.Is<HttpRequestMessage>(

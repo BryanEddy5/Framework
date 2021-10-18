@@ -177,12 +177,11 @@ namespace HumanaEdge.Webcore.Core.Rest
                 _timeout = TimeSpan.FromSeconds(5);
                 _jsonSettings = StandardSerializerConfiguration.Settings;
                 _resiliencePolicy =
-                    new List<IAsyncPolicy<BaseRestResponse>>(
-                        new[]
-                        {
-                            ResiliencyPolicies.CircuitBreaker(TimeSpan.FromSeconds(5), 4),
-                            ResiliencyPolicies.RetryWithExponentialBackoff(6)
-                        });
+                    new List<IAsyncPolicy<BaseRestResponse>>
+                    {
+                        ResiliencyPolicies.CircuitBreaker(TimeSpan.FromSeconds(5), 4),
+                        ResiliencyPolicies.RetryWithExponentialBackoff(6)
+                    };
                 _alertCondition = CommonRestAlertConditions.Standard();
             }
 
@@ -298,7 +297,8 @@ namespace HumanaEdge.Webcore.Core.Rest
             public Builder ConfigureBearerToken<TClient>(Func<CancellationToken, Task<string>> tokenFactory)
             {
                 _tokenFactory = (TokenFactory: tokenFactory, TokenKey: typeof(TClient).FullName !);
-                _resiliencePolicy.Add(ResiliencyPolicies.RefreshToken<TClient>(tokenFactory, typeof(TClient).FullName !));
+                _resiliencePolicy.Add(
+                    ResiliencyPolicies.RefreshToken<TClient>(tokenFactory, typeof(TClient).FullName !));
                 return this;
             }
 
