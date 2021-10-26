@@ -78,6 +78,7 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Extensions
         {
             services.AddSingleton<ISecretsService<TSecret>, SecretsService<TSecret>>();
             services.AddSingleton<ISecretsHandler, SecretsHandler>();
+            services.AddMemoryCache();
             return services.AddSingleton<ISecretsClient, SecretsClient>();
         }
     }

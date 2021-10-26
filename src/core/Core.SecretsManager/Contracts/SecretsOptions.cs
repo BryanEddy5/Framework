@@ -19,5 +19,10 @@
         /// The version of the secret.
         /// </summary>
         public string SecretVersionId { get; set; } = null!;
+
+        /// <summary>
+        /// The absolute cache expiration relative to now.
+        /// </summary>
+        public int CacheExpirationInMinutesRelativeToNow { get; set; } = 1440;
     }
 }

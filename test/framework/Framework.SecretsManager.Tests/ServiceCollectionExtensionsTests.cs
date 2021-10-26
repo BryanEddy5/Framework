@@ -6,6 +6,7 @@ using HumanaEdge.Webcore.Core.Testing;
 using HumanaEdge.Webcore.Framework.SecretsManager.Clients;
 using HumanaEdge.Webcore.Framework.SecretsManager.Extensions;
 using HumanaEdge.Webcore.Framework.SecretsManager.Tests.Stubs;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -33,8 +34,10 @@ namespace HumanaEdge.Webcore.Framework.SecretsManager.Tests
             var secretsService = serviceProvider.GetRequiredService<ISecretsService<FakeSecret>>();
             var secretsHandler = serviceProvider.GetRequiredService<ISecretsHandler>();
             var internalSecretsClient = serviceProvider.GetRequiredService<ISecretsClient>();
+            var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
 
             // assert
+            Assert.IsAssignableFrom<IMemoryCache>(memoryCache);
             Assert.IsAssignableFrom<ISecretsService<FakeSecret>>(secretsService);
             Assert.IsAssignableFrom<ISecretsHandler>(secretsHandler);
             Assert.IsAssignableFrom<ISecretsClient>(internalSecretsClient);
