@@ -1,4 +1,4 @@
-﻿﻿namespace HumanaEdge.Webcore.Core.SecretsManager.Contracts
+﻿namespace HumanaEdge.Webcore.Core.SecretsManager.Contracts
 {
     /// <summary>
     /// A request for retrieving a secret.
@@ -12,11 +12,13 @@
         /// <param name="projectId">The ProjectId where the secrets manager is located.</param>
         /// <param name="secretId">The unique identifier for the secret.</param>
         /// <param name="secretVersionId">The version of the secret.</param>
-        public SecretsKey(string projectId, string secretId, string secretVersionId)
+        /// <param name="cacheExpirationInMinutesRelativeToNow">The absolute cache expiration relative to now.</param>
+        public SecretsKey(string projectId, string secretId, string secretVersionId, int cacheExpirationInMinutesRelativeToNow)
         {
             ProjectId = projectId;
             SecretId = secretId;
             SecretVersionId = secretVersionId;
+            CacheExpirationInMinutesRelativeToNow = cacheExpirationInMinutesRelativeToNow;
         }
 
         /// <summary>
@@ -33,5 +35,10 @@
         /// The version of the secret.
         /// </summary>
         public string SecretVersionId { get; }
+
+        /// <summary>
+        /// The absolute cache expiration relative to now.
+        /// </summary>
+        public int CacheExpirationInMinutesRelativeToNow { get; }
     }
 }

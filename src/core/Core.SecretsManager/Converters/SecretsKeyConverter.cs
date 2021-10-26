@@ -13,6 +13,6 @@ namespace HumanaEdge.Webcore.Core.SecretsManager.Converters
         /// <param name="options">The secret options.</param>
         /// <returns>The immutable secrets key.</returns>
         public static SecretsKey ToSecretsKey(this SecretsOptions options) =>
-            new SecretsKey(options.ProjectId, options.SecretId, options.SecretVersionId);
+            new SecretsKey(options.ProjectId, options.SecretId, options.SecretVersionId, options.CacheExpirationInMinutesRelativeToNow);
     }
 }
