@@ -52,7 +52,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry.PubSub
         public string MessageId { get; }
 
         /// <inheritdoc />
-        internal override TelemetryEvent ToTelemetryEvent()
+        public override TelemetryEvent ToTelemetryEvent()
         {
             // shallow copy to a new dictionary to ensure this method is idempotent.
             var tags = new Dictionary<string, object>(Tags)

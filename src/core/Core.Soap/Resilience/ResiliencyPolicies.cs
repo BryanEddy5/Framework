@@ -36,8 +36,8 @@ namespace HumanaEdge.Webcore.Core.Soap.Resilience
                         var logger = context.GetLogger("SoapClient");
                         logger.LogInformation(
                             "Http response status code {StatusCode}, retry#{RetryNumber}. Retrying in {Duration}",
-                            retryNumber,
                             outcome.Result.StatusCode,
+                            retryNumber,
                             duration);
                     });
 

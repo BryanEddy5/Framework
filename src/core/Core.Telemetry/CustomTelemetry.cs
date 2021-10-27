@@ -5,7 +5,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry
     /// <summary>
     /// Developer defined custom metric type.
     /// </summary>
-    internal sealed class CustomTelemetry : Telemetry
+    public sealed class CustomTelemetry : Telemetry
     {
         /// <summary>
         /// Designated constructor.
@@ -13,7 +13,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry
         /// <param name="name">Name of the observer metric.</param>
         /// <param name="configuration">Custom metrics defined for the class.</param>
         /// <param name="alert">Whether or not this telemetry contains an alert.</param>
-        internal CustomTelemetry(string name, TelemetryConfiguration configuration, bool alert)
+        public CustomTelemetry(string name, TelemetryConfiguration configuration, bool alert)
             : base(name, TelemetryType.Custom, DateTimeOffset.UtcNow, configuration, alert)
         {
             // nop
