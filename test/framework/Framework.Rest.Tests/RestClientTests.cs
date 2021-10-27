@@ -16,12 +16,13 @@ using HumanaEdge.Webcore.Core.Common.Serialization;
 using HumanaEdge.Webcore.Core.Rest;
 using HumanaEdge.Webcore.Core.Rest.AccessTokens;
 using HumanaEdge.Webcore.Core.Rest.Alerting;
-using HumanaEdge.Webcore.Core.Rest.Resiliency;
 using HumanaEdge.Webcore.Core.Telemetry;
 using HumanaEdge.Webcore.Core.Testing;
 using HumanaEdge.Webcore.Core.Web.Resiliency;
 using HumanaEdge.Webcore.Framework.Rest.Resiliency;
 using HumanaEdge.Webcore.Framework.Rest.Tests.Stubs;
+using HumanaEdge.Webcore.Framework.Rest.Transformations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Polly;
@@ -57,11 +58,6 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         private readonly Mock<IInternalClient> _mockHttpClient;
 
         /// <summary>
-        /// A mock of <see cref="IMediaTypeFormatter"/>.
-        /// </summary>
-        private readonly Mock<IMediaTypeFormatter> _mockMediaTypeFormatter;
-
-        /// <summary>
         /// A mock of <see cref="IInternalClientFactory"/>.
         /// </summary>
         private readonly Mock<IInternalClientFactory> _mockInternalClientFactory;
@@ -71,7 +67,10 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         /// </summary>
         private readonly Mock<IHttpAlertingService> _mockHttpAlerting;
 
-        private readonly Mock<IPollyContextFactory> _pollyContextFactoryMock;
+        /// <summary>
+        /// A mock of <see cref="IMediaTypeFormatter"/>.
+        /// </summary>
+        private readonly Mock<IMediaTypeFormatter> _mockMediaTypeFormatter;
 
         private readonly Mock<ILoggerFactory> _loggerFactory;
 
@@ -82,19 +81,27 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         /// </summary>
         public RestClientTests()
         {
+            var mockRequestTransformationFactory = Moq.Create<IRequestTransformationFactory>();
+            var pollyContextFactoryMock = Moq.Create<IPollyContextFactory>();
+            var mockHttpContextAccessor = Moq.Create<IHttpContextAccessor>(MockBehavior.Loose);
+            var mockTelemetryFactory = Moq.Create<ITelemetryFactory>(MockBehavior.Loose);
+            var mockAccessTokenCache = Moq.Create<IAccessTokenCacheService>(MockBehavior.Loose);
+            var context = new DefaultHttpContext();
+
             _mockHttpAlerting = Moq.Create<IHttpAlertingService>();
             _mockInternalClientFactory = Moq.Create<IInternalClientFactory>();
             _mockHttpClient = Moq.Create<IInternalClient>();
-            _mockMediaTypeFormatter = Moq.Create<IMediaTypeFormatter>();
-            _mockMediaTypeFormatter.Setup(f => f.MediaTypes).Returns(new[] { MediaType.Json });
-            var accessTokenCacheMock = Moq.Create<IAccessTokenCacheService>();
-            _pollyContextFactoryMock = Moq.Create<IPollyContextFactory>();
             _fakeClientName = FakeData.Create<string>();
-            var mockTelemetryFactory = Moq.Create<ITelemetryFactory>(MockBehavior.Loose);
             _loggerFactory = Moq.Create<ILoggerFactory>();
             _logger = Moq.Create<ILogger<IRestClient>>(MockBehavior.Loose);
-            _pollyContextFactoryMock.Setup(x => x.Create())
+            _mockMediaTypeFormatter = Moq.Create<IMediaTypeFormatter>(MockBehavior.Loose);
+
+            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
+            _mockMediaTypeFormatter.Setup(f => f.MediaTypes).Returns(new[] { MediaType.Json });
+
+            pollyContextFactoryMock.Setup(x => x.Create())
                 .Returns(new Context().WithLogger(_loggerFactory.Object));
+
             _options = new RestClientOptions.Builder("https://localhost:5000")
                 .ConfigureHeader("Foo", "Bar")
                 .ConfigureTimeout(TimeSpan.FromSeconds(7))
@@ -115,13 +122,16 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                 .ConfigureAlertCondition(CommonRestAlertConditions.None())
                 .Build();
 
+            mockRequestTransformationFactory
+                .Setup(x => x.Create(_options))
+                .Returns(new RequestTransformationService(mockAccessTokenCache.Object, mockHttpContextAccessor.Object, new[] { _mockMediaTypeFormatter.Object }, _options));
+
             _restClient = new RestClient(
                 _fakeClientName,
                 _mockInternalClientFactory.Object,
                 _options,
-                new[] { _mockMediaTypeFormatter.Object },
-                _pollyContextFactoryMock.Object,
-                accessTokenCacheMock.Object,
+                pollyContextFactoryMock.Object,
+                mockRequestTransformationFactory.Object,
                 _mockHttpAlerting.Object,
                 mockTelemetryFactory.Object);
         }
@@ -149,7 +159,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                     r.Headers.Any(h => h.Key == "Id") &&
                     r.Headers.Any(h => h.Key == "x-jeremy-is"));
             SetupHttpClientFactory();
-            await SetupRestResponseAlertingNone(fakeHttpResponseMessage, fakeRequest);
+            SetupRestResponseAlertingNone(fakeRequest);
 
             // act
             var actual = await _restClient.SendAsync(fakeRequest, CancellationTokenSource.Token);
@@ -190,11 +200,11 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                     r.Headers.Any(h => h.Key == "Id") &&
                     r.Headers.Any(h => h.Key == "x-jeremy-is"));
             SetupHttpClientFactory();
-            var convertedResponse = await ConvertToRestResponse<RestResponse>(fakeHttpResponseMessage);
+
             _mockHttpAlerting
                 .Setup(
                     alert => alert.IsHttpAlert(
-                        convertedResponse,
+                        It.IsAny<RestResponse>(),
                         fakeRestRequest.AlertCondition,
                         CommonRestAlertConditions.None()))
                 .Returns(true);
@@ -236,7 +246,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                     r.Headers.Any(h => h.Key == "Id") &&
                     r.Headers.Any(h => h.Key == "x-jeremy-is"));
             SetupHttpClientFactory();
-            await SetupRestResponseAlertingNone(fakeHttpResponseMessage, fakeRequest);
+            SetupRestResponseAlertingNone(fakeRequest);
 
             // act
             Func<Task> act = async () => await _restClient.SendAsync(fakeRequest, CancellationTokenSource.Token);
@@ -268,7 +278,8 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                     r.RequestUri == new Uri("/foo/add", UriKind.Relative) &&
                     r.Content == fakeContent);
             SetupHttpClientFactory();
-            await SetupRestResponseAlertingNone(fakeHttpResponseMessage, fakeRequest);
+            SetupRestResponseAlertingNone(fakeRequest);
+
             _loggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(_logger.Object);
 
             // act
@@ -315,7 +326,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                 r =>
                     r.Method == fakeRequest.HttpMethod &&
                     r.RequestUri == new Uri("/foo/file", UriKind.Relative));
-            await SetupFileResponseAlertingNone(mockResponse, fakeRequest);
+            SetupFileResponseAlertingNone(fakeRequest);
 
             // act
             var actual = await _restClient.GetFileAsync(fakeRequest, CancellationTokenSource.Token);
@@ -354,7 +365,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                     r.Method == fakeRequest.HttpMethod &&
                     r.RequestUri == new Uri("/foo/file", UriKind.Relative) &&
                     r.Content == fakeContent);
-            await SetupFileResponseAlertingNone(mockResponse, fakeRequest);
+            SetupFileResponseAlertingNone(fakeRequest);
 
             // act
             var actual = await _restClient.GetFileAsync(fakeRequest, CancellationTokenSource.Token);
@@ -413,7 +424,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                                 r.RequestUri == new Uri("/foo/add", UriKind.Relative)),
                         CancellationTokenSource.Token))
                 .ReturnsAsync(fakeHttpResponseMessage);
-            await SetupRestResponseAlertingNone(fakeHttpResponseMessage, fakeRequest);
+            SetupRestResponseAlertingNone(fakeRequest);
             _loggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(_logger.Object);
 
             // act
@@ -467,7 +478,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
             var expectedBytesStream = new MemoryStream(expectedBytes);
             var content = new StreamContent(expectedBytesStream);
             SetupHttpClientFactory();
-            var mockResponse = new HttpResponseMessage(HttpStatusCode.OK);
+            var mockResponse = new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
             mockResponse.Content = content;
             mockResponse.Content.Headers.ContentDisposition = null;
             mockResponse.Content.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
@@ -476,7 +487,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
                 r =>
                     r.Method == fakeRequest.HttpMethod &&
                     r.RequestUri == new Uri("/foo/file", UriKind.Relative));
-            await SetupFileResponseAlertingNone(mockResponse, fakeRequest);
+            SetupFileResponseAlertingNone(fakeRequest);
 
             // act
             var actual = await _restClient.GetFileAsync(fakeRequest, CancellationTokenSource.Token);
@@ -492,14 +503,12 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         /// <returns>
         /// The constructed <see cref="HttpResponseMessage"/> that will convert to a <see cref="FileResponse"/>.
         /// </returns>
-        private HttpResponseMessage BuildMockResponseForFiles(MemoryStream expectedBytesStream)
+        private static HttpResponseMessage BuildMockResponseForFiles(MemoryStream expectedBytesStream)
         {
             var content = new StreamContent(expectedBytesStream);
 
-            var mockResponse = new HttpResponseMessage(HttpStatusCode.OK);
-            mockResponse.Content = content;
-            var contentDisposition = new ContentDispositionHeaderValue("attachment");
-            contentDisposition.FileName = "SomeFile.txt";
+            var mockResponse = new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
+            var contentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = "SomeFile.txt" };
             mockResponse.Content.Headers.ContentDisposition = contentDisposition;
             mockResponse.Content.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
             return mockResponse;
@@ -533,17 +542,13 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         /// Sets up the <see cref="IHttpAlertingService"/> mock to handle a response that will convert to
         /// a <see cref="FileResponse"/>.
         /// </summary>
-        /// <param name="fakeHttpResponseMessage">The mock response.</param>
         /// <param name="fakeRestRequest">The rest request.</param>
-        private async Task SetupFileResponseAlertingNone(
-            HttpResponseMessage fakeHttpResponseMessage,
-            RestRequest fakeRestRequest)
+        private void SetupFileResponseAlertingNone(RestRequest fakeRestRequest)
         {
-            var convertedResponse = await ConvertToStreamResponse(fakeHttpResponseMessage);
             _mockHttpAlerting
                 .Setup(
                     alert => alert.IsHttpAlert(
-                        convertedResponse,
+                        It.IsAny<FileResponse>(),
                         fakeRestRequest.AlertCondition,
                         CommonRestAlertConditions.None()))
                 .Returns(false);
@@ -553,61 +558,16 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests
         /// Sets up the <see cref="IHttpAlertingService"/> mock to handle a response that will convert to
         /// a <see cref="RestResponse"/>.
         /// </summary>
-        /// <param name="fakeHttpResponseMessage">The mock response.</param>
         /// <param name="fakeRestRequest">The rest request.</param>
-        private async Task SetupRestResponseAlertingNone(
-            HttpResponseMessage fakeHttpResponseMessage,
-            RestRequest fakeRestRequest)
+        private void SetupRestResponseAlertingNone(RestRequest fakeRestRequest)
         {
-            var convertedResponse = await ConvertToRestResponse<RestResponse>(fakeHttpResponseMessage);
             _mockHttpAlerting
                 .Setup(
                     alert => alert.IsHttpAlert(
-                        convertedResponse,
+                        It.IsAny<RestResponse>(),
                         fakeRestRequest.AlertCondition,
                         CommonRestAlertConditions.None()))
                 .Returns(false);
-        }
-
-        /// <summary>
-        /// A copy of the method from the <see cref="RestClient"/> that converts to a <see cref="FileResponse"/>.
-        /// </summary>
-        /// <param name="httpResponseMessage">The response to convert.</param>
-        /// <returns>The converted <see cref="FileResponse"/>.</returns>
-        private async Task<FileResponse> ConvertToStreamResponse(HttpResponseMessage httpResponseMessage)
-        {
-            var responseStream = await httpResponseMessage.Content.ReadAsStreamAsync();
-
-            return new FileResponse(
-                httpResponseMessage.IsSuccessStatusCode,
-                responseStream,
-                httpResponseMessage.StatusCode,
-                httpResponseMessage.Content.Headers.ContentType?.MediaType,
-                httpResponseMessage.Content.Headers.ContentDisposition?.FileName);
-        }
-
-        /// <summary>
-        /// A copy of the method from the <see cref="RestClient"/> that converts to a <see cref="RestResponse"/>.
-        /// </summary>
-        /// <param name="httpResponseMessage">The response to convert.</param>
-        /// <param name="expectedResponse">The expected response shape in return.</param>
-        /// <typeparam name="TResponse">The type of response.</typeparam>
-        /// <returns>The converted <see cref="RestResponse"/>.</returns>
-        private async Task<RestResponse> ConvertToRestResponse<TResponse>(
-            HttpResponseMessage httpResponseMessage,
-            TResponse expectedResponse = null)
-            where TResponse : class
-        {
-            var responseBytes =
-                httpResponseMessage.Content != null
-                    ? await httpResponseMessage.Content.ReadAsByteArrayAsync()
-                    : Array.Empty<byte>();
-            var deserializer = new TestRestResponseDeserializer(_ => expectedResponse, responseBytes);
-            return new RestResponse(
-                httpResponseMessage.IsSuccessStatusCode,
-                deserializer,
-                httpResponseMessage.StatusCode,
-                httpResponseMessage.Headers.Location);
         }
     }
 }

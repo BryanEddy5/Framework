@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using HumanaEdge.Webcore.Core.Rest;
-using HumanaEdge.Webcore.Core.Rest.AccessTokens;
 using HumanaEdge.Webcore.Core.Rest.Alerting;
 using HumanaEdge.Webcore.Core.Telemetry;
 using HumanaEdge.Webcore.Framework.Rest.Resiliency;
+using HumanaEdge.Webcore.Framework.Rest.Transformations;
 
 namespace HumanaEdge.Webcore.Framework.Rest
 {
@@ -15,9 +15,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
 
         private readonly IPollyContextFactory _pollyContextFactory;
 
-        private readonly IAccessTokenCacheService _accessTokenCacheService;
-
-        private readonly IMediaTypeFormatter[] _mediaTypeFormatters;
+        private readonly IRequestTransformationFactory _requestTransformationFactory;
 
         private readonly ITelemetryFactory _telemetryFactory;
 
@@ -27,23 +25,20 @@ namespace HumanaEdge.Webcore.Framework.Rest
         /// Initializes a new instance of the <see cref="RestClientFactory" /> class.
         /// </summary>
         /// <param name="internalClientFactory">A factory for generating a rest client.</param>
-        /// <param name="mediaTypeFormatters">A collection of media types for formatting a request.</param>
         /// <param name="pollyContextFactory">A factory for creating Polly Context.</param>
-        /// <param name="accessTokenCacheService">A token caching service. </param>
+        /// <param name="requestTransformationFactory">A factory for creating a request transformation service.</param>
         /// <param name="httpAlerting">The alerting service for http telemetry.</param>
         /// <param name="telemetryFactory">A factory associated with telemetry.</param>
         public RestClientFactory(
             IInternalClientFactory internalClientFactory,
-            IEnumerable<IMediaTypeFormatter> mediaTypeFormatters,
             IPollyContextFactory pollyContextFactory,
-            IAccessTokenCacheService accessTokenCacheService,
+            IRequestTransformationFactory requestTransformationFactory,
             IHttpAlertingService httpAlerting,
             ITelemetryFactory telemetryFactory = null!)
         {
             _internalClientFactory = internalClientFactory;
             _pollyContextFactory = pollyContextFactory;
-            _accessTokenCacheService = accessTokenCacheService;
-            _mediaTypeFormatters = mediaTypeFormatters.ToArray();
+            _requestTransformationFactory = requestTransformationFactory;
             _httpAlerting = httpAlerting;
             _telemetryFactory = telemetryFactory;
         }
@@ -55,9 +50,8 @@ namespace HumanaEdge.Webcore.Framework.Rest
                 typeof(TRestClient).Name,
                 _internalClientFactory,
                 options,
-                _mediaTypeFormatters,
                 _pollyContextFactory,
-                _accessTokenCacheService,
+                _requestTransformationFactory,
                 _httpAlerting,
                 _telemetryFactory);
         }

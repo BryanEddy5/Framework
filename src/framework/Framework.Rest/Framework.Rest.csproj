@@ -7,6 +7,8 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftExtensionsVersion)" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="$(MicrosoftExtensionsVersion)" />
+      <PackageReference Include="Microsoft.AspNetCore.Http" Version="$(MicrosoftAspNetCoreVersion)" />
+      <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="$(MicrosoftAspNetCoreVersion)" />
       <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="$(MicrosoftExtensionsVersion)" />
     </ItemGroup>
     <ItemGroup>
