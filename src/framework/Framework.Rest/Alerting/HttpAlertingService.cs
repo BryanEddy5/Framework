@@ -14,12 +14,12 @@ namespace HumanaEdge.Webcore.Framework.Rest.Alerting
             AlertCondition<BaseRestResponse>? requestCondition,
             AlertCondition<BaseRestResponse>? clientCondition)
         {
-            if (requestCondition != null)
+            if (requestCondition?.Condition != null)
             {
                 return requestCondition.Condition.Invoke(restResponse);
             }
 
-            if (clientCondition != null)
+            if (clientCondition?.Condition != null)
             {
                 return clientCondition.Condition.Invoke(restResponse);
             }

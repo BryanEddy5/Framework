@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.Rest;
-using HumanaEdge.Webcore.Core.Rest.AccessTokens;
 using HumanaEdge.Webcore.Core.Rest.Alerting;
 using HumanaEdge.Webcore.Core.Rest.Resiliency;
 using HumanaEdge.Webcore.Core.Telemetry;
 using HumanaEdge.Webcore.Core.Telemetry.Http;
 using HumanaEdge.Webcore.Framework.Rest.Resiliency;
-using Microsoft.Net.Http.Headers;
+using HumanaEdge.Webcore.Framework.Rest.Transformations;
 using Polly;
 
 namespace HumanaEdge.Webcore.Framework.Rest
@@ -20,13 +18,13 @@ namespace HumanaEdge.Webcore.Framework.Rest
     /// <inheritdoc />
     internal sealed class RestClient : IRestClient
     {
-        private readonly IDictionary<MediaType, IMediaTypeFormatter> _mediaTypeFormatters;
-
         private readonly RestClientOptions _options;
 
         private readonly IPollyContextFactory _pollyContextFactory;
 
-        private readonly IAccessTokenCacheService _accessTokenCacheService;
+        private readonly IRequestTransformationFactory _requestTransformationFactory;
+
+        private readonly IRequestTransformationService _requestTransformationService;
 
         private readonly ITelemetryFactory _telemetryFactory;
 
@@ -42,18 +40,16 @@ namespace HumanaEdge.Webcore.Framework.Rest
         /// <param name="clientName">The name type of the <see cref="System.Net.Http.HttpClient" />.</param>
         /// <param name="internalClientFactory">A factory for generating <see cref="IInternalClient" /> for sending the request.</param>
         /// <param name="options">Configuration settings for outbound requests for the instance of <see cref="IRestClient" />.</param>
-        /// <param name="mediaTypeFormatters">A collection of media type formatters.</param>
         /// <param name="pollyContextFactory">Generates Polly <see cref="Context"/> to be leveraged by consumers.</param>
-        /// <param name="accessTokenCacheService">A cache for tokens. </param>
+        /// <param name="requestTransformationFactory">A factory for creating a request transformation service.</param>
         /// <param name="httpAlerting">A service for managing alerts.</param>
         /// <param name="telemetryFactory">A factory associated with telemetry.</param>
         public RestClient(
             string clientName,
             IInternalClientFactory internalClientFactory,
             RestClientOptions options,
-            IMediaTypeFormatter[] mediaTypeFormatters,
             IPollyContextFactory pollyContextFactory,
-            IAccessTokenCacheService accessTokenCacheService,
+            IRequestTransformationFactory requestTransformationFactory,
             IHttpAlertingService httpAlerting,
             ITelemetryFactory telemetryFactory = null!)
         {
@@ -61,14 +57,11 @@ namespace HumanaEdge.Webcore.Framework.Rest
             _internalClientFactory = internalClientFactory;
             _options = options;
             _pollyContextFactory = pollyContextFactory;
-            _accessTokenCacheService = accessTokenCacheService;
+            _requestTransformationFactory = requestTransformationFactory;
             _httpAlerting = httpAlerting;
-            _mediaTypeFormatters = mediaTypeFormatters.SelectMany(
-                    formatter => formatter.MediaTypes.Select(
-                        mediaType =>
-                            new KeyValuePair<MediaType, IMediaTypeFormatter>(mediaType, formatter)))
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             _telemetryFactory = telemetryFactory;
+
+            _requestTransformationService = _requestTransformationFactory.Create(_options);
         }
 
         private IInternalClient InternalHttpClient =>
@@ -80,8 +73,8 @@ namespace HumanaEdge.Webcore.Framework.Rest
             return await SendInternalAsync(
                 fileRequest,
                 cancellationToken,
-                ConvertToHttpRequestMessage,
-                ConvertToStreamResponse);
+                _requestTransformationService.ConvertToHttpRequestMessage,
+                _requestTransformationService.ConvertToStreamResponse);
         }
 
         /// <inheritdoc />
@@ -92,8 +85,8 @@ namespace HumanaEdge.Webcore.Framework.Rest
             return await SendInternalAsync(
                 fileRequest,
                 cancellationToken,
-                ConvertToHttpRequestMessage,
-                ConvertToStreamResponse);
+                _requestTransformationService.ConvertToHttpRequestMessage,
+                _requestTransformationService.ConvertToStreamResponse);
         }
 
         /// <inheritdoc />
@@ -102,103 +95,18 @@ namespace HumanaEdge.Webcore.Framework.Rest
             return await SendInternalAsync(
                 restRequest,
                 cancellationToken,
-                ConvertToHttpRequestMessage,
-                ConvertToRestResponse);
+                _requestTransformationService.ConvertToHttpRequestMessage,
+                _requestTransformationService.ConvertToRestResponse);
         }
 
         /// <inheritdoc />
-        public async Task<RestResponse> SendAsync<TRequest>(
-            RestRequest<TRequest> restRequest,
-            CancellationToken cancellationToken)
+        public async Task<RestResponse> SendAsync<TRequest>(RestRequest<TRequest> restRequest, CancellationToken cancellationToken)
         {
             return await SendInternalAsync(
                 restRequest,
                 cancellationToken,
-                ConvertToHttpRequestMessage,
-                ConvertToRestResponse);
-        }
-
-        /// <summary>
-        /// Converts a <see cref="RestRequest{TRequest}" /> to <see cref="HttpRequestMessage" />.
-        /// </summary>
-        /// <param name="request">The rest request to be converted.</param>
-        /// <typeparam name="TRequest">The <see cref="Type" /> of the request body.</typeparam>
-        /// <returns>A http request to be sent.</returns>
-        /// <exception cref="FormatFailedRestException">An exception thrown if the request body could not be serialized.</exception>
-        private HttpRequestMessage ConvertToHttpRequestMessage<TRequest>(RestRequest<TRequest> request)
-        {
-            var httpRequestMessage = ConvertToHttpRequestMessage(request as RestRequest);
-            try
-            {
-                if (!_mediaTypeFormatters.TryGetValue(request.MediaType, out var mediaTypeFormatter))
-                {
-                    throw new FormatFailedRestException(
-                        $"A formatter could not be located for media type {nameof(request.MediaType)}");
-                }
-
-                if (!mediaTypeFormatter.TryFormat(
-                    request.MediaType,
-                    _options,
-                    request.RequestBody,
-                    out var httpContent))
-                {
-                    throw new FormatFailedRestException(
-                        $"Could not format media type {nameof(request.MediaType)} for request {typeof(TRequest).Name}");
-                }
-
-                httpRequestMessage.Content = httpContent;
-
-                return httpRequestMessage;
-            }
-            catch (Exception formatException)
-            {
-                throw new FormatFailedRestException(
-                    $"Attempting to format {typeof(TRequest).Name} as media type {request.MediaType.Name} resulted in an exception",
-                    formatException);
-            }
-        }
-
-        /// <summary>
-        /// Converts a <see cref="RestRequest" /> to a <see cref="HttpRequestMessage" />.
-        /// </summary>
-        /// <param name="request">The request to convert.</param>
-        /// <returns>An <see cref="HttpRequestMessage" />.</returns>
-        private HttpRequestMessage ConvertToHttpRequestMessage(RestRequest request)
-        {
-            var message = new HttpRequestMessage(request.HttpMethod, request.RelativePath);
-            foreach (var header in request.Headers.Keys)
-            {
-                message.Headers.Add(header, (IEnumerable<string>)request.Headers[header]);
-            }
-
-            return message;
-        }
-
-        private async Task<RestResponse> ConvertToRestResponse(HttpResponseMessage httpResponseMessage)
-        {
-            var responseBytes = httpResponseMessage.Content != null
-                ? await httpResponseMessage.Content.ReadAsByteArrayAsync()
-                : Array.Empty<byte>();
-
-            var contentType = httpResponseMessage.Content?.Headers.ContentType;
-            var deserializer = new RestResponseDeserializer(_mediaTypeFormatters, contentType, responseBytes, _options);
-            return new RestResponse(
-                httpResponseMessage.IsSuccessStatusCode,
-                deserializer,
-                httpResponseMessage.StatusCode,
-                httpResponseMessage.Headers.Location);
-        }
-
-        private async Task<FileResponse> ConvertToStreamResponse(HttpResponseMessage httpResponseMessage)
-        {
-            var responseStream = await httpResponseMessage.Content.ReadAsStreamAsync();
-
-            return new FileResponse(
-                httpResponseMessage.IsSuccessStatusCode,
-                responseStream,
-                httpResponseMessage.StatusCode,
-                httpResponseMessage.Content.Headers.ContentType?.MediaType,
-                httpResponseMessage.Content.Headers.ContentDisposition?.FileName);
+                _requestTransformationService.ConvertToHttpRequestMessage,
+                _requestTransformationService.ConvertToRestResponse);
         }
 
         /// <summary>
@@ -218,7 +126,7 @@ namespace HumanaEdge.Webcore.Framework.Rest
             where TRestRequest : RestRequest
             where TRestResponse : BaseRestResponse
         {
-            var transformedRestRequest = await TransformRequest(restRequest, cancellationToken);
+            var transformedRestRequest = await _requestTransformationService.TransformRequest(restRequest, cancellationToken);
             var contextData = _pollyContextFactory.Create()
                 .WithRestRequest(transformedRestRequest);
 
@@ -317,52 +225,6 @@ namespace HumanaEdge.Webcore.Framework.Rest
                 request.RequestUri?.ToString()!,
                 isAlert,
                 success: response != null && response.IsSuccessStatusCode);
-        }
-
-        /// <summary>
-        /// The execution of the transformation(s) against the incoming request.
-        /// These run before the actual request is sent.
-        /// If there is a bearer token factory available, then it will execute that first.
-        /// </summary>
-        /// <param name="restRequest">The incoming <see cref="RestRequest"/>.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <typeparam name="TRestRequest">The type of rest request this is.</typeparam>
-        /// <returns>The transformed <see cref="RestRequest"/>.</returns>
-        private async Task<TRestRequest> TransformRequest<TRestRequest>(
-            TRestRequest restRequest,
-            CancellationToken cancellationToken)
-            where TRestRequest : RestRequest
-        {
-            var transformedRequest = restRequest;
-
-            // greedy allocation to array to avoid exceptions due to modifying the collection while enumerating over it.
-            var defaultHeaderKeysToAdd = _options.DefaultHeaders.Keys.Except(restRequest.Headers.Keys).ToArray();
-
-            // add the client-level defaults.
-            foreach (var key in defaultHeaderKeysToAdd)
-            {
-                transformedRequest.Headers[key] = _options.DefaultHeaders[key];
-            }
-
-            // apply synchronous transformations.
-            foreach (var transformation in _options.RestRequestMiddleware)
-            {
-                transformedRequest = (TRestRequest)transformation(restRequest);
-            }
-
-            foreach (var asyncTransformation in _options.RestRequestMiddlewareAsync)
-            {
-                transformedRequest = (TRestRequest)await asyncTransformation(restRequest, cancellationToken);
-            }
-
-            if (_options.BearerTokenFactory.HasValue)
-            {
-                var (factory, token) = _options.BearerTokenFactory.Value;
-                var bearerToken = await _accessTokenCacheService.GetAsync(factory, token, cancellationToken);
-                transformedRequest.Headers[HeaderNames.Authorization] = $"Bearer {bearerToken}";
-            }
-
-            return transformedRequest;
         }
     }
 }
