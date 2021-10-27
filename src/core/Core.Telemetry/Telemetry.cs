@@ -61,7 +61,7 @@ namespace HumanaEdge.Webcore.Core.Telemetry
         /// Write data to sink.
         /// </summary>
         /// <returns>Returns TelemetryEvent information.</returns>
-        internal virtual TelemetryEvent ToTelemetryEvent()
+        public virtual TelemetryEvent ToTelemetryEvent()
         {
             return new TelemetryEvent(
                 Name,

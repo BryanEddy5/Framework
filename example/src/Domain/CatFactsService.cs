@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.Caching.Extensions;
 using HumanaEdge.Webcore.Core.DependencyInjection;
+using HumanaEdge.Webcore.Core.Telemetry;
 using HumanaEdge.Webcore.Domain;
 using HumanaEdge.Webcore.Example.Integration.CatFacts.Services;
 using HumanaEdge.Webcore.Example.Models.Immutable;
@@ -29,8 +31,12 @@ namespace HumanaEdge.Webcore.Example.Domain
 
         private readonly ILogger<CatFactsService> _logger;
 
+        private readonly ITelemetryFactory _factory;
+
         private readonly DistributedCacheEntryOptions _cacheOptions =
             new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(20));
+
+        private readonly Stopwatch _stopwatch = new Stopwatch();
 
         /// <summary>
         /// ctor.
@@ -38,14 +44,17 @@ namespace HumanaEdge.Webcore.Example.Domain
         /// <param name="cache">Cache.</param>
         /// <param name="randomCatFactService">A service for getting random cat facts. </param>
         /// <param name="logger">The app logger. </param>
+        /// <param name="factory">The telemetry factory. </param>
         public CatFactsService(
             IDistributedCache cache,
             IRandomCatFactService randomCatFactService,
-            ILogger<CatFactsService> logger)
+            ILogger<CatFactsService> logger,
+            ITelemetryFactory factory)
         {
             _cache = cache;
             _randomCatFactService = randomCatFactService;
             _logger = logger;
+            _factory = factory;
         }
 
         /// <inheritdoc />
@@ -60,16 +69,35 @@ namespace HumanaEdge.Webcore.Example.Domain
                 return new CatFact("Cat's toes are called beans");
 #endif
             };
+            CatFact? response;
+            _stopwatch.Start();
             if (forceRefresh)
             {
-                _logger.LogInformation("Force Refresh cache.");
-                var request = await catFactory.Invoke(cancellationToken);
-                await _cache.SetAsync(CatFactsKey, request!, cancellationToken, _cacheOptions);
-                return request;
+                _logger.LogInformation("Force Refresh cache");
+                response = await catFactory.Invoke(cancellationToken);
+                await _cache.SetAsync(CatFactsKey, response!, cancellationToken, _cacheOptions);
+            }
+            else
+            {
+                _logger.LogInformation("Get or Create cache");
+                response = await _cache.GetOrCreateAsync(CatFactsKey, catFactory, cancellationToken, _cacheOptions);
             }
 
-            _logger.LogInformation("Get or Create cache");
-            return await _cache.GetOrCreateAsync(CatFactsKey, catFactory, cancellationToken, _cacheOptions);
+            _stopwatch.Stop();
+            GetTelemetry(response, _stopwatch.ElapsedMilliseconds);
+            _stopwatch.Reset();
+
+            return response;
+        }
+
+        private void GetTelemetry(CatFact? catFact, long duration)
+        {
+            var dic = new TelemetryConfiguration();
+            dic.Tags.Add("Response", catFact!);
+            dic.Tags.Add("Duration", duration);
+            dic.Tags.Add("Foo", "Bar");
+            _factory.Track(
+                new CustomTelemetry("Cat Facts Cache", dic, false));
         }
     }
 }

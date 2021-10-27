@@ -31,5 +31,14 @@ namespace HumanaEdge.Webcore.Framework.Telemetry
                 .Where(sink => sink.Predicate(telemetryEvent))
                 .ForEach(sink => sink.Emit(telemetryEvent));
         }
+
+        /// <inheritdoc />
+        public void Track(Core.Telemetry.Telemetry telemetry)
+        {
+            var telemetryEvent = telemetry.ToTelemetryEvent();
+            _sinks
+                .Where(sink => sink.Predicate(telemetryEvent))
+                .ForEach(sink => sink.Emit(telemetryEvent));
+        }
     }
 }

@@ -39,8 +39,8 @@ namespace HumanaEdge.Webcore.Core.Rest.Resiliency
 
                         logger.LogInformation(
                             "Http response status code {StatusCode}, retry attempt number {RetryNumber}. Retrying in {Duration}",
-                            retryNumber,
                             outcome.Result.StatusCode,
+                            retryNumber,
                             duration);
                     });
         }
