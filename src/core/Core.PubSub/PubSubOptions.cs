@@ -53,6 +53,15 @@ namespace HumanaEdge.Webcore.Core.PubSub
         public ExceptionStorageOptions ExceptionStorage { get; set; } = new ExceptionStorageOptions();
 
         /// <summary>
+        /// Will immediately Ack the message.
+        /// </summary>
+        /// <remarks>
+        /// By immediately Acking the message long running processes can continue without worry of interruption if it takes longer than the
+        /// maximum Ack deadline. Since the message has been immediately Acked it will not be able to retry if the process were to fail for some reason.
+        /// </remarks>
+        public bool ImmediatelyAckMessage { get; set; }
+
+        /// <summary>
         /// The resiliency configuration options for retrying a message.
         /// </summary>
         [Equals(DoNotAddEqualityOperators = true)]
