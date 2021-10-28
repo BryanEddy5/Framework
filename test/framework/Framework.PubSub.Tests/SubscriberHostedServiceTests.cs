@@ -16,6 +16,7 @@ using HumanaEdge.Webcore.Framework.PubSub.Subscription.Factory;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription.Middleware.Builder;
 using HumanaEdge.Webcore.Framework.PubSub.Tests.Stubs;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
@@ -36,10 +37,24 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
 
         private Mock<IMiddlewareBuilder<Foo>> _middlewareBuilderMock;
 
+        private Mock<IOptionsMonitor<PubSubOptions>> _optionsMock;
+
+        private PubSubOptions _options;
+
         /// <summary>
         /// SUT.
         /// </summary>
         private SubscriberHostedService<Foo> _pubSubHostedService;
+
+        /// <summary>
+        /// Common code setup.
+        /// </summary>
+        public SubscriberHostedServiceTests()
+        {
+            _options = new PubSubOptions();
+            _optionsMock = Moq.Create<IOptionsMonitor<PubSubOptions>>();
+            _optionsMock.Setup(x => x.Get(typeof(Foo).FullName)).Returns(_options);
+        }
 
         /// <summary>
         /// Testing that a path where serialization fails or null is passed returns an ack.
@@ -55,7 +70,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
             _pubSubHostedService = new SubscriberHostedService<Foo>(
                 _logger.Object,
                 _subscriberClientFactory.Object,
-                _middlewareBuilderMock.Object);
+                _middlewareBuilderMock.Object,
+                _optionsMock.Object);
 
             // act
             await _pubSubHostedService.StartAsync(CancellationTokenSource.Token);
@@ -181,7 +197,50 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
             _pubSubHostedService = new SubscriberHostedService<Foo>(
                 _logger.Object,
                 _subscriberClientFactory.Object,
-                _middlewareBuilderMock.Object);
+                _middlewareBuilderMock.Object,
+                _optionsMock.Object);
+
+            // act
+            await _pubSubHostedService.StartAsync(CancellationToken.None);
+
+            // assert
+            _subscriberClient.TestReply.Should().Be(SubscriberClient.Reply.Ack);
+        }
+
+        /// <summary>
+        /// Validates the behavior of <see cref="SubscriberHostedService{TMessage}.StartAsync(CancellationToken)"/> when a message is immediately Acked.
+        /// </summary>
+        /// <returns>A task.</returns>
+        [Fact]
+        public async Task ImmediatelyAckMessage()
+        {
+            // arrange
+            var fakeFoo = FakeData.Create<Foo>();
+            var fakeMessageId = FakeData.Create<string>();
+            _options.ImmediatelyAckMessage = true;
+            Setup();
+            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo, fakeMessageId);
+
+            // act
+            await _pubSubHostedService.StartAsync(CancellationToken.None);
+
+            // assert
+            _subscriberClient.TestReply.Should().Be(SubscriberClient.Reply.Ack);
+        }
+
+        /// <summary>
+        /// Validates the behavior of <see cref="SubscriberHostedService{TMessage}.StartAsync(CancellationToken)"/> when a message is immediately Acked even when an exception is thrown.
+        /// </summary>
+        /// <returns>A task.</returns>
+        [Fact]
+        public async Task ImmediatelyAckMessage_ExceptionThrown()
+        {
+            // arrange
+            var fakeFoo = FakeData.Create<Foo>();
+            var fakeMessageId = FakeData.Create<string>();
+            _options.ImmediatelyAckMessage = true;
+            Setup(context => throw new NackException("shit broke but that's okay"));
+            _subscriberClient.TestMessage = BuildPubsubMessage(fakeFoo, fakeMessageId);
 
             // act
             await _pubSubHostedService.StartAsync(CancellationToken.None);
@@ -210,7 +269,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Tests
             _pubSubHostedService = new SubscriberHostedService<Foo>(
                 _logger.Object,
                 _subscriberClientFactory.Object,
-                _middlewareBuilderMock.Object);
+                _middlewareBuilderMock.Object,
+                _optionsMock.Object);
         }
 
         private PubsubMessage BuildPubsubMessage(string message)

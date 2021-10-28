@@ -11,6 +11,7 @@ using HumanaEdge.Webcore.Framework.PubSub.Subscription.Middleware.Builder;
 using HumanaEdge.Webcore.Framework.PubSub.TraceContext;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace HumanaEdge.Webcore.Framework.PubSub.Subscription
 {
@@ -24,6 +25,8 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription
 
         private readonly ISubscriberClientFactory _subscriberClientFactory;
 
+        private readonly IOptionsMonitor<PubSubOptions> _options;
+
         private readonly MessageDelegate _messageDelegate;
 
         private readonly IActivityFactory _activityFactory;
@@ -36,16 +39,19 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription
         /// <param name="logger">A logger.</param>
         /// <param name="subscriberClientFactory">A factory that generates a <see cref="SubscriberClient" />.</param>
         /// <param name="middlewareBuilder">Creates the pipeline and instruments the middleware. </param>
+        /// <param name="options">The configuration options.</param>
         /// <param name="activityFactory">A factory for creating a new activity with W3C trace context.</param>
         public SubscriberHostedService(
             ILogger<SubscriberHostedService<TMessage>> logger,
             ISubscriberClientFactory subscriberClientFactory,
             IMiddlewareBuilder<TMessage> middlewareBuilder,
+            IOptionsMonitor<PubSubOptions> options,
             IActivityFactory activityFactory = null!)
         {
             _activityFactory = activityFactory;
             _logger = logger;
             _subscriberClientFactory = subscriberClientFactory;
+            _options = options;
             _messageDelegate = middlewareBuilder.Build();
         }
 
@@ -53,28 +59,20 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             _subscriber = await _subscriberClientFactory.Create(typeof(TMessage).FullName!);
+            var options = _options.Get(typeof(TMessage).FullName);
 
             _ = _subscriber.StartAsync(
                 async (message, cancel) =>
                 {
-                    var activity = Activity.Current;
-                    try
+                    if (options.ImmediatelyAckMessage)
                     {
-                        activity = _activityFactory?.Create(message);
-                        var subscriptionContext =
-                            new SubscriptionContext(message.MessageId, cancel) { Items = { [ContextKeys.SubscriptionContextKey] = message } };
-                        await _messageDelegate.Invoke(subscriptionContext);
-
+#pragma warning disable CS4014
+                        Task.Run(() => ExecuteAsync(message, cancel), cancellationToken);
                         return SubscriberClient.Reply.Ack;
+#pragma warning restore CS4014
                     }
-                    catch (Exception exception)
-                    {
-                        return HandleException(exception);
-                    }
-                    finally
-                    {
-                        activity?.Stop();
-                    }
+
+                    return await ExecuteAsync(message, cancel);
                 });
         }
 
@@ -82,6 +80,30 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Subscription
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             await _subscriber?.StopAsync(cancellationToken)!;
+        }
+
+        private async Task<SubscriberClient.Reply> ExecuteAsync(PubsubMessage message, CancellationToken cancellationToken)
+        {
+            var activity = Activity.Current;
+            try
+            {
+                activity = _activityFactory?.Create(message);
+                var subscriptionContext = new SubscriptionContext(message.MessageId, cancellationToken)
+                {
+                    Items = { [ContextKeys.SubscriptionContextKey] = message }
+                };
+                await _messageDelegate.Invoke(subscriptionContext);
+
+                return SubscriberClient.Reply.Ack;
+            }
+            catch (Exception exception)
+            {
+                return HandleException(exception);
+            }
+            finally
+            {
+                activity?.Stop();
+            }
         }
 
         private SubscriberClient.Reply HandleException(Exception exception)

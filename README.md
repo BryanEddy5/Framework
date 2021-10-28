@@ -205,6 +205,7 @@ Example of configuration in `appsettings.json`
     "ProjectId": "some-project-id",
     "Name": "the-subscription-name",
     "MaxMessageCount": 1, // The number of parrallel messages that will be processed.
+    "ImmediatelyAckMessage":true // This will immediately ack the pub/sub message allowing the process to continue on a background thread
     "Resiliency": {
       "MaxRetries": 5 // The max number of retries before Acking a message.
     },
@@ -215,6 +216,12 @@ Example of configuration in `appsettings.json`
     }
   },
 ```
+
+#### Immediately Ack Message
+In some use cases a microservice will need to process a long running task which will exceed the maximum Ack deadline causing the GCP subscription to retry processing of the message.  
+Therefore the pub/sub subscription can run into an issue where it continuously retries sending a message to the subscriber until it meets the criteria in accordance with the retry policy. 
+By immediately `Ack`ing the message the GCP subscription will no longer attempt to retry the message allowing these long running processes to continue uninterrupted. The tradeoff is that the message will no longer be retried.
+Since the message will not be retried the microservice takes on the responsibility of handling exceptions and retrying in code or continuing processing the message appropriately.
 
 #### Pub/Sub Subscriber Model State Validation
 Developers can now perform model state validation on their subscription message. To do so you must simply create a validator to validate your message type and then you are done. Use the Di Validactor decorator to register the validator.
