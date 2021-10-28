@@ -58,8 +58,8 @@ namespace HumanaEdge.Webcore.Framework.Rest.AccessTokens
                 if (forceRefresh)
                 {
                     _logger.LogInformation("Force refreshing token");
-                    var accessToken = tokenFactory.Invoke(cancellationToken);
-                    return await _cache.Set(tokenKey, accessToken, TimeSpan.FromMinutes(210));
+                    var accessToken = await tokenFactory.Invoke(cancellationToken);
+                    return _cache.Set(tokenKey, accessToken, TimeSpan.FromMinutes(210));
                 }
 
                 _logger.LogInformation("Get or Create token");
