@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.Rest;
 using HumanaEdge.Webcore.Core.Rest.AccessTokens;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 
 namespace HumanaEdge.Webcore.Framework.Rest.Transformations
@@ -64,9 +65,14 @@ namespace HumanaEdge.Webcore.Framework.Rest.Transformations
                 transformedRequest.Headers[key] = _options.DefaultHeaders[key];
             }
 
-            if (_httpContextAccessor.HttpContext.Request.Headers.TryGetValue(CloudTraceHeader, out var value))
+            _httpContextAccessor.HttpContext = null;
+
+            if (_httpContextAccessor?.HttpContext?.Request?.Headers != null)
             {
-                transformedRequest.Headers[CloudTraceHeader] = value;
+                if (_httpContextAccessor.HttpContext.Request.Headers.TryGetValue(CloudTraceHeader, out var value))
+                {
+                    transformedRequest.Headers[CloudTraceHeader] = value;
+                }
             }
 
             // apply synchronous transformations.
