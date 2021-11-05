@@ -126,6 +126,44 @@ namespace HumanaEdge.Webcore.Framework.Rest.Tests.Transformations
             actual.Headers["Authorization"].Should().Equal("Bearer " + _authHeader);
         }
 
+                /// <summary>
+        /// Verifies the behavior of <see cref="RequestTransformationService.TransformRequest{TRestRequest}(TRestRequest, CancellationToken)" /> with all
+        /// <see cref="RestClientOptions" /> containing values.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task TransformRequest_NullHttpContext_ReturnsTransformedRequest()
+        {
+            // arrange
+            _mockAccessTokenCache
+                .Setup(x => x.GetAsync(It.IsAny<Func<CancellationToken, Task<string>>>(), It.IsAny<string>(), CancellationTokenSource.Token, false))
+                .ReturnsAsync(_authHeader);
+
+            var fakeRestRequest = new RestRequest("/hello/world", HttpMethod.Get)
+                .UseAcceptHeader(MediaType.Json)
+                .UseHeader("test", "testing")
+                .ConfigureAlertCondition(
+                    new AlertCondition<BaseRestResponse>
+                    {
+                        Condition = _ => true,
+                        ThrowOnFailure = true
+                    });
+
+            // act
+            var actual = await _requestTransformationService.TransformRequest(fakeRestRequest, CancellationTokenSource.Token);
+
+            // assert
+            Assert.IsType<RestRequest>(actual);
+            actual.Headers.Should().ContainKey("Foo");
+            actual.Headers.Should().ContainKey("Authorization");
+            actual.Headers.Should().ContainKey("test");
+            actual.Headers.Should().ContainKey("x-jeremy-is");
+            actual.Headers.Should().ContainKey("Foo");
+            actual.Headers.Should().ContainKey("Accept");
+            actual.Headers.Should().HaveCount(6);
+            actual.Headers["Authorization"].Should().Equal("Bearer " + _authHeader);
+        }
+
         /// <summary>
         /// Verifies the behavior of <see cref="RequestTransformationService.ConvertToHttpRequestMessage(RestRequest)" /> with all
         /// <see cref="RestClientOptions" /> containing values.
