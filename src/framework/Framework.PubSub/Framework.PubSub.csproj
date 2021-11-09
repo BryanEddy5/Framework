@@ -25,5 +25,6 @@
     <ProjectReference Include="..\..\core\Core.Telemetry\Core.Telemetry.csproj" />
     <ProjectReference Include="..\Framework.Logging\Framework.Logging.csproj" />
     <ProjectReference Include="..\Framework.Storage\Framework.Storage.csproj" />
+    <ProjectReference Include="..\Framework.Telemetry\Framework.Telemetry.csproj" />
   </ItemGroup>
 </Project>

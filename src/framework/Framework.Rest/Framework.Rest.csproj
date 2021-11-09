@@ -16,5 +16,6 @@
       <ProjectReference Include="..\..\core\Core.Rest\Core.Rest.csproj" />
       <ProjectReference Include="..\..\core\Core.Telemetry\Core.Telemetry.csproj" />
       <ProjectReference Include="..\..\core\Core.Web\Core.Web.csproj" />
+      <ProjectReference Include="..\Framework.Telemetry\Framework.Telemetry.csproj" />
     </ItemGroup>
 </Project>

@@ -13,6 +13,7 @@ using HumanaEdge.Webcore.Framework.PubSub.Subscription.Middleware;
 using HumanaEdge.Webcore.Framework.PubSub.Subscription.Middleware.Builder;
 using HumanaEdge.Webcore.Framework.PubSub.TraceContext;
 using HumanaEdge.Webcore.Framework.Storage.Extensions;
+using HumanaEdge.Webcore.Framework.Telemetry;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -85,6 +86,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
             where TMessageHandler : class, ISubOrchestrationService<TMessage>
             where TMessage : class
         {
+            services.AddApplicationTelemetry();
             services.AddTransient<ISubOrchestrationService<TMessage>, TMessageHandler>();
 
             services.AddOptions();
@@ -125,6 +127,7 @@ namespace HumanaEdge.Webcore.Framework.PubSub.Extensions
             IConfigurationSection configurationSection)
             where TMessage : class
         {
+            services.AddApplicationTelemetry();
             services.AddOptions();
             services.AddSingleton<IPubsubAlertingService, PubsubAlertingService>();
             services.Configure<PublisherOptions>(typeof(TMessage).FullName, configurationSection);

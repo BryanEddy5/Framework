@@ -5,7 +5,7 @@ using HumanaEdge.Webcore.Framework.Rest.AccessTokens;
 using HumanaEdge.Webcore.Framework.Rest.Alerting;
 using HumanaEdge.Webcore.Framework.Rest.Resiliency;
 using HumanaEdge.Webcore.Framework.Rest.Transformations;
-using Microsoft.AspNetCore.Http;
+using HumanaEdge.Webcore.Framework.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -23,6 +23,7 @@ namespace HumanaEdge.Webcore.Framework.Rest.Extensions
         /// <returns>The service collection, for fluent chaining.</returns>
         public static IServiceCollection AddRestClient(this IServiceCollection services)
         {
+            services.AddApplicationTelemetry();
             services.AddHttpClient();
             services.AddSingleton<IInternalClientFactory, InternalClientFactory>();
             services.AddTransient<IHttpAlertingService, HttpAlertingService>();
