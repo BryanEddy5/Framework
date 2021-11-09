@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
+using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
@@ -15,7 +16,7 @@ namespace HumanaEdge.Webcore.Framework.Soap.Contracts
     /// Our custom logic that handles all the fancy stuff like telemetry and logging and supports
     /// the various configurations we offer via <see cref="SoapClientOptions"/>.
     /// </remarks>
-    internal sealed class EndpointBehavior : IEndpointBehavior
+    internal sealed class EndpointBehavior : IClientMessageInspector, IEndpointBehavior
     {
         /// <summary>
         /// The client name.
@@ -73,6 +74,7 @@ namespace HumanaEdge.Webcore.Framework.Soap.Contracts
         [ExcludeFromCodeCoverage]
         public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
         {
+            clientRuntime.ClientMessageInspectors.Add(this);
         }
 
         /// <inheritdoc />
@@ -87,6 +89,24 @@ namespace HumanaEdge.Webcore.Framework.Soap.Contracts
         [ExcludeFromCodeCoverage]
         public void Validate(ServiceEndpoint endpoint)
         {
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Unused by this service, but required by implementing <see cref="IClientMessageInspector"/>.</remarks>
+        public void AfterReceiveReply(ref Message reply, object correlationState)
+        {
+        }
+
+        /// <inheritdoc/>
+        /// <remarks>Attaches SOAP envelope headers.</remarks>
+        public object BeforeSendRequest(ref Message request, IClientChannel channel)
+        {
+            foreach (var header in _soapClientOptions.SoapHeaders)
+            {
+                request.Headers.Add(MessageHeader.CreateHeader(header.Name, header.NameSpace, header.Value));
+            }
+
+            return request;
         }
     }
 }
