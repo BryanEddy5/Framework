@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using HumanaEdge.Webcore.Core.DependencyInjection;
 using HumanaEdge.Webcore.Core.Soap.Client;
 using HumanaEdge.Webcore.Core.Soap.Client.Factory;
+using HumanaEdge.Webcore.Core.Soap.Client.Models;
 using Microsoft.Extensions.Options;
 
 namespace HumanaEdge.Webcore.Example.Integration.Calculator.Client
@@ -40,6 +41,7 @@ namespace HumanaEdge.Webcore.Example.Integration.Calculator.Client
             return new SoapClientOptions.Builder(options.BaseEndpoint)
                 .ConfigureTimeout(TimeSpan.FromMilliseconds(options.TimeoutMilliseconds))
                 .ConfigureHeader("x-jeremys-secret", "his-SOAP-is-just-bleach")
+                .ConfigureSoapHeader(new SoapHeader("some-soap-header", "the-namespace", "test"))
                 .Build();
         }
     }

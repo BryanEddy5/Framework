@@ -5,8 +5,8 @@ using System.Net.Http;
 using AutoFixture;
 using FluentAssertions;
 using HumanaEdge.Webcore.Core.Soap.Client;
-using HumanaEdge.Webcore.Core.Soap.Resilience;
-using HumanaEdge.Webcore.Core.Soap.Tests.Stubs;
+using HumanaEdge.Webcore.Core.Soap.Client.Models;
+using HumanaEdge.Webcore.Core.Soap.Exceptions;
 using HumanaEdge.Webcore.Core.Testing;
 using Microsoft.Extensions.Primitives;
 using Polly;
@@ -52,10 +52,7 @@ namespace HumanaEdge.Webcore.Core.Soap.Tests.Client
             var fakeBaseEndpoint = new Uri("https://humana.com");
             var customHeaderKey = FakeData.Create<string>();
             var customHeaderValue = FakeData.Create<string>();
-            var expectedHeaders = new Dictionary<string, StringValues>
-            {
-                { customHeaderKey, customHeaderValue }
-            };
+            var expectedHeaders = new Dictionary<string, StringValues> { { customHeaderKey, customHeaderValue } };
 
             // act
             var builtOptions = new SoapClientOptions.Builder(fakeBaseEndpoint)
@@ -154,10 +151,7 @@ namespace HumanaEdge.Webcore.Core.Soap.Tests.Client
             // arrange
             var fakeBaseEndpoint = new Uri("https://humana.com");
             var customResiliencyPolicy = Policy.NoOpAsync<HttpResponseMessage>();
-            var expectedResiliencyPolicies = new List<IAsyncPolicy<HttpResponseMessage>>
-            {
-                customResiliencyPolicy
-            };
+            var expectedResiliencyPolicies = new List<IAsyncPolicy<HttpResponseMessage>> { customResiliencyPolicy };
 
             // act
             var builtOptions = new SoapClientOptions.Builder(fakeBaseEndpoint)
@@ -183,7 +177,9 @@ namespace HumanaEdge.Webcore.Core.Soap.Tests.Client
             var customResiliencyPolicy3 = Policy.NoOpAsync<HttpResponseMessage>();
             var expectedResiliencyPolicies = new List<IAsyncPolicy<HttpResponseMessage>>
             {
-                customResiliencyPolicy1, customResiliencyPolicy2, customResiliencyPolicy3
+                customResiliencyPolicy1,
+                customResiliencyPolicy2,
+                customResiliencyPolicy3
             };
 
             // act
@@ -195,6 +191,53 @@ namespace HumanaEdge.Webcore.Core.Soap.Tests.Client
 
             // assert
             builtOptions.ResiliencePolicies.Should().Contain(expectedResiliencyPolicies);
+        }
+
+        /// <summary>
+        /// Verifies the behavior of <see cref="SoapClientOptions.Builder.Build"/>.<br/>
+        /// Ensures when the ConfigureResiliencePolicy is used multiple times,
+        /// that it works as expected.
+        /// </summary>
+        [Fact]
+        public void ConfigureSoapHeaders_Builds()
+        {
+            // arrange
+            var fakeBaseEndpoint = new Uri("https://humana.com");
+            var fakeSoapHeader = FakeData.Create<SoapHeader>();
+
+            // act
+            var builtOptions = new SoapClientOptions.Builder(fakeBaseEndpoint)
+                .ConfigureSoapHeader(fakeSoapHeader)
+                .Build();
+
+            // assert
+            builtOptions.SoapHeaders.Should().Contain(fakeSoapHeader);
+        }
+
+        /// <summary>
+        /// Verifies the behavior of <see cref="SoapClientOptions.Builder.Build"/>.<br/>
+        /// Ensures when the ConfigureResiliencePolicy is used multiple times,
+        /// that it works as expected.
+        /// </summary>
+        [Fact]
+        public void ConfigureSoapHeaders_Duplicates_Builds()
+        {
+            // arrange
+            var fakeBaseEndpoint = new Uri("https://humana.com");
+            var fakeSoapHeader = FakeData.Create<SoapHeader>();
+            var duplicateSoapHeader = new SoapHeader(
+                fakeSoapHeader.Name,
+                FakeData.Create<string>(),
+                FakeData.Create<object>());
+
+            // act
+            Action actual = () => new SoapClientOptions.Builder(fakeBaseEndpoint)
+                .ConfigureSoapHeader(fakeSoapHeader)
+                .ConfigureSoapHeader(duplicateSoapHeader)
+                .Build();
+
+            // assert
+            actual.Should().ThrowExactly<DuplicateSoapHeaderException>();
         }
 
         /// <summary>
@@ -229,15 +272,9 @@ namespace HumanaEdge.Webcore.Core.Soap.Tests.Client
             var customTimeout = TimeSpan.FromDays(25);
             var customHeaderKey = FakeData.Create<string>();
             var customHeaderValue = FakeData.Create<string>();
-            var expectedHeaders = new Dictionary<string, StringValues>
-            {
-                { customHeaderKey, customHeaderValue }
-            };
+            var expectedHeaders = new Dictionary<string, StringValues> { { customHeaderKey, customHeaderValue } };
             var customResiliencyPolicy = Policy.NoOpAsync<HttpResponseMessage>();
-            var expectedResiliencyPolicies = new List<IAsyncPolicy<HttpResponseMessage>>
-            {
-                customResiliencyPolicy
-            };
+            var expectedResiliencyPolicies = new List<IAsyncPolicy<HttpResponseMessage>> { customResiliencyPolicy };
 
             // act
             var builtOptions = new SoapClientOptions.Builder(fakeBaseEndpoint)

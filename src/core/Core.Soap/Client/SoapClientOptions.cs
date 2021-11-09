@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using HumanaEdge.Webcore.Core.Soap.Client.Models;
+using HumanaEdge.Webcore.Core.Soap.Exceptions;
 using HumanaEdge.Webcore.Core.Soap.Resilience;
 using Microsoft.Extensions.Primitives;
 using Polly;
@@ -16,19 +18,22 @@ namespace HumanaEdge.Webcore.Core.Soap.Client
         /// Constructor.
         /// </summary>
         /// <param name="baseEndpoint">The base endpoint.</param>
-        /// <param name="headers">The default outgoing headers..</param>
+        /// <param name="headers">The default outgoing headers.</param>
         /// <param name="timeout">The timeout.</param>
         /// <param name="resiliencePolicies">The resilience for this client.</param>
+        /// <param name="soapHeaders">The SOAP headers.</param>
         private SoapClientOptions(
             Uri baseEndpoint,
             IDictionary<string, StringValues> headers,
             TimeSpan timeout,
-            IAsyncPolicy<HttpResponseMessage>[] resiliencePolicies)
+            IAsyncPolicy<HttpResponseMessage>[] resiliencePolicies,
+            IEnumerable<SoapHeader> soapHeaders)
         {
             BaseEndpoint = baseEndpoint;
             Headers = headers;
             Timeout = timeout;
             ResiliencePolicies = resiliencePolicies;
+            SoapHeaders = soapHeaders;
         }
 
         /// <summary>
@@ -40,6 +45,11 @@ namespace HumanaEdge.Webcore.Core.Soap.Client
         /// The headers that will be attached to all outgoing requests for this client.
         /// </summary>
         public IDictionary<string, StringValues> Headers { get; }
+
+        /// <summary>
+        /// The headers that will be created as SOAP Envelope headers for the out bound request.
+        /// </summary>
+        public IEnumerable<SoapHeader> SoapHeaders { get; }
 
         /// <summary>
         /// The timeout for http calls this client makes.
@@ -67,6 +77,11 @@ namespace HumanaEdge.Webcore.Core.Soap.Client
             private readonly Dictionary<string, StringValues> _defaultHeaders;
 
             /// <summary>
+            /// The headers that will be created as SOAP Envelope headers for the out bound request.
+            /// </summary>
+            private IDictionary<string, SoapHeader> _soapHeaders;
+
+            /// <summary>
             /// The timeout for http calls this client makes.
             /// </summary>
             private TimeSpan _timeout;
@@ -89,6 +104,7 @@ namespace HumanaEdge.Webcore.Core.Soap.Client
                     ResiliencyPolicies.RetryWithExponentialBackoff(6)
                 };
                 _defaultHeaders = new Dictionary<string, StringValues>();
+                _soapHeaders = new Dictionary<string, SoapHeader>();
                 _timeout = TimeSpan.FromSeconds(8);
             }
 
@@ -111,7 +127,8 @@ namespace HumanaEdge.Webcore.Core.Soap.Client
                     _baseEndpoint,
                     _defaultHeaders,
                     _timeout,
-                    _resiliencePolicies.ToArray());
+                    _resiliencePolicies.ToArray(),
+                    _soapHeaders.Values);
             }
 
             /// <summary>
@@ -131,6 +148,24 @@ namespace HumanaEdge.Webcore.Core.Soap.Client
                 {
                     _defaultHeaders[headerKey] = headerValue;
                 }
+
+                return this;
+            }
+
+            /// <summary>
+            /// Adds an SOAP header that will be applied to all outbound requests.<br/>
+            /// Chain multiple times to add multiple headers.
+            /// </summary>
+            /// <param name="soapHeader">The header value.</param>
+            /// <returns>The builder instance, for fluent chaining.</returns>
+            public Builder ConfigureSoapHeader(SoapHeader soapHeader)
+            {
+                if (_soapHeaders.ContainsKey(soapHeader.Name))
+                {
+                    throw new DuplicateSoapHeaderException(soapHeader);
+                }
+
+                _soapHeaders.Add(soapHeader.Name, soapHeader);
 
                 return this;
             }
