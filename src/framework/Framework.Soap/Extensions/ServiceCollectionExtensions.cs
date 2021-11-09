@@ -1,6 +1,7 @@
 using HumanaEdge.Webcore.Core.Soap.Client.Factory;
 using HumanaEdge.Webcore.Framework.Soap.Factory;
 using HumanaEdge.Webcore.Framework.Soap.Resiliency;
+using HumanaEdge.Webcore.Framework.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HumanaEdge.Webcore.Framework.Soap.Extensions
@@ -17,6 +18,7 @@ namespace HumanaEdge.Webcore.Framework.Soap.Extensions
         /// <returns>The same service collection, for fluently chaining.</returns>
         public static IServiceCollection AddSoapClient(this IServiceCollection serviceCollection)
         {
+            serviceCollection.AddApplicationTelemetry();
             return serviceCollection
                 .AddSingleton<IPollyContextFactory, PollyContextFactory>()
                 .AddSingleton<IEndpointBehaviorFactory, EndpointBehaviorFactory>();
