@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -13,49 +14,47 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
     /// <summary>
     /// configuration settings for API documentation middleware. Uses this technique to DI the
     /// options configuration correctly in the bootstrap process.
-    /// https://andrewlock.net/access-services-inside-options-and-startup-using-configureoptions/
-    /// https://benjamincollins.com/blog/using-dependency-injection-while-configuring-services/ .
     /// </summary>
     /// <typeparam name="TEntry">The <see cref="Type" /> of the Startup class.</typeparam>
     internal sealed class ConfigureSwaggerOptions<TEntry> : IConfigureOptions<SwaggerGenOptions>
     {
-        private static readonly OpenApiInfo ApiInfo;
-
         private static readonly Assembly EntryAssembly;
 
         private static readonly string XmlPath;
 
+        /// <inheritdoc cref="IApiVersionDescriptionProvider"/>
+        private readonly IApiVersionDescriptionProvider _provider;
+
+        /// <summary>
+        /// Static constructor.
+        /// </summary>
         static ConfigureSwaggerOptions()
         {
             EntryAssembly = typeof(TEntry).Assembly;
             var xmlFile = $"{EntryAssembly.GetName().Name}.xml";
             XmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             BuildSourceInfo = GetBuildSourceInfo();
-            ApiInfo = CreateInfo();
         }
 
         /// <summary>
-        /// The build and pipeline info to display for non-prod.  Used in SwaggerJsonRequestDocumentFilter&lt;T&gt;.Apply().
+        /// Constructor.
+        /// </summary>
+        /// <param name="provider">The api version provider.</param>
+        public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
+        {
+            _provider = provider;
+        }
+
+        /// <summary>
+        /// The build and pipeline info to display for non-prod.
         /// </summary>
         public static string BuildSourceInfo { get; }
 
         /// <inheritdoc />
         public void Configure(SwaggerGenOptions options)
         {
-            // This configures a filter that is executed every time the Swagger UI page is refreshed.
-            // This is useful because the filter gets access to the HttpContext and allows us to detect
-            // the environment that we are currently running in (e.g., prod vs non-prod).
-            // But it's easy to create bugs since the filter can modify existing state.
             options.DocumentFilter<SwaggerJsonRequestDocumentFilter<TEntry>>();
 
-            // Enable the request/response examples
-            // options.ExampleFilters();
-
-            // CustomSchemaIds->FullName enables UseFullTypeNameInSchemaIds to prevent this:
-            // https://stackoverflow.com/questions/46071513/swagger-error-conflicting-schemaids-duplicate-schemaids-detected-for-types-a-a
-            // options.CustomSchemaIds(x => x.FullName);
-
-            // Set the comments path for the Swagger JSON and UI.
             options.IncludeXmlComments(XmlPath);
 
             options.AddSecurityDefinition(
@@ -84,30 +83,37 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
                     }
                 });
 
-            // Configures the initial hero with OpenApiInfo.
-            // For some reason (and it's not obvious), this first parameter needs to match OpenApiInfo.Version below.
-            options.SwaggerDoc("v1", ApiInfo);
+            // add swagger document for every API version discovered.
+            foreach (var description in _provider.ApiVersionDescriptions)
+            {
+                options.SwaggerDoc(
+                    description.GroupName,
+                    CreateVersionInfo(description));
+            }
 
-            // add a custom operation filter which sets default values
+            // add a custom operation filter which sets default values.
             options.OperationFilter<SwaggerDefaultValues>();
         }
 
         /// <summary>
-        /// Configures initial hero information.
+        /// Generates the <see cref="OpenApiInfo"/> version information for this description.
         /// </summary>
-        /// <returns><see cref="OpenApiInfo" />.</returns>
-        internal static OpenApiInfo CreateInfo()
+        /// <param name="description">The <see cref="ApiVersionDescription"/> data.</param>
+        /// <returns>The generated version information.</returns>
+        private static OpenApiInfo CreateVersionInfo(ApiVersionDescription description)
         {
             var info = new OpenApiInfo
             {
-                Version = "v1",
-                Title = EntryAssembly?.GetCustomAttribute<AssemblyProductAttribute>()?.Product,
-                Description = EntryAssembly?.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description
-
-                // Contact = new OpenApiContact() { Name = "George Chung", Email = "george.chung@nortal.com" },
-                // TermsOfService = new Uri("https://opensource.org/licenses/MIT"),
-                // License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }
+                Version = description.ApiVersion.ToString(),
+                Title = EntryAssembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product,
+                Description = EntryAssembly.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description
             };
+
+            if (description.IsDeprecated)
+            {
+                info.Description += " This API version has been deprecated.";
+            }
+
             return info;
         }
 
