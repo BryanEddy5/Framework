@@ -1,6 +1,8 @@
 using HumanaEdge.Webcore.Framework.Swagger.Configuration;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace HumanaEdge.Webcore.Framework.Swagger.Extensions
@@ -18,7 +20,13 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Extensions
         /// The <see cref="IConfiguration" /> instance passed into the initial Startup.ConfigureService()
         /// call.
         /// </param>
-        public static void UseSwaggerDocumentation(this IApplicationBuilder app, IConfiguration config)
+        /// <param name="provider">The api version provider, for api versioning support.</param>
+        /// <param name="logger">The application logger.</param>
+        public static void UseSwaggerDocumentation(
+            this IApplicationBuilder app,
+            IConfiguration config,
+            IApiVersionDescriptionProvider provider,
+            ILogger logger)
         {
             app.UseSwagger();
             app.UseSwaggerUI(
@@ -29,8 +37,12 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Extensions
                         .Get<OpenApiConfigSettings>()
                         .DocumentTitle;
 
-                    // endpoint for swagger.json
-                    options.SwaggerEndpoint("swagger/v1/swagger.json", $"{options.DocumentTitle} V1 (hardcoded)");
+                    foreach (var description in provider.ApiVersionDescriptions)
+                    {
+                        var groupName = $"{options.DocumentTitle} {description.GroupName.ToUpperInvariant()}";
+                        var endpoint = $"/swagger/{description.GroupName}/swagger.json";
+                        options.SwaggerEndpoint(endpoint, groupName);
+                    }
 
                     // default is all sections collapsed
                     options.DocExpansion(DocExpansion.None);

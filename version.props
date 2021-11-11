@@ -14,6 +14,8 @@
     <MicrosoftCodeAnalysisCSharpVersion>3.6.0</MicrosoftCodeAnalysisCSharpVersion>
   </PropertyGroup>
   <PropertyGroup Label="Microsoft library versions old" Condition="'$(TargetFramework)' == '$(TargetFramework31)' or '$(TargetFramework)' == '$(LibTargetFramework)'">
+    <MicrosoftAspNetCoreMvcVersioning>4.1.0</MicrosoftAspNetCoreMvcVersioning>
+    <MicrosoftAspNetCoreMvcVersioningApiExplorer>4.1.0</MicrosoftAspNetCoreMvcVersioningApiExplorer>
     <MicrosoftExtensionsVersion>3.1.6</MicrosoftExtensionsVersion>
     <MicrosoftExtensionsDependencyModelVersion>2.0.4</MicrosoftExtensionsDependencyModelVersion>
     <SystemComponentModelAnnotations>4.7.0</SystemComponentModelAnnotations>
@@ -21,6 +23,8 @@
     <SystemServiceModelVersion>4.8.1</SystemServiceModelVersion>
   </PropertyGroup>
   <PropertyGroup Label="Microsoft library versions net5.0" Condition="'$(TargetFramework)' == '$(TargetFramework50)'">
+    <MicrosoftAspNetCoreMvcVersioning>5.0.0</MicrosoftAspNetCoreMvcVersioning>
+    <MicrosoftAspNetCoreMvcVersioningApiExplorer>5.0.0</MicrosoftAspNetCoreMvcVersioningApiExplorer>
     <MicrosoftExtensionsVersion>5.0.0</MicrosoftExtensionsVersion>
     <MicrosoftExtensionsDependencyModelVersion>5.0.0</MicrosoftExtensionsDependencyModelVersion>
     <SystemComponentModelAnnotations>5.0.0</SystemComponentModelAnnotations>

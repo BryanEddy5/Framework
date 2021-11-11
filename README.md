@@ -165,13 +165,31 @@ Examples:
 - Mapping controllers
 - Exception Handling middleware
 - Request telemetry
-- Swagger (OpenApi) documentation and `/index.html` GUI.
+- Enables API Versioning
+- Swagger (OpenApi) documentation and `/index.html` GUI (includes support for API Versioning).
 
-[ConfigureAppServices](example/src/WebApi/Startup.cs#L34) allows for each Microservice can also customize the services
+[ConfigureAppServices](example/src/WebApi/Startup.cs#L34) allows for each Microservice can also customize the services.
 
 2.[Utilizing `UseCustomHostBuilder<TStartup>` in `Program` class](example/src/WebApi/Program.cs#L28)
 
 This configures the logging and service dependency injection from Webcore.
+
+## API Versioning
+Out of the box, this SDK will enable API Versioning in your API.
+
+With this, some defaults are setup that will allow setup for API versioning in your API.
+- in the API Explorer (aka the Swagger UI):
+  - we enforce format of `v#.#`, such as `v1.0`.
+  - for convenience, the version will be inlined when viewing URLs in the Swagger UI.
+- for the API Versioning functionality itself:
+  - the (microsoft) versioning middleware is registered by default.
+  - there is a default version, that being `v1.0`.
+  - if the consumer doesn't pass a version, the above default is used.
+  - the version location to be read from is specified to be from the url (not header or querystring).
+  - when consumers hit a versioned endpoint of any kind, all available versions will be reported back in the response headers.
+
+> If opting into API Versioning, there are additional steps that need to be taken.<br/>
+> You can find these steps in the [API Versioning example repo](https://gitlab.humanaedge.com/cxp/ah-cxp-versioning-example-api#api-versioning-example).
 
 ## Encryption Service
 Offers simple symmetric encryption and decryption in utf-8 base64 url encoded string.  This encoding enables the encrypted string to be passed as part of a Url path and properly decode and decrypt.

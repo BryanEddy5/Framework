@@ -142,6 +142,7 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Tests
                     }
                 }
              }");
+
 #pragma warning restore SA1118 // Parameter should not span multiple lines
         }
 

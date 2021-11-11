@@ -14,6 +14,7 @@ using HumanaEdge.Webcore.Framework.Web.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -49,10 +50,12 @@ namespace HumanaEdge.Webcore.Framework.Web
         /// </summary>
         /// <param name="app">The application builder.</param>
         /// <param name="env">The hosting environment.</param>
+        /// <param name="provider">The api version provider.</param>
         /// <param name="logger">The application logger.</param>
         public void Configure(
             IApplicationBuilder app,
             IWebHostEnvironment env,
+            IApiVersionDescriptionProvider provider,
             ILogger<TStartup> logger)
         {
             Activity.DefaultIdFormat = ActivityIdFormat.W3C;
@@ -71,7 +74,7 @@ namespace HumanaEdge.Webcore.Framework.Web
                 .UseRequestLoggingMiddleware()
                 .UseMiddleware<ExceptionHandlingMiddleware>();
 
-            app.UseSwaggerDocumentation(Configuration);
+            app.UseSwaggerDocumentation(Configuration, provider, logger);
             app.UseRouting();
             app.UseReadyHealthChecks();
             app.UseTracing(Configuration);
@@ -99,6 +102,7 @@ namespace HumanaEdge.Webcore.Framework.Web
             services.AddHealthChecks();
             services.AddHttpContextAccessor();
             services.AddOptionsPattern(Configuration);
+            services.EnableApiVersioning();
 
             services.AddMvc(
                 options =>

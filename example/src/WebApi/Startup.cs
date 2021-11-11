@@ -6,8 +6,8 @@ using HumanaEdge.Webcore.Framework.Caching.Extensions;
 using HumanaEdge.Webcore.Framework.Encryption.Extensions;
 using HumanaEdge.Webcore.Framework.PubSub.Extensions;
 using HumanaEdge.Webcore.Framework.SecretsManager.Extensions;
-using HumanaEdge.Webcore.Framework.Soap.Extensions;
 using HumanaEdge.Webcore.Framework.Web;
+using HumanaEdge.Webcore.Framework.Web.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

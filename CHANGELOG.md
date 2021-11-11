@@ -18,6 +18,7 @@ Additional information on the libraries is located in the README.md
 - GCP Pub/Sub Susbcribers - Can now perform model state validation on their `TMessage` (subscription message) .
 
 ### Changed
+- Upgraded to enable activation of API Versioning on APIs (not enabled by default, but supported by default).
 - Upgraded all libraries to multi-target both .Net 5.0 and .Net 3.1 or .Net Standard 2.1.
   This allows consumers to upgrade to .Net 5.0 at their own pace.
   All consumers will reap the benefits of the latest releases of Webcore without having to upgrade to .Net 5.0.

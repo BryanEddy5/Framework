@@ -31,9 +31,6 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Extensions
             // Add Mvc convention to ensure ApiExplorer is enabled for all actions.
             services.Configure<MvcOptions>(c => c.Conventions.Add(new SwaggerApplicationConvention()));
 
-            // https://github.com/mattfrear/Swashbuckle.AspNetCore.Filters/issues/114
-            // services.AddSwaggerExamplesFromAssemblyOf<ExampleViewModel>();
-
             // Register generator and it's dependencies
             services.AddTransient<ISwaggerProvider, SwaggerGenerator>();
             services.AddTransient<ISchemaGenerator, SchemaGenerator>();
