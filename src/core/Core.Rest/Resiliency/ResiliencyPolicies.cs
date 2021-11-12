@@ -20,8 +20,11 @@ namespace HumanaEdge.Webcore.Core.Rest.Resiliency
         /// Creates a resiliency policy with exponential backoff.
         /// </summary>
         /// <param name="maxRetryAttempts">The maximum number of retries.</param>
+        /// <param name="retry"> Custom function to use to determine if a retry should occur, optional. </param>
         /// <returns> The resilience policy. </returns>
-        public static IAsyncPolicy<BaseRestResponse> RetryWithExponentialBackoff(int maxRetryAttempts)
+        public static IAsyncPolicy<BaseRestResponse> RetryWithExponentialBackoff(
+            int maxRetryAttempts,
+            Func<BaseRestResponse, bool>? retry = null)
         {
             var jitterer = new Random();
             var backOffIntervals = Enumerable.Range(1, maxRetryAttempts)
@@ -30,7 +33,7 @@ namespace HumanaEdge.Webcore.Core.Rest.Resiliency
                          TimeSpan.FromMilliseconds(jitterer.Next(0, 100)))
                 .ToArray();
             return Policy<BaseRestResponse>.HandleResult(
-                    r => r.StatusCode >= HttpStatusCode.InternalServerError)
+                    r => retry?.Invoke(r) ?? DefaultRetryCondition(r))
                 .WaitAndRetryAsync(
                     backOffIntervals,
                     onRetry: (outcome, duration, retryNumber, context) =>
@@ -50,11 +53,13 @@ namespace HumanaEdge.Webcore.Core.Rest.Resiliency
         /// </summary>
         /// <param name="durationOfBreakInTimeSpan">The number of seconds or minutes between breaks.</param>
         /// <param name="eventsAllowedBeforeBreaking">The number of events allowed before breaking.</param>
+        /// <param name="retry"> Custom function to use to determine if a retry should occur, optional. </param>
         /// <returns> The resilience policy. </returns>
         public static IAsyncPolicy<BaseRestResponse> CircuitBreaker(
             TimeSpan durationOfBreakInTimeSpan,
-            int eventsAllowedBeforeBreaking) => Policy<BaseRestResponse>.HandleResult(
-                r => r.StatusCode >= HttpStatusCode.InternalServerError)
+            int eventsAllowedBeforeBreaking,
+            Func<BaseRestResponse, bool>? retry = null) => Policy<BaseRestResponse>.HandleResult(
+                r => retry?.Invoke(r) ?? DefaultRetryCondition(r))
                 .CircuitBreakerAsync(
                     handledEventsAllowedBeforeBreaking: eventsAllowedBeforeBreaking,
                     durationOfBreak: durationOfBreakInTimeSpan,
@@ -101,5 +106,8 @@ namespace HumanaEdge.Webcore.Core.Rest.Resiliency
                         var currentRequest = context.GetRestRequest();
                         currentRequest!.Headers[HeaderNames.Authorization] = $"Bearer {newBearerToken}";
                     });
+
+        private static bool DefaultRetryCondition(BaseRestResponse response) =>
+            response.StatusCode >= HttpStatusCode.InternalServerError;
     }
 }

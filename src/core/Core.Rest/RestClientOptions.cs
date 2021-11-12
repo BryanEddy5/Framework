@@ -278,6 +278,18 @@ namespace HumanaEdge.Webcore.Core.Rest
             }
 
             /// <summary>
+            /// Overrides the existing resilience policies with a new collection of policies.
+            /// </summary>
+            /// <param name="resiliencePolicies"> The new resilience policies. </param>
+            /// <returns> The builder instance, for fluent chaining. </returns>
+            public Builder OverrideResiliencePolicy(IEnumerable<IAsyncPolicy<BaseRestResponse>> resiliencePolicies)
+            {
+                _resiliencePolicy.Clear();
+                _resiliencePolicy.AddRange(resiliencePolicies);
+                return this;
+            }
+
+            /// <summary>
             /// Configures a default timeout on all requests for the client.
             /// </summary>
             /// <param name="timeout">The timeout window.</param>
