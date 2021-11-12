@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -150,6 +151,27 @@ namespace HumanaEdge.Webcore.Core.Rest.Tests
 
             // assert
             restClientOptions.ResiliencePolicies.Should().Contain(policy);
+        }
+
+        /// <summary>
+        /// Validates the behavior of <see cref="RestClientOptions"/> resilience functionality.<br/>
+        /// Ensures that the .OverrideResiliencePolicy functionality works.
+        /// </summary>
+        [Fact]
+        public void OverrideResiliencePolicyTest()
+        {
+            // Arrange
+            var uri = new Uri("http://localhost:5000");
+            var policy = Policy.TimeoutAsync<BaseRestResponse>(Timeout.InfiniteTimeSpan);
+
+            // Act
+            var restClientOptions = new RestClientOptions.Builder(uri)
+                .OverrideResiliencePolicy(new List<IAsyncPolicy<BaseRestResponse>>(new[] { policy }))
+                .Build();
+
+            // Assert
+            restClientOptions.ResiliencePolicies.Should().Contain(policy);
+            restClientOptions.ResiliencePolicies.Length.Should().Be(1);
         }
 
         /// <summary>
