@@ -1,5 +1,6 @@
 using HumanaEdge.Webcore.Framework.Web.Options;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,19 +25,32 @@ namespace HumanaEdge.Webcore.Framework.Web.Extensions
         }
 
         /// <summary>
+        /// Registers the <see cref="IApiVersionDescriptionProvider"/>.
+        /// </summary>
+        /// <remarks>
+        /// This does NOT enable versioning for the API! This only adds the dependency for the swagger UI explorer
+        /// to know how to render any number (including one) of versions to the swagger UI. If you want to add
+        /// API verisoning, use <see cref="EnableApiVersioning"/>.
+        /// </remarks>
+        /// <param name="services">The services collection.</param>
+        public static void AddApiVersionDescriptionProvider(this IServiceCollection services)
+        {
+            services.AddTransient<IApiVersionDescriptionProvider, DefaultApiVersionDescriptionProvider>();
+        }
+
+        /// <summary>
         /// Registers the defaults for and enables Versioning in the API.
         /// </summary>
         /// <param name="services">The services collection.</param>
-        /// <returns>The <see cref="IServiceCollection"/> for fluent-chaining.</returns>
-        public static IServiceCollection EnableApiVersioning(this IServiceCollection services)
+        public static void EnableApiVersioning(this IServiceCollection services)
         {
             services.AddVersionedApiExplorer(
                 setup =>
                 {
-                    setup.GroupNameFormat = "'v'VVV";
                     setup.SubstituteApiVersionInUrl = true;
+                    setup.GroupNameFormat = "'v'VVV";
                 });
-            return services.AddApiVersioning(config =>
+            services.AddApiVersioning(config =>
             {
                 config.RegisterMiddleware = true;
                 config.DefaultApiVersion = new ApiVersion(1, 0);

@@ -165,7 +165,7 @@ Examples:
 - Mapping controllers
 - Exception Handling middleware
 - Request telemetry
-- Enables API Versioning
+- Supports API Versioning
 - Swagger (OpenApi) documentation and `/index.html` GUI (includes support for API Versioning).
 
 [ConfigureAppServices](example/src/WebApi/Startup.cs#L34) allows for each Microservice can also customize the services.
@@ -175,11 +175,25 @@ Examples:
 This configures the logging and service dependency injection from Webcore.
 
 ## API Versioning
-Out of the box, this SDK will enable API Versioning in your API.
+Out of the box, this SDK will support API Versioning in your API.
+
+In order to enable it, just add this line to your API's `Startup.cs` file, and you'll be ready for the rest.
+```c#
+/// <inheritdoc />
+protected override IHttpClientBuilder ConfigureAppServices(IServiceCollection services)
+{
+    // ... other app-specific service/configuration registrations ...
+    
+    services.EnableApiVersioning(); // the line to add!
+    
+    return services.AddHttpClient("backend");
+}
+```
 
 With this, some defaults are setup that will allow setup for API versioning in your API.
 - in the API Explorer (aka the Swagger UI):
   - we enforce format of `v#.#`, such as `v1.0`.
+    - > Note: the swagger url will only have the version without the `v` prefix.
   - for convenience, the version will be inlined when viewing URLs in the Swagger UI.
 - for the API Versioning functionality itself:
   - the (microsoft) versioning middleware is registered by default.
@@ -188,7 +202,7 @@ With this, some defaults are setup that will allow setup for API versioning in y
   - the version location to be read from is specified to be from the url (not header or querystring).
   - when consumers hit a versioned endpoint of any kind, all available versions will be reported back in the response headers.
 
-> If opting into API Versioning, there are additional steps that need to be taken.<br/>
+> If opting into API Versioning, do be sure to check out the rest of the steps for configuration/deployment.<br/>
 > You can find these steps in the [API Versioning example repo](https://gitlab.humanaedge.com/cxp/ah-cxp-versioning-example-api#api-versioning-example).
 
 ## Encryption Service

@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -50,13 +51,13 @@ namespace HumanaEdge.Webcore.Framework.Web
         /// </summary>
         /// <param name="app">The application builder.</param>
         /// <param name="env">The hosting environment.</param>
-        /// <param name="provider">The api version provider.</param>
         /// <param name="logger">The application logger.</param>
+        /// <param name="provider">The api version detail provider.</param>
         public void Configure(
             IApplicationBuilder app,
             IWebHostEnvironment env,
-            IApiVersionDescriptionProvider provider,
-            ILogger<TStartup> logger)
+            ILogger<TStartup> logger,
+            IApiVersionDescriptionProvider provider)
         {
             Activity.DefaultIdFormat = ActivityIdFormat.W3C;
 
@@ -74,7 +75,7 @@ namespace HumanaEdge.Webcore.Framework.Web
                 .UseRequestLoggingMiddleware()
                 .UseMiddleware<ExceptionHandlingMiddleware>();
 
-            app.UseSwaggerDocumentation(Configuration, provider, logger);
+            app.UseSwaggerDocumentation(Configuration, provider);
             app.UseRouting();
             app.UseReadyHealthChecks();
             app.UseTracing(Configuration);
@@ -98,11 +99,12 @@ namespace HumanaEdge.Webcore.Framework.Web
         /// <param name="services">The collection of service registrations that should be included in the container.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApiVersionDescriptionProvider();
             services.AddSwaggerServices<TStartup>(Configuration);
+
             services.AddHealthChecks();
             services.AddHttpContextAccessor();
             services.AddOptionsPattern(Configuration);
-            services.EnableApiVersioning();
 
             services.AddMvc(
                 options =>
@@ -110,7 +112,6 @@ namespace HumanaEdge.Webcore.Framework.Web
                     options.Filters.Add(new ProducesAttribute("application/json"));
                     options.Filters.Add(new ConsumesAttribute("application/json"));
                 });
-
             services.AddControllers(
                 options =>
                 {

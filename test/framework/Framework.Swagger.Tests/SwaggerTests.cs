@@ -12,7 +12,7 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Tests
     /// </summary>
     public class SwaggerTests : IClassFixture<WebApplicationFactory<Startup>>
     {
-        private const string SwaggerPath = "swagger/v1/swagger.json";
+        private const string SwaggerPath = "swagger/1.0/swagger.json";
 
         private readonly WebApplicationFactory<Startup> _factory;
 
