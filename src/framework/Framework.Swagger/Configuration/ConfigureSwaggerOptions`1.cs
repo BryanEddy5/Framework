@@ -18,8 +18,14 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
     /// <typeparam name="TEntry">The <see cref="Type" /> of the Startup class.</typeparam>
     internal sealed class ConfigureSwaggerOptions<TEntry> : IConfigureOptions<SwaggerGenOptions>
     {
+        /// <summary>
+        /// A reference to the entry point this API is using swagger within.
+        /// </summary>
         private static readonly Assembly EntryAssembly;
 
+        /// <summary>
+        /// The path to the xml-docs for swagger's output.
+        /// </summary>
         private static readonly string XmlPath;
 
         /// <inheritdoc cref="IApiVersionDescriptionProvider"/>
@@ -53,10 +59,9 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
         /// <inheritdoc />
         public void Configure(SwaggerGenOptions options)
         {
+            options.OperationFilter<SwaggerDefaultValues>();
             options.DocumentFilter<SwaggerJsonRequestDocumentFilter<TEntry>>();
-
             options.IncludeXmlComments(XmlPath);
-
             options.AddSecurityDefinition(
                 "apikey",
                 new OpenApiSecurityScheme
@@ -66,33 +71,8 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey
                 });
-
-            options.AddSecurityRequirement(
-                new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "apikey"
-                            }
-                        },
-                        new List<string>()
-                    }
-                });
-
-            // add swagger document for every API version discovered.
-            foreach (var description in _provider.ApiVersionDescriptions)
-            {
-                options.SwaggerDoc(
-                    description.GroupName,
-                    CreateVersionInfo(description));
-            }
-
-            // add a custom operation filter which sets default values.
-            options.OperationFilter<SwaggerDefaultValues>();
+            options.AddSecurityRequirement(CreateSecurityRequirement());
+            AddVersionedDocs(options);
         }
 
         /// <summary>
@@ -104,7 +84,7 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
         {
             var info = new OpenApiInfo
             {
-                Version = description.ApiVersion.ToString(),
+                Version = $"v{description.ApiVersion.MajorVersion}",
                 Title = EntryAssembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product,
                 Description = EntryAssembly.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description
             };
@@ -118,14 +98,35 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
         }
 
         /// <summary>
+        /// Generates the <see cref="OpenApiSecurityRequirement"/> for this swagger documentation.
+        /// </summary>
+        /// <returns>The security requirement.</returns>
+        private static OpenApiSecurityRequirement CreateSecurityRequirement()
+        {
+            return new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "apikey"
+                        }
+                    },
+                    new List<string>()
+                }
+            };
+        }
+
+        /// <summary>
         /// Extracts build info from the assembly for non-prod environments.
         /// </summary>
         /// <returns>string representing formatted build info.</returns>
         private static string GetBuildSourceInfo()
         {
-            // eg "c81631b9_1193"
             var informationalVersion = EntryAssembly
-                ?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
                 ?.InformationalVersion
                 .Split("_")
                 .ToList();
@@ -133,6 +134,32 @@ namespace HumanaEdge.Webcore.Framework.Swagger.Configuration
             var pipelineId = informationalVersion?.Last();
 
             return $"<p><b>git:</b> {gitHash}, <b>pipeline id:</b> {pipelineId}";
+        }
+
+        /// <summary>
+        /// Adds the actual swagger documents to the swagger UI.
+        /// </summary>
+        /// <param name="options">The swagger generation options.</param>
+        private void AddVersionedDocs(SwaggerGenOptions options)
+        {
+            // if we are using API Versioning and have multiple versions, then add them all.
+            if (_provider.ApiVersionDescriptions.Count > 1)
+            {
+                foreach (var description in _provider.ApiVersionDescriptions)
+                {
+                    options.SwaggerDoc(
+                        description.GroupName,
+                        CreateVersionInfo(description));
+                }
+            }
+
+            // if we do not have multiple versions, then add just the one.
+            else
+            {
+                var description = _provider.ApiVersionDescriptions[0];
+                var versionInfo = CreateVersionInfo(description);
+                options.SwaggerDoc(description.GroupName, versionInfo);
+            }
         }
     }
 }
