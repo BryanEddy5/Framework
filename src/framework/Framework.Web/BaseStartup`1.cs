@@ -72,7 +72,6 @@ namespace HumanaEdge.Webcore.Framework.Web
             }
 
             app.UseMiddleware<RequestInfoMiddleware>()
-                .UseRequestLoggingMiddleware()
                 .UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseSwaggerDocumentation(Configuration, provider);
